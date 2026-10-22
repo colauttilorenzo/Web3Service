@@ -1,0 +1,102 @@
+# On every push to main that touches the TypeScript package: TypeScript tests, then the npm package on GitHub Packages
+# and a GitHub Release tagged npm-v<version>.
+# The version comes from typescript/package.json; when it is already published, a build number is added (0.1.0-build.1, …).
+name: npm package
+
+on:
+  push:
+    branches: [main]
+    paths: ['typescript/**', 'shared/**', '.github/scripts/**', '.github/workflows/release-npm.yml']
+  workflow_dispatch:
+
+# One release at a time, so two pushes never compute the same build number.
+concurrency:
+  group: release-npm
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 22
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: typescript/package-lock.json
+      - run: npm ci --force
+      - run: npm run typecheck
+      - name: TypeScript tests
+        run: npm test
+      - name: Version resolver tests
+        run: node --test ../.github/scripts/resolve-version.test.mjs
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: typescript/package-lock.json
+
+      - name: Resolve the version
+        id: version
+        run: node .github/scripts/resolve-version.mjs npm
+
+      - name: Publish the npm package
+        working-directory: typescript
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          NPM_NAME: ${{ steps.version.outputs.name }}
+        run: |
+          npm ci --force
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          npm pkg set "name=$NPM_NAME" "repository.type=git" "repository.url=git+${{ github.server_url }}/${{ github.repository }}.git"
+          mkdir -p ../artifacts/npm
+          npm pack --pack-destination ../artifacts/npm
+          echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" > "$RUNNER_TEMP/.npmrc"
+          npm publish ../artifacts/npm/*.tgz --registry https://npm.pkg.github.com --userconfig "$RUNNER_TEMP/.npmrc" --tag latest
+
+      # Notes: the CHANGELOG.md section of the package.json version plus the commits since the previous npm release.
+      # Build versions (0.1.0-build.N) are prereleases.
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        run: |
+          awk -v heading="## ${VERSION%-build.*}" '$0 == heading { found = 1; next } found && /^## / { exit } found' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          flags=()
+          previous=$(git tag --list 'npm-v*' --sort=-creatordate | head -n 1)
+          if [ -n "$previous" ]; then flags+=(--notes-start-tag "$previous"); fi
+          if [ "$PRERELEASE" = true ]; then flags+=(--prerelease); fi
+          gh release create "npm-v$VERSION" --target "$GITHUB_SHA" --title "npm $VERSION" \
+            --notes-file "$RUNNER_TEMP/notes.md" --generate-notes "${flags[@]}" \
+            artifacts/npm/*.tgz \
+            typescript/dist/browser/web3-service.min.js \
+            typescript/dist/browser/web3-service.esm.min.js
+
+      - name: Summary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          NPM_NAME: ${{ steps.version.outputs.name }}
+        run: |
+          echo "Published \`$NPM_NAME@$VERSION\` on GitHub Packages and the release [npm-v$VERSION](${{ github.server_url }}/${{ github.repository }}/releases/tag/npm-v$VERSION)." >> "$GITHUB_STEP_SUMMARY"

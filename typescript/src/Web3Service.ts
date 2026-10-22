@@ -1,5 +1,6 @@
 import type { Mnemonic } from 'ethers';
 import type { TransactionReceipt } from 'web3';
+import * as AbiMethods from './Internal/AbiMethods.js';
 import * as Configuration from './Internal/Configuration.js';
 import type { ResolvedOptions } from './Internal/Configuration.js';
 import * as ContractCalls from './Internal/ContractCalls.js';
@@ -9,16 +10,20 @@ import * as Integers from './Internal/Integers.js';
 import { KeySigner } from './Internal/KeySigner.js';
 import * as Receipts from './Internal/Receipts.js';
 import { RpcConnector } from './Internal/RpcConnector.js';
+import * as ErcStandards from './Internal/ErcStandards.js';
 import type { RpcSession } from './Internal/RpcSession.js';
 import { TransactionRequest } from './Internal/TransactionRequest.js';
 import type { TransactionSigner } from './Internal/TransactionRequest.js';
 import * as TransactionResults from './Internal/TransactionResults.js';
+import * as Transactions from './Internal/Transactions.js';
 import { WalletSigner } from './Internal/WalletSigner.js';
 import { WriteQueue } from './Internal/WriteQueue.js';
 import type {
-  Abi, ChainId, ContractResult, IEthereumProvider, IEvmProvider, ITransaction, IWallet, NotarizationDocument, TransactionOptions,
-  Web3ServiceOptions,
+  Abi, ChainId, ContractResult, IEthereumProvider, IEvmProvider, ITransaction, ITransactionDetails, IWallet, NotarizationDocument,
+  TransactionOptions, Web3ServiceOptions,
 } from './Models.js';
+import { Web3Contract } from './Web3Contract.js';
+import type { IContractRunner } from './Web3Contract.js';
 
 const MINT_SIGNATURE = 'mint(address,string,string,string)';
 const BYTECODE_PATTERN = /^0x(?:[0-9a-f]{2})+$/i;
@@ -72,6 +77,16 @@ export class Web3Service {
     return (await Web3Service.getWallet(mnemonic, index)).privateKey;
   }
 
+  /** ERC standards recognized from the functions of an ABI, e.g. ['ERC-20'] or ['ERC-721', 'ERC-721 Metadata', 'ERC-165']. */
+  static detectStandards(abi: Abi): string[] {
+    return ErcStandards.detect(AbiMethods.describe(abi).map(fn => fn.method.signature));
+  }
+
+  /** A contract at an address: lists its functions and calls them with named parameters, e.g. contract.call('transfer', { to, amount }). */
+  getContract(abi: Abi, address: string): Web3Contract {
+    return new Web3Contract(abi, address, this.#runner());
+  }
+
   async check(): Promise<{ blockNumber: string; gasPrice: string }> {
     return this.#rpc.use(async session => {
       const blockNumber = await session.quantity(session.web3.eth.getBlockNumber());
@@ -121,6 +136,32 @@ export class Web3Service {
       const receipt = await Receipts.get(session, transactionHash);
       if (!receipt) throw transactionNotFound(transactionHash);
       return TransactionResults.fromReceipt(session, receipt, { ...onChainEvent }, this.provider);
+    });
+  }
+
+  /** A transaction by hash, pending or mined. With the contract ABI, the called function and its arguments are decoded too. */
+  async getTransaction(transactionHash: string, abi?: Abi): Promise<ITransactionDetails> {
+    return this.#rpc.use(async session => {
+      const details = Transactions.fromRpc(await Transactions.get(session, transactionHash), abi ? AbiMethods.describe(abi) : []);
+      return TransactionResults.addMinedDetails(session, details, this.provider);
+    });
+  }
+
+  #runner(): IContractRunner {
+    return {
+      read: (abi, address, signature, args) => this.callContractMethod(signature, abi, address, args),
+      send: (abi, address, signature, args, name, options) => this.#transact(abi, address, signature, args, { name }, options),
+      getTransaction: (transactionHash, abi) => this.getTransaction(transactionHash, abi),
+    };
+  }
+
+  /** Sends a call to any state-changing contract function. */
+  #transact(
+    abi: Abi, address: string, signature: string, args: readonly unknown[], onChainEvent: ITransaction, options?: TransactionOptions,
+  ): Promise<ITransaction> {
+    return this.#write(onChainEvent, session => {
+      const call = ContractCalls.getFunction(session.web3, abi, address, signature)(...args);
+      return new TransactionRequest(call.encodeABI(), address, (from, value) => call.estimateGas({ from, value: value.toFixed(0) }), options);
     });
   }
 

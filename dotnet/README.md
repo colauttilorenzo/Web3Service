@@ -68,6 +68,30 @@ TransactionResult receipt = await amoy.GetTransactionReceiptAsync(transactionHas
 CheckResult status = await amoy.CheckAsync();
 ```
 
+## Any contract, tokens and NFTs
+
+`GetContract(abi, address)` lists the functions of any contract and calls them by name; the parameters are a `JsonObject`, a dictionary or an anonymous object with the ABI names.
+
+```csharp
+Web3Contract token = amoy.GetContract(tokenAbiJson, tokenAddress);
+IReadOnlyList<string> standards = token.Standards;   // ERC-20, ERC-173
+IReadOnlyList<ContractMethod> methods = token.Methods; // Name, Kind (read, write, payable), Parameters (name → JSON type)
+string? owner = await token.OwnerAsync();
+JsonNode? balance = await token.CallAsync("balanceOf", new { account = holder });                // read: the value
+JsonNode? transfer = await token.CallAsync("transfer", new { to = recipient, amount = "1000" }); // write: the transaction as JSON
+TransactionResult deposit = await token.SendAsync("deposit", new { note = "tip" }, new TransactionOptions { Value = 1000 });
+TokenInfo coin = await token.GetTokenInfoAsync();                                              // Name, Symbol, Decimals, TotalSupply
+
+Web3Contract nft = amoy.GetContract(nftAbiJson, nftAddress);
+NftMint minted = await nft.MintNftAsync(new { to = holder, uri = "ipfs://…" }); // TokenIds, Transaction
+TokenInfo art = await nft.GetTokenInfoAsync(minted.TokenIds[0]);                 // Owner, TokenURI
+
+TransactionDetails details = await amoy.GetTransactionAsync(hash, tokenAbiJson); // Method: Name, Signature, Parameters
+List<string> detected = Web3Service.DetectStandards(nftAbiJson);                // ERC-721, ERC-721 Metadata, ERC-165
+```
+
+The members match the TypeScript `Web3Contract` (`CallAsync`, `ReadAsync`, `SendAsync`, `Encode`, `OwnerAsync`, `MintNftAsync`, `GetTokenInfoAsync`, `GetTransactionAsync`) and serialize to the same JSON.
+
 ## Wallets
 
 ```csharp
@@ -78,7 +102,7 @@ string privateKey = Web3Service.GetPrivateKey(phrase);
 
 ## Errors
 
-Every error is a `Web3Exception` with a `Code` (`INVALID_ARGUMENT`, `SIGNER_REQUIRED`, `CHAIN_ID_MISMATCH`, `PROVIDER_UNAVAILABLE`, `RPC_ERROR`, `METHOD_NOT_FOUND`, `TRANSACTION_SUBMISSION_FAILED`, `TRANSACTION_REVERTED`, `TRANSACTION_NOT_FOUND`, `RECEIPT_DETAILS_FAILED`) and, when available, a `TransactionHash`. `ToInfo()` returns the serializable form without RPC details.
+Every error is a `Web3Exception` with a `Code` (`INVALID_ARGUMENT`, `SIGNER_REQUIRED`, `CHAIN_ID_MISMATCH`, `PROVIDER_UNAVAILABLE`, `RPC_ERROR`, `METHOD_NOT_FOUND`, `NOT_SUPPORTED`, `TRANSACTION_SUBMISSION_FAILED`, `TRANSACTION_REVERTED`, `TRANSACTION_NOT_FOUND`, `RECEIPT_DETAILS_FAILED`) and, when available, a `TransactionHash`. `ToInfo()` returns the serializable form without RPC details.
 
 ## ASP.NET Core
 

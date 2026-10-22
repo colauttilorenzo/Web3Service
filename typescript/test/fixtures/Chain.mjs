@@ -1,6 +1,6 @@
-// Local Ganache chain with the Notarizer contract; the .NET tests use the same chain through `npm run test:dotnet`.
+// Local Ganache chain with the test contracts; the .NET tests use the same chain through `npm run test:dotnet`.
 import ganache from 'ganache';
-import { abi, bytecode } from './notarizer.mjs';
+import { contracts } from './contracts.mjs';
 import { vectors } from './TestVectors.mjs';
 
 export class Chain {
@@ -10,8 +10,9 @@ export class Chain {
     this.http = `http://127.0.0.1:${port}`;
     this.webSocket = `ws://127.0.0.1:${port}`;
     this.mnemonic = vectors.mnemonic;
-    this.abi = abi;
-    this.bytecode = bytecode;
+    this.contracts = contracts;
+    this.abi = contracts.Notarizer.abi;
+    this.bytecode = contracts.Notarizer.bytecode;
   }
 
   static async start() {

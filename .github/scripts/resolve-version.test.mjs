@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { nextVersion, npmName } from './resolve-version.mjs';
+import { csprojVersion, nextVersion, npmName } from './resolve-version.mjs';
 
 test('the package.json version is used while it is not published', () => {
   assert.equal(nextVersion('0.1.0', []), '0.1.0');
@@ -16,4 +16,9 @@ test('a published version gets the next build number', () => {
 test('the npm scope is the repository owner, as GitHub Packages requires', () => {
   assert.equal(npmName('@certifie/web3-service', 'certifie'), '@certifie/web3-service');
   assert.equal(npmName('@certifie/web3-service', 'LorenzoColautti'), '@lorenzocolautti/web3-service');
+});
+
+test('the NuGet version is the <Version> of the .csproj', () => {
+  assert.equal(csprojVersion('<Project><PropertyGroup>\n    <Version>0.2.0</Version>\n  </PropertyGroup></Project>'), '0.2.0');
+  assert.throws(() => csprojVersion('<Project />'));
 });

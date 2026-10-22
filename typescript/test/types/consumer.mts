@@ -1,4 +1,7 @@
-import { Web3Service, type ITransaction, type IEthereumProvider, type IEvmProvider, type EthereumProviderConfig, type Eip1193Provider } from '@certifie/web3-service';
+import {
+  Web3Service, type Web3Contract, type ITransaction, type IEthereumProvider, type IEvmProvider, type EthereumProviderConfig, type Eip1193Provider,
+  type IContractMethod, type INftMint, type ITokenInfo, type ITransactionDetails,
+} from '@certifie/web3-service';
 const provider: IEthereumProvider = { chainId: 1337, rpcURI: 'http://localhost:8545', nativeCurrency: { symbol: 'ETH', decimals: 18 } };
 const service = new Web3Service(provider, { signer: { privateKey: '0x1234' } });
 const defaultConfig: EthereumProviderConfig = { rpcURI: 'http://localhost:8545' };
@@ -24,3 +27,17 @@ const wallet: Eip1193Provider = { request: async () => null };
 new Web3Service(provider, { signer: { wallet, switchChain: false } });
 // @ts-expect-error A wallet signer cannot be combined with a private key.
 new Web3Service(provider, { signer: { wallet, privateKey: '0x1234' } });
+async function contracts(): Promise<string[]> {
+  const contract: Web3Contract = service.getContract([], '0x00000000000000000000000000000000000000aa');
+  const method: IContractMethod | undefined = contract.methods[0];
+  const kind: 'read' | 'write' | 'payable' | undefined = method?.kind;
+  const balance = await contract.call<string>('balanceOf', { owner: '0x00000000000000000000000000000000000000aa' });
+  const sent: ITransaction = await contract.send('transfer', { to: '0x00000000000000000000000000000000000000aa', amount: 1 }, { value: '0' });
+  const minted: INftMint = await contract.mintNft({ to: '0x00000000000000000000000000000000000000aa', uri: 'ipfs://example' });
+  const info: ITokenInfo = await contract.getTokenInfo(1n);
+  const details: ITransactionDetails = await service.getTransaction('0x1234', contract.abi);
+  // @ts-expect-error Token supplies are integer strings.
+  const supply: number | undefined = info.totalSupply;
+  return [balance, kind ?? '', sent.name ?? '', ...minted.tokenIds, details.value, ...Web3Service.detectStandards(contract.abi)];
+}
+void contracts;

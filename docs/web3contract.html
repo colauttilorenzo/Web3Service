@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web3Contract · Web3 Service Docs</title>
+<meta name="description" content="Un contratto qualsiasi: metodi, chiamate per nome, token e NFT.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="">Docs</a><a href="web3service.html" class="on">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.1.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.1.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="index.html">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link" href="uso-base.html">Uso di base</a><a class="nav-link" href="contratti.html">Contratti, token e NFT</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link" href="firma.html">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="web3service.html">Web3Service</a><a class="nav-link on" href="web3contract.html" aria-current="page">Web3Contract</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link" href="tipi.html">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">API</div>
+      <div class="page-head"><h1>Web3Contract</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Un contratto qualsiasi: metodi, chiamate per nome, token e NFT.</p>
+
+<p>Si ottiene da <code>web3.getContract(abi, address)</code> e usa la connessione, il signer e la coda delle scritture del servizio che l’ha creato.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">class Web3Contract {
+  readonly abi: Abi;
+  readonly address: string;
+  readonly methods: readonly IContractMethod[]; // nome, tipo (read, write, payable), parametri
+  readonly standards: readonly string[];        // es. ['ERC-721', 'ERC-721 Metadata', 'ERC-165']
+}</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const nft = web3.getContract(nftAbi, '0x...');
+nft.address;    // '0x...'
+nft.standards;  // ['ERC-721', 'ERC-721 Metadata', 'ERC-165']
+nft.methods.filter(method =&gt; method.kind === 'read').map(method =&gt; method.name);</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">public sealed class Web3Contract
+{
+    public string Abi { get; }
+    public string Address { get; }
+    public IReadOnlyList&lt;ContractMethod&gt; Methods { get; } // nome, tipo (read, write, payable), parametri
+    public IReadOnlyList&lt;string&gt; Standards { get; }       // es. ["ERC-721", "ERC-721 Metadata", "ERC-165"]
+}</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var nft = web3.GetContract(nftAbi, "0x...");
+Console.WriteLine(string.Join(", ", nft.Standards)); // ERC-721, ERC-721 Metadata, ERC-165
+var reads = nft.Methods.Where(method =&gt; method.Kind == "read").Select(method =&gt; method.Name);</code></pre></div></div></div>
+<h2 id="call">call, read, send, encode</h2>
+<p><code>call</code> legge le funzioni <code>read</code> e invia una transazione per <code>write</code> e <code>payable</code>. <code>read</code> e <code>send</code> forzano l’una o l’altra cosa. Il nome della transazione nel risultato è quello del metodo.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">call&lt;T = ContractResult | ITransaction&gt;(method: string, parameters?: ContractParameters, options?: TransactionOptions): Promise&lt;T&gt;
+read&lt;T = ContractResult&gt;(method: string, parameters?: ContractParameters): Promise&lt;T&gt;
+send(method: string, parameters?: ContractParameters, options?: TransactionOptions): Promise&lt;ITransaction&gt;
+encode(method: string, parameters?: ContractParameters): string</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">await token.call('balanceOf', { account: '0x...' });          // '1000000': lettura, gratuita
+await token.call('transfer', { to: '0x...', amount: '1000' });   // ITransaction, quando è nel blocco
+await token.call('deposit', { note: 'grazie' }, { value: '1000000000000000' }); // payable: 0,001 ETH in wei
+await token.read('approve', { spender: '0x...', amount: '1' });  // simulazione, senza transazione
+await nft.call('safeTransferFrom(address,address,uint256)', { from, to, tokenId: 1 }); // scelta tra omonimi
+token.encode('transfer', { to: '0x...', amount: '1000' });      // '0xa9059cbb...': dati da firmare altrove</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">// parameters: JsonObject, dizionario o oggetto anonimo, es. new { to, amount = "1000" }
+Task&lt;JsonNode?&gt; CallAsync(string method, object? parameters = null, TransactionOptions? options = null,
+    CancellationToken cancellationToken = default)
+Task&lt;JsonNode?&gt; ReadAsync(string method, object? parameters = null, CancellationToken cancellationToken = default)
+Task&lt;TransactionResult&gt; SendAsync(string method, object? parameters = null, TransactionOptions? options = null,
+    CancellationToken cancellationToken = default)
+string Encode(string method, object? parameters = null)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">await token.CallAsync("balanceOf", new { account = "0x..." });         // "1000000": lettura, gratuita
+await token.CallAsync("transfer", new { to = "0x...", amount = "1000" }); // la transazione, in JSON
+await token.SendAsync("deposit", new { note = "grazie" }, new TransactionOptions { Value = 1_000_000_000_000_000 });
+await token.ReadAsync("approve", new { spender = "0x...", amount = "1" }); // simulazione, senza transazione
+token.Encode("transfer", new { to = "0x...", amount = "1000" });         // "0xa9059cbb...": dati da firmare altrove</code></pre></div></div></div>
+<h2 id="owner">owner</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">owner(): Promise&lt;string | undefined&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">await token.owner(); // '0x7099...79C8', oppure undefined se l'ABI non ha owner()</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;string?&gt; OwnerAsync(CancellationToken cancellationToken = default)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">await token.OwnerAsync(); // "0x7099...79C8", oppure null se l'ABI non ha owner()</code></pre></div></div></div>
+<h2 id="mint-nft">mintNft, getTokenInfo</h2>
+<p>Disponibili sui contratti ERC-20 (solo <code>getTokenInfo</code>), ERC-721 ed ERC-1155; sugli altri restituiscono <code>NOT_SUPPORTED</code>. Gli URI ERC-1155 con <code>{id}</code> vengono completati con l’ID in 64 cifre esadecimali.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">mintNft(parameters: ContractParameters, options?: TransactionOptions): Promise&lt;INftMint&gt;
+getTokenInfo(tokenId?: string | number | bigint): Promise&lt;ITokenInfo&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const minted = await nft.mintNft({ to: '0x...', uri: 'ipfs://bafy...' }); // safeMint(address,string)
+minted.tokenIds;   // ['1']
+await nft.getTokenInfo(minted.tokenIds[0]);
+// { standard: 'ERC-721', address, tokenId: '1', name: 'Art', symbol: 'ART', totalSupply: '1', owner: '0x...', tokenURI: 'ipfs://bafy...' }
+await token.getTokenInfo(); // ERC-20: { standard: 'ERC-20', address, name, symbol, decimals: '18', totalSupply }</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;NftMint&gt; MintNftAsync(object parameters, TransactionOptions? options = null, CancellationToken cancellationToken = default)
+Task&lt;TokenInfo&gt; GetTokenInfoAsync(string? tokenId = null, CancellationToken cancellationToken = default)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var minted = await nft.MintNftAsync(new { to = "0x...", uri = "ipfs://bafy..." }); // safeMint(address,string)
+Console.WriteLine(minted.TokenIds[0]); // "1"
+var info = await nft.GetTokenInfoAsync(minted.TokenIds[0]); // Name, Symbol, Owner, TokenURI
+var coin = await token.GetTokenInfoAsync();                 // ERC-20: Name, Symbol, Decimals, TotalSupply</code></pre></div></div></div>
+<h2 id="contract-get-transaction">getTransaction</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">getTransaction(transactionHash: string): Promise&lt;ITransactionDetails&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const details = await token.getTransaction(transfer.tx!.transactionHash);
+details.method?.parameters; // { to: '0x...', amount: '1000' }</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;TransactionDetails&gt; GetTransactionAsync(string transactionHash, CancellationToken cancellationToken = default)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var details = await token.GetTransactionAsync(transfer.Tx!.TransactionHash);
+Console.WriteLine(details.Method?.Parameters.ToJsonString()); // {"to":"0x...","amount":"1000"}</code></pre></div></div></div>
+
+      <nav class="pager" aria-label="Pagine"><a href="web3service.html"><span>Precedente</span>Web3Service</a><a class="next" href="wallet-hd.html"><span>Successiva</span>Metodi statici</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.1.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

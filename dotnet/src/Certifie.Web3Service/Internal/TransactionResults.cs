@@ -31,6 +31,17 @@ namespace Certifie.Web3
             return result;
         }
 
+        /// <summary>Adds the receipt, the block time and the exact fee of a mined transaction.</summary>
+        public static async Task<TransactionDetails> AddMinedDetailsAsync(RpcSession session, TransactionDetails details, EthereumProvider provider)
+        {
+            var receipt = details.Pending ? null : await Receipts.GetAsync(session, details.Hash).ConfigureAwait(false);
+            if (receipt == null) return details;
+            details.Receipt = NormalizeReceipt(receipt);
+            details.Timestamp = await BlockTimestampAsync(session, receipt.BlockNumber).ConfigureAwait(false);
+            details.NativeFee = await NativeFeeAsync(session, receipt, provider).ConfigureAwait(false);
+            return details;
+        }
+
         /// <summary>Every field is set, so stale values from the caller's event are overwritten.</summary>
         private static void ApplyOutcome(TransactionResult result, TransactionReceipt tx, string timestamp)
         {

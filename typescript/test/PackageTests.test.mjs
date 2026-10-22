@@ -6,8 +6,10 @@ import { createRequire } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import ganache from 'ganache';
 import { Web3Service } from '@certifie/web3-service';
-import { abi, bytecode } from './fixtures/notarizer.mjs';
+import { contracts } from './fixtures/contracts.mjs';
 import { vectors } from './fixtures/TestVectors.mjs';
+
+const { abi, bytecode } = contracts.Notarizer;
 
 const browserDir = new URL('../dist/browser/', import.meta.url);
 
@@ -15,6 +17,7 @@ test('ESM and CommonJS package entry points expose the public API', () => {
   const cjs = createRequire(import.meta.url)('@certifie/web3-service');
   assert.equal(typeof cjs.Web3Service, 'function');
   assert.equal(typeof cjs.Web3Error, 'function');
+  assert.equal(typeof cjs.Web3Contract, 'function');
 });
 
 test('a service never serializes its credentials', () => {
@@ -34,6 +37,7 @@ test('the <script> bundle defines the CertifieWeb3 global without Node globals',
   assert.equal(typeof window.CertifieWeb3.Web3Error, 'function');
   assert.equal(window.CertifieWeb3.Web3Service.normalizeChainId(137), '0x89');
   assert.equal(new window.CertifieWeb3.Web3Service('https://node.example').provider.nativeCurrency.symbol, 'ETH');
+  assert.equal(window.CertifieWeb3.Web3Service.detectStandards(vectors.contractAbi.abi).length, 0);
 });
 
 test('the self-contained ESM bundle deploys and notarizes over HTTP with an EIP-1193 wallet', async t => {

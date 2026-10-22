@@ -1,9 +1,10 @@
 // Builds the JSON-safe ITransaction of a mined transaction.
 import type Big from 'big.js';
 import type { Log, Numbers, TransactionReceipt } from 'web3';
-import type { IEthereumProvider, ITransaction, ITransactionLog, ITransactionReceipt } from '../Models.js';
+import type { IEthereumProvider, ITransaction, ITransactionDetails, ITransactionLog, ITransactionReceipt } from '../Models.js';
 import { transactionReverted } from './Errors.js';
 import * as Integers from './Integers.js';
+import * as Receipts from './Receipts.js';
 import type { RpcSession } from './RpcSession.js';
 
 const MILLISECONDS_PER_SECOND = 1000;
@@ -24,6 +25,18 @@ export async function fromReceipt(
   applyOutcome(result, tx, timestamp);
   result.nativeFee = await nativeFee(session, receipt, provider);
   return result;
+}
+
+/** Adds the receipt, the block time and the exact fee of a mined transaction. */
+export async function addMinedDetails(
+  session: RpcSession, details: ITransactionDetails, provider: Readonly<IEthereumProvider>,
+): Promise<ITransactionDetails> {
+  const receipt = details.pending ? undefined : await Receipts.get(session, details.hash);
+  if (!receipt) return details;
+  details.receipt = normalizeReceipt(receipt);
+  details.timestamp = await blockTimestamp(session, receipt.blockNumber);
+  details.nativeFee = await nativeFee(session, receipt, provider);
+  return details;
 }
 
 /** Every field is set, so stale values from the caller's event are overwritten. */

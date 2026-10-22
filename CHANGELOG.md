@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+- Any contract: `getContract(abi, address)` returns a `Web3Contract` that lists the ABI functions with their kind (`read`, `write`, `payable`) and their parameters as simple JSON types, and calls them by name with a JSON object (`call`, `read`, `send`, `encode`). It recognizes ERC standards (`standards`, `Web3Service.detectStandards`), reads `owner()`, mints NFTs on ERC-721 and ERC-1155 contracts (`mintNft`, returning the new token IDs) and reads token data (`getTokenInfo`). `getTransaction(hash, abi?)` reads any transaction, pending or mined, and decodes the called function. New error code `NOT_SUPPORTED`. Same API in .NET (`GetContract`, `CallAsync`, `MintNftAsync`, …).
 - Universal distribution: npm package for Node.js and bundled frontends, standalone ESM module (`@certifie/web3-service/browser`) and `dist/browser/web3-service.min.js` script with the global namespace `CertifieWeb3`.
 - Browser signing through an EIP-1193 wallet (`signer: { wallet: window.ethereum }`), with automatic network switching or adding and the `USER_REJECTED` and `WALLET_ERROR` codes.
 - `Certifie.Web3Service` NuGet package (net8.0 and netstandard2.0): native C# client built on Nethereum with the same API, defaults and JSON output.

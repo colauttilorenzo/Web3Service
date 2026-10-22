@@ -1,7 +1,10 @@
 // ABI lookups and conversion of contract outputs to JSON-safe values.
+import { eth } from 'web3';
 import type { Web3 } from 'web3';
-import type { Abi, ContractResult } from '../Models.js';
+import type { Abi, ContractResult, IDecodedCall } from '../Models.js';
 import { Web3Error } from '../Web3Exception.js';
+import * as AbiMethods from './AbiMethods.js';
+import type { AbiFunction } from './AbiMethods.js';
 
 /** A contract method as web3.js exposes it: called with arguments, it returns an encodable, callable object. */
 export type ContractFunction = (...args: unknown[]) => {
@@ -13,7 +16,7 @@ export type ContractFunction = (...args: unknown[]) => {
 /** web3.js returns several outputs, and tuples, as an object with numeric keys and __length__. */
 type DecodedTuple = { __length__: number; [index: number]: unknown };
 
-/** Looks a function up in the ABI and fails with METHOD_NOT_FOUND when it is missing. */
+/** Looks a function up in the ABI by name or signature, and fails with METHOD_NOT_FOUND when it is missing. */
 export function getFunction(web3: Web3, abi: Abi, address: string, method: string, missingMessage?: string): ContractFunction {
   const contract = new web3.eth.Contract(abi, address);
   const fn = contract.methods[method] as ContractFunction | undefined;
@@ -24,6 +27,21 @@ export function getFunction(web3: Web3, abi: Abi, address: string, method: strin
 /** A single output is returned as its value, several outputs as a JSON array. */
 export function outputsToJson(outputs: unknown): ContractResult {
   return toJson(outputs);
+}
+
+/** The call data of a function call: its selector followed by the encoded arguments. */
+export function encode(fn: AbiFunction, args: readonly unknown[]): string {
+  return eth.abi.encodeFunctionCall({ ...fn.fragment, type: 'function' } as never, [...args] as never);
+}
+
+/** The function a transaction input calls, with its arguments; undefined when no function of the ABI has its selector. */
+export function decodeCall(functions: readonly AbiFunction[], input: string): IDecodedCall | undefined {
+  const fn = functions.find(candidate => input.toLowerCase().startsWith(candidate.selector));
+  if (!fn) return undefined;
+  const inputs = AbiMethods.inputsOf(fn.fragment);
+  const values = eth.abi.decodeParameters([...inputs] as never, `0x${input.slice(fn.selector.length)}`);
+  const parameters = Object.fromEntries(inputs.map((parameter, index) => [AbiMethods.parameterName(parameter, index), toJson(values[index])]));
+  return { name: fn.method.name, signature: fn.method.signature, parameters };
 }
 
 /** Converts decoded values at any depth. Tuples are matched before the generic object case. */

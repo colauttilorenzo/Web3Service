@@ -4,8 +4,10 @@ import assert from 'node:assert/strict';
 import ganache from 'ganache';
 import { Web3 } from 'web3';
 import { Web3Service } from '@certifie/web3-service';
-import { abi, bytecode } from './fixtures/notarizer.mjs';
+import { contracts } from './fixtures/contracts.mjs';
 import { vectors } from './fixtures/TestVectors.mjs';
+
+const { abi, bytecode } = contracts.Notarizer;
 
 const document = { hash: { data: 'd'.repeat(64), algorithm: 'sha2' }, metadata: 'ipfs://wallet' };
 

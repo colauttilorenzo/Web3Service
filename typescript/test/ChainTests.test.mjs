@@ -106,3 +106,61 @@ test('ComputesExactFeesBeyondSafeIntegers', async t => {
   const receipt = await new Web3Service(chain.provider(proxy.uri)).getTransactionReceipt(deployed.tx.transactionHash);
   assert.equal(receipt.nativeFee.amount, vectors.largeFee.amount);
 });
+
+const [holder, recipient] = [vectors.wallets[0].address, vectors.wallets[1].address];
+
+async function deployContract(service, name, constructorArguments) {
+  const { abi, bytecode } = chain.contracts[name];
+  return service.getContract(abi, (await service.deploy(abi, bytecode, constructorArguments)).tx.contractAddress);
+}
+
+test('CallsContractFunctionsWithNamedParameters', async () => {
+  const service = new Web3Service(chain.provider(), chain.signer());
+  const token = await deployContract(service, 'TestToken', ['Coin', 'CN', '1000000']);
+  assert.deepEqual(token.standards, ['ERC-20', 'ERC-173']);
+  assert.deepEqual(token.methods.find(method => method.name === 'deposit').kind, 'payable');
+  assert.equal(await token.owner(), holder);
+  assert.equal(await token.call('balanceOf', { arg0: holder }), '1000000');
+
+  const transfer = await token.call('transfer', { to: recipient, amount: 250 });
+  assert.deepEqual([transfer.name, transfer.tx.status], ['transfer', '1']);
+  assert.equal(await token.read('balanceOf', { arg0: recipient }), '250');
+  assert.equal(await token.read('approve', { spender: recipient, amount: '1' }), true);
+  await token.send('deposit', { note: 'tip' }, { value: '12345' });
+  assert.equal(await token.read('deposits'), '12345');
+  assert.deepEqual(await token.getTokenInfo(), { standard: 'ERC-20', address: token.address, name: 'Coin', symbol: 'CN', decimals: '18', totalSupply: '1000000' });
+
+  const details = await token.getTransaction(transfer.tx.transactionHash);
+  assert.deepEqual(details.method, { name: 'transfer', signature: 'transfer(address,uint256)', parameters: { to: recipient, amount: '250' } });
+  assert.deepEqual([details.pending, details.value, details.from.toLowerCase(), details.receipt.status], [false, '0', holder.toLowerCase(), '1']);
+  assert.equal(details.nativeFee.amount, transfer.nativeFee.amount);
+  assert.match(details.timestamp, /^\d+$/);
+  assert.equal((await service.getTransaction(transfer.tx.transactionHash)).method, undefined);
+  assert.equal(await service.getContract(chain.abi, token.address).owner(), undefined);
+
+  await assert.rejects(service.getTransaction(`0x${'0'.repeat(64)}`), error => error.code === 'TRANSACTION_NOT_FOUND');
+  await assert.rejects(token.call('transfer', { to: recipient }), error => error.code === 'INVALID_ARGUMENT');
+  await assert.rejects(service.getContract(chain.abi, token.address).getTokenInfo(), error => error.code === 'NOT_SUPPORTED');
+});
+
+test('MintsNftsAndReadsTokenData', async () => {
+  const service = new Web3Service(chain.provider(), chain.signer());
+  const nft = await deployContract(service, 'TestNft', ['Art', 'ART']);
+  assert.deepEqual(nft.standards, ['ERC-721', 'ERC-721 Metadata', 'ERC-165']);
+  const minted = await nft.mintNft({ to: holder, uri: 'ipfs://art/1' });
+  assert.deepEqual([minted.standard, minted.tokenIds, minted.transaction.name, minted.transaction.tx.status], ['ERC-721', ['1'], 'safeMint', '1']);
+  const info = { standard: 'ERC-721', address: nft.address, tokenId: '1', name: 'Art', symbol: 'ART', totalSupply: '1', owner: holder, tokenURI: 'ipfs://art/1' };
+  assert.deepEqual(await nft.getTokenInfo(1), info);
+  await nft.call('safeTransferFrom', { from: holder, to: recipient, tokenId: '1' });
+  assert.equal(await nft.read('ownerOf', { tokenId: 1 }), recipient);
+
+  const multi = await deployContract(service, 'TestMultiToken', ['ipfs://multi/{id}.json']);
+  assert.deepEqual(multi.standards, ['ERC-1155', 'ERC-1155 Metadata URI']);
+  assert.deepEqual((await multi.mintNft({ to: holder, id: 7, amount: 3, arg3: '0x' })).tokenIds, ['7']);
+  assert.deepEqual((await multi.mintNft({ to: holder, ids: [8, 9], amounts: [1, 2] })).tokenIds, ['8', '9']);
+  assert.deepEqual(await multi.read('balanceOfBatch', { accounts: [holder, holder], ids: [7, 9] }), ['3', '2']);
+  assert.equal((await multi.getTokenInfo('7')).tokenURI, `ipfs://multi/${'7'.padStart(64, '0')}.json`);
+
+  await assert.rejects(nft.mintNft({ to: holder }), error => error.code === 'INVALID_ARGUMENT');
+  await assert.rejects(service.getContract(chain.abi, nft.address).mintNft({}), error => error.code === 'NOT_SUPPORTED');
+});

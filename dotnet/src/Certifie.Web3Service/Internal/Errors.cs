@@ -8,6 +8,12 @@ namespace Certifie.Web3
     {
         public static Web3Exception InvalidArgument(string message) => new Web3Exception("INVALID_ARGUMENT", message);
 
+        /// <summary>The contract does not offer the requested feature, e.g. minting on a contract that is not an NFT.</summary>
+        public static Web3Exception NotSupported(string message) => new Web3Exception("NOT_SUPPORTED", message);
+
+        public static Web3Exception MethodNotFound(string method) =>
+            new Web3Exception("METHOD_NOT_FOUND", $"Contract method {method} is missing from the ABI.");
+
         public static Web3Exception SignerRequired() =>
             new Web3Exception("SIGNER_REQUIRED", "Provide a private key or mnemonic to sign transactions.");
 

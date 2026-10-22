@@ -1,6 +1,6 @@
 # @certifie/web3-service
 
-TypeScript library for notarizing document hashes on EVM networks, extracted from CERTIFIE's `Web3Service`. It covers contract deployment, minting, contract calls, transaction receipts and wallet derivation. It runs both on the backend (Node.js 20+) and in the browser (ES2022), signing with a private key or mnemonic, or with the user's own wallet (MetaMask or any EIP-1193 wallet).
+TypeScript library for notarizing document hashes on EVM networks, extracted from CERTIFIE's `Web3Service`. It covers contract deployment, minting, transaction receipts and wallet derivation, and works with any contract: it lists the functions of an ABI, calls them by name with JSON parameters, recognizes ERC standards, mints NFTs and reads tokens and transactions. It runs both on the backend (Node.js 20+) and in the browser (ES2022), signing with a private key or mnemonic, or with the user's own wallet (MetaMask or any EIP-1193 wallet).
 
 Runtime dependencies: `web3`, `ethers` and `big.js`.
 
@@ -194,6 +194,43 @@ const metadata = await service.callContractMethod(
 `event` keeps `name` and `requestedAt` (a millisecond string). The object you pass is not modified. A failed receipt has `error` and `rejectedAt`; a successful one has `completedAt`. Stale error fields are removed when a successful receipt is retrieved.
 
 The fifth argument of `mint` and `deploy` accepts `gas`, `gasPrice`, `nonce` and `value`, all integers. With a key or mnemonic, the library signs `gasPrice` (legacy type) transactions. By default it estimates gas, adds a buffer of `10000` and uses the `pending` nonce. Writes on the same instance are serialized; applications that share a wallet across processes or instances must coordinate nonces.
+
+## Any contract, tokens and NFTs
+
+`getContract(abi, address)` turns any contract into an object that lists its functions and calls them by name with a JSON object of named parameters, so no ABI encoding or Solidity types are needed.
+
+```ts
+const token = service.getContract(tokenAbi, tokenAddress);
+
+token.standards; // ['ERC-20', 'ERC-173']
+token.methods;   // [{ name: 'transfer', kind: 'write', parameters: { to: 'string', amount: 'number' }, … }, …]
+await token.owner();                                            // owner() when the ABI has it, otherwise undefined
+await token.call('balanceOf', { account: holder });             // read: returns the value, free
+await token.call('transfer', { to: recipient, amount: '1000' }); // write: returns the mined ITransaction
+await token.call('deposit', { note: 'tip' }, { value: '1000' }); // payable: coins in options.value
+await token.getTokenInfo();                                     // { standard: 'ERC-20', name, symbol, decimals, totalSupply }
+
+const nft = service.getContract(nftAbi, nftAddress);
+const { tokenIds } = await nft.mintNft({ to: holder, uri: 'ipfs://…' }); // safeMint, mint or mintTo, chosen by the parameter names
+await nft.getTokenInfo(tokenIds[0]);                                     // name, symbol, owner, tokenURI
+
+await service.getTransaction(hash, tokenAbi); // any transaction, with the called function and its arguments decoded
+Web3Service.detectStandards(nftAbi);           // ['ERC-721', 'ERC-721 Metadata', 'ERC-165']
+```
+
+| Member | Description |
+| --- | --- |
+| `methods` | Every function: `name`, `signature`, `kind` (`read`, `write`, `payable`), `stateMutability`, `parameters` (name → JSON type: `string`, `number`, `boolean`, `array`, `object`), `inputs` and `outputs` (name → Solidity type). Unnamed parameters are `arg0`, `arg1`, … |
+| `standards` | ERC-20, ERC-721 (Metadata, Enumerable), ERC-1155 (Metadata URI), ERC-165, ERC-173 and ERC-2981, recognized from the ABI |
+| `call(method, parameters?, options?)` | Reads `read` functions, sends a transaction for the others. `method` is a name or, for overloaded names, a signature |
+| `read(method, parameters?)` / `send(…)` | Force a read (also a free simulation of a write, sent from the zero address) or a transaction |
+| `encode(method, parameters?)` | The call data, to have the call signed elsewhere |
+| `owner()` | `owner()` of Ownable / ERC-173 contracts |
+| `mintNft(parameters, options?)` | `{ standard, tokenIds, transaction }`, with the IDs read from the Transfer, TransferSingle and TransferBatch events |
+| `getTokenInfo(tokenId?)` | Token data from the functions present in the ABI; `{id}` in ERC-1155 URIs is filled in |
+| `getTransaction(hash)` | `service.getTransaction(hash, abi)` with this contract's ABI |
+
+Integers can be passed as numbers or decimal strings (strings beyond 2^53), addresses and bytes as `0x` strings. Missing, unknown or mistyped parameters fail with `INVALID_ARGUMENT` before any request; `mintNft` and `getTokenInfo` on a contract that is not a token fail with `NOT_SUPPORTED`.
 
 ## Wallets
 

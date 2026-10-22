@@ -43,3 +43,38 @@ test('SerializedErrorsUseTheSharedShape', () => {
   const error = new Web3Error(code, message, { cause: new Error(secret) });
   assert.deepEqual(JSON.parse(JSON.stringify(error)), json);
 });
+
+/** One function per signature, as the standards vectors list them. */
+function abiOf(signatures) {
+  return signatures.map(signature => {
+    const [name, types] = [signature.slice(0, signature.indexOf('(')), signature.slice(signature.indexOf('(') + 1, -1)];
+    return { type: 'function', name, inputs: types.split(',').filter(Boolean).map(type => ({ name: '', type })), outputs: [] };
+  });
+}
+
+const contractOf = abi => new Web3Service('http://localhost').getContract(abi, vectors.contractAbi.address);
+
+test('DescribesContractMethodsWithJsonParameterTypes', () => {
+  const { abi, address, methods } = vectors.contractAbi;
+  const contract = contractOf(abi);
+  assert.deepEqual(contract.methods, methods);
+  assert.equal(contract.address, address);
+  assert.deepEqual(contract.standards, []);
+  assert.throws(() => new Web3Service('http://localhost').getContract(abi, '0x1234'), error => error.code === 'INVALID_ARGUMENT');
+});
+
+test('DetectsErcStandardsFromTheAbi', () => {
+  for (const { functions, expected } of vectors.standards) {
+    assert.deepEqual(Web3Service.detectStandards(abiOf(functions)), expected);
+    assert.deepEqual(contractOf(abiOf(functions)).standards, expected);
+  }
+});
+
+test('EncodesNamedParametersInAbiOrder', () => {
+  const contract = contractOf(vectors.contractAbi.abi);
+  for (const { method, parameters, data } of vectors.contractAbi.encoded) assert.equal(contract.encode(method, parameters), data);
+  for (const { method, parameters } of vectors.contractAbi.invalid) {
+    assert.throws(() => contract.encode(method, parameters), error => error.code === 'INVALID_ARGUMENT', JSON.stringify(parameters));
+  }
+  assert.throws(() => contract.encode('missing'), error => error.code === 'METHOD_NOT_FOUND');
+});

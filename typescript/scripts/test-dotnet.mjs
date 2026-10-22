@@ -1,4 +1,4 @@
-// Runs the .NET tests against a local Ganache chain with the same Notarizer contract as the TypeScript tests.
+// Runs the .NET tests against a local Ganache chain with the same test contracts as the TypeScript tests.
 // The TypeScript package first runs the parity scenario on that chain; the .NET ParityTests compare their output with it.
 import { spawn } from 'node:child_process';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
@@ -9,9 +9,9 @@ import * as ParityScenario from '../test/fixtures/ParityScenario.mjs';
 
 const chain = await Chain.start();
 const directory = await mkdtemp(join(tmpdir(), 'web3-service-dotnet-'));
-const artifact = join(directory, 'Notarizer.json');
+const artifact = join(directory, 'contracts.json');
 const parity = join(directory, 'parity.json');
-await writeFile(artifact, JSON.stringify({ abi: chain.abi, bytecode: chain.bytecode }));
+await writeFile(artifact, JSON.stringify({ abi: chain.abi, bytecode: chain.bytecode, contracts: chain.contracts }));
 await writeFile(parity, JSON.stringify(await ParityScenario.run(chain)));
 const solution = new URL('../../dotnet/Certifie.Web3Service.sln', import.meta.url).pathname;
 const code = await new Promise(resolve => {

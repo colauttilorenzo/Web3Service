@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace Certifie.Web3
@@ -156,5 +157,85 @@ namespace Certifie.Web3
         [JsonPropertyName("nativeFee")] public NativeFee? NativeFee { get; set; }
 
         internal TransactionResult Copy() => (TransactionResult)MemberwiseClone();
+    }
+
+    /// <summary>A contract function as <see cref="Web3Contract.Methods"/> lists it; same JSON as <c>IContractMethod</c> in the JavaScript package.</summary>
+    public sealed class ContractMethod
+    {
+        [JsonPropertyName("name")] public string Name { get; set; } = "";
+        /// <summary>Canonical signature, e.g. <c>transfer(address,uint256)</c>; pass it to <c>CallAsync</c> to pick one of several functions with the same name.</summary>
+        [JsonPropertyName("signature")] public string Signature { get; set; } = "";
+        /// <summary><c>read</c>: returns data, free, no transaction. <c>write</c>: changes the contract with a transaction. <c>payable</c>: a write that can also receive coins.</summary>
+        [JsonPropertyName("kind")] public string Kind { get; set; } = "";
+        /// <summary><c>pure</c>, <c>view</c>, <c>nonpayable</c> or <c>payable</c>.</summary>
+        [JsonPropertyName("stateMutability")] public string StateMutability { get; set; } = "";
+        /// <summary>Parameter name → JSON type to pass: string, number, boolean, array or object. Unnamed parameters are arg0, arg1, …</summary>
+        [JsonPropertyName("parameters")] public Dictionary<string, string> Parameters { get; set; } = new Dictionary<string, string>();
+        /// <summary>Parameter name → Solidity type, e.g. address or uint256.</summary>
+        [JsonPropertyName("inputs")] public Dictionary<string, string> Inputs { get; set; } = new Dictionary<string, string>();
+        /// <summary>Output name → Solidity type; unnamed outputs are result0, result1, …</summary>
+        [JsonPropertyName("outputs")] public Dictionary<string, string> Outputs { get; set; } = new Dictionary<string, string>();
+    }
+
+    /// <summary>Token data read from the contract. Only the fields whose functions exist in the ABI are set.</summary>
+    public sealed class TokenInfo
+    {
+        /// <summary><c>ERC-20</c>, <c>ERC-721</c> or <c>ERC-1155</c>.</summary>
+        [JsonPropertyName("standard")] public string Standard { get; set; } = "";
+        [JsonPropertyName("address")] public string Address { get; set; } = "";
+        [JsonPropertyName("name")] public string? Name { get; set; }
+        [JsonPropertyName("symbol")] public string? Symbol { get; set; }
+        [JsonPropertyName("decimals")] public string? Decimals { get; set; }
+        [JsonPropertyName("totalSupply")] public string? TotalSupply { get; set; }
+        /// <summary>NFTs only, when a token ID is passed to <c>GetTokenInfoAsync</c>.</summary>
+        [JsonPropertyName("tokenId")] public string? TokenId { get; set; }
+        [JsonPropertyName("owner")] public string? Owner { get; set; }
+        [JsonPropertyName("tokenURI")] public string? TokenURI { get; set; }
+    }
+
+    public sealed class NftMint
+    {
+        /// <summary><c>ERC-721</c> or <c>ERC-1155</c>.</summary>
+        [JsonPropertyName("standard")] public string Standard { get; set; } = "";
+        /// <summary>IDs of the created tokens, read from the Transfer, TransferSingle and TransferBatch events of the contract.</summary>
+        [JsonPropertyName("tokenIds")] public List<string> TokenIds { get; set; } = new List<string>();
+        [JsonPropertyName("transaction")] public TransactionResult Transaction { get; set; } = new TransactionResult();
+    }
+
+    /// <summary>The contract function a transaction called, with its arguments as JSON-safe values.</summary>
+    public sealed class DecodedCall
+    {
+        [JsonPropertyName("name")] public string Name { get; set; } = "";
+        [JsonPropertyName("signature")] public string Signature { get; set; } = "";
+        [JsonPropertyName("parameters")] public JsonObject Parameters { get; set; } = new JsonObject();
+    }
+
+    /// <summary>A transaction read by hash; same JSON as <c>ITransactionDetails</c> in the JavaScript package. Numeric fields are decimal strings.</summary>
+    public sealed class TransactionDetails
+    {
+        [JsonPropertyName("hash")] public string Hash { get; set; } = "";
+        [JsonPropertyName("from")] public string From { get; set; } = "";
+        /// <summary>Null for contract deployments.</summary>
+        [JsonPropertyName("to")] public string? To { get; set; }
+        /// <summary>Native currency sent, in the smallest unit (wei on Ethereum).</summary>
+        [JsonPropertyName("value")] public string Value { get; set; } = "";
+        [JsonPropertyName("nonce")] public string Nonce { get; set; } = "";
+        [JsonPropertyName("gas")] public string Gas { get; set; } = "";
+        [JsonPropertyName("gasPrice")] public string? GasPrice { get; set; }
+        [JsonPropertyName("maxFeePerGas")] public string? MaxFeePerGas { get; set; }
+        [JsonPropertyName("maxPriorityFeePerGas")] public string? MaxPriorityFeePerGas { get; set; }
+        [JsonPropertyName("input")] public string Input { get; set; } = "";
+        [JsonPropertyName("type")] public string? Type { get; set; }
+        [JsonPropertyName("blockHash")] public string? BlockHash { get; set; }
+        [JsonPropertyName("blockNumber")] public string? BlockNumber { get; set; }
+        [JsonPropertyName("transactionIndex")] public string? TransactionIndex { get; set; }
+        /// <summary>True while the transaction waits to be mined.</summary>
+        [JsonPropertyName("pending")] public bool Pending { get; set; }
+        /// <summary>Block time in milliseconds, once mined.</summary>
+        [JsonPropertyName("timestamp")] public string? Timestamp { get; set; }
+        [JsonPropertyName("receipt")] public TransactionReceipt? Receipt { get; set; }
+        [JsonPropertyName("nativeFee")] public NativeFee? NativeFee { get; set; }
+        /// <summary>The called function and its arguments, when the ABI passed to <c>GetTransactionAsync</c> contains it.</summary>
+        [JsonPropertyName("method")] public DecodedCall? Method { get; set; }
     }
 }

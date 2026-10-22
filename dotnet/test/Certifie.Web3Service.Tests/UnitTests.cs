@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Certifie.Web3;
 using Xunit;
@@ -60,5 +61,48 @@ public class UnitTests
         var exception = new Web3Exception(Text(error["code"]), Text(error["message"]), new Exception(Text(error["secret"])));
         var options = new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
         Assert.Equal(error["json"]!.ToJsonString(), JsonSerializer.Serialize(exception.ToInfo(), options));
+    }
+
+    /// <summary>One function per signature, as the standards vectors list them.</summary>
+    private static string AbiOf(IEnumerable<string> signatures) => new JsonArray(signatures.Select(signature =>
+    {
+        var (name, types) = (signature[..signature.IndexOf('(')], signature[(signature.IndexOf('(') + 1)..^1]);
+        var inputs = types.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(type => (JsonNode)new JsonObject { ["name"] = "", ["type"] = type });
+        return (JsonNode)new JsonObject { ["type"] = "function", ["name"] = name, ["inputs"] = new JsonArray(inputs.ToArray()), ["outputs"] = new JsonArray() };
+    }).ToArray()).ToJsonString();
+
+    private static Web3Contract ContractOf(string abi) => new Service("http://localhost").GetContract(abi, Text(Root["contractAbi"]!["address"]));
+
+    [Fact]
+    public void DescribesContractMethodsWithJsonParameterTypes()
+    {
+        var vector = Root["contractAbi"]!;
+        var contract = ContractOf(vector["abi"]!.ToJsonString());
+        Assert.Equal(vector["methods"]!.ToJsonString(), JsonSerializer.Serialize(contract.Methods));
+        Assert.Equal(Text(vector["address"]), contract.Address);
+        Assert.Empty(contract.Standards);
+        Assert.Equal("INVALID_ARGUMENT", Assert.Throws<Web3Exception>(() => new Service("http://localhost").GetContract(vector["abi"]!.ToJsonString(), "0x1234")).Code);
+    }
+
+    [Fact]
+    public void DetectsErcStandardsFromTheAbi()
+    {
+        foreach (var vector in Root["standards"]!.AsArray())
+        {
+            var abi = AbiOf(Texts(vector!["functions"]));
+            Assert.Equal(Texts(vector["expected"]), Service.DetectStandards(abi));
+            Assert.Equal(Texts(vector["expected"]), ContractOf(abi).Standards);
+        }
+    }
+
+    [Fact]
+    public void EncodesNamedParametersInAbiOrder()
+    {
+        var contract = ContractOf(Root["contractAbi"]!["abi"]!.ToJsonString());
+        foreach (var vector in Root["contractAbi"]!["encoded"]!.AsArray())
+            Assert.Equal(Text(vector!["data"]), contract.Encode(Text(vector["method"]), vector["parameters"]!.DeepClone()));
+        foreach (var vector in Root["contractAbi"]!["invalid"]!.AsArray())
+            Assert.Equal("INVALID_ARGUMENT", Assert.Throws<Web3Exception>(() => contract.Encode(Text(vector!["method"]), vector["parameters"]!.DeepClone())).Code);
+        Assert.Equal("METHOD_NOT_FOUND", Assert.Throws<Web3Exception>(() => contract.Encode("missing")).Code);
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -14,7 +16,7 @@ namespace Certifie.Web3
     /// Native port of the <c>@certifie/web3-service</c> JavaScript class: same defaults, error codes and JSON output,
     /// with numeric values returned as decimal integer strings. Arithmetic uses <see cref="BigInteger"/>.
     /// </summary>
-    public sealed class Web3Service
+    public sealed class Web3Service : IContractRunner
     {
         private const string MintSignature = "mint(address,string,string,string)";
         private static readonly Regex BytecodePattern = new Regex("^0x(?:[0-9a-f]{2})+$", RegexOptions.IgnoreCase);
@@ -53,6 +55,12 @@ namespace Certifie.Web3
         public static WalletInfo GetWallet(string mnemonic, int index = 1, string password = "") => HdWallets.Derive(mnemonic, index, password);
 
         public static string GetPrivateKey(string mnemonic, int index = 1, string password = "") => GetWallet(mnemonic, index, password).PrivateKey;
+
+        /// <summary>ERC standards recognized from the functions of an ABI, e.g. <c>["ERC-20"]</c> or <c>["ERC-721", "ERC-721 Metadata", "ERC-165"]</c>.</summary>
+        public static List<string> DetectStandards(string abi) => ErcStandards.Detect(AbiMethods.Describe(abi).Select(fn => fn.Method.Signature).ToList());
+
+        /// <summary>A contract at an address: lists its functions and calls them with named parameters, e.g. <c>contract.CallAsync("transfer", new { to, amount })</c>.</summary>
+        public Web3Contract GetContract(string abi, string address) => new Web3Contract(abi, address, this);
 
         public Task<CheckResult> CheckAsync(CancellationToken cancellationToken = default) =>
             _rpc.UseAsync(async session =>
@@ -109,6 +117,34 @@ namespace Certifie.Web3
                 var receipt = await Receipts.GetAsync(session, transactionHash).ConfigureAwait(false) ?? throw Errors.TransactionNotFound(transactionHash);
                 var result = onChainEvent?.Copy() ?? new TransactionResult();
                 return await TransactionResults.FromReceiptAsync(session, receipt, result, Provider).ConfigureAwait(false);
+            }, cancellationToken);
+
+        /// <summary>A transaction by hash, pending or mined. With the contract ABI, the called function and its arguments are decoded too.</summary>
+        public Task<TransactionDetails> GetTransactionAsync(string transactionHash, string? abi = null, CancellationToken cancellationToken = default) =>
+            _rpc.UseAsync(async session =>
+            {
+                var functions = abi == null ? new List<AbiFunction>() : AbiMethods.Describe(abi);
+                var details = Transactions.FromRpc(await Transactions.GetAsync(session, transactionHash).ConfigureAwait(false), functions);
+                return await TransactionResults.AddMinedDetailsAsync(session, details, Provider).ConfigureAwait(false);
+            }, cancellationToken);
+
+        Task<JsonNode?> IContractRunner.ReadAsync(string abi, string address, string signature, object[] args, CancellationToken cancellationToken) =>
+            CallContractMethodAsync(signature, abi, address, args, cancellationToken);
+
+        Task<TransactionResult> IContractRunner.SendAsync(string abi, string address, string signature, object[] args, string name, TransactionOptions? options,
+            CancellationToken cancellationToken) =>
+            TransactAsync(abi, address, signature, args, new TransactionResult { Name = name }, options, cancellationToken);
+
+        Task<TransactionDetails> IContractRunner.GetTransactionAsync(string transactionHash, string abi, CancellationToken cancellationToken) =>
+            GetTransactionAsync(transactionHash, abi, cancellationToken);
+
+        /// <summary>Sends a call to any state-changing contract function.</summary>
+        private Task<TransactionResult> TransactAsync(string abi, string address, string signature, object[] args, TransactionResult onChainEvent,
+            TransactionOptions? options, CancellationToken cancellationToken) =>
+            WriteAsync(onChainEvent, session =>
+            {
+                var function = ContractCalls.GetFunction(session.Eth, abi, address, signature);
+                return new TransactionRequest(function.GetData(args), address, (from, value) => function.EstimateGasAsync(from, null, value, args), options);
             }, cancellationToken);
 
         private static TransactionResult Named(TransactionResult? onChainEvent, string name)

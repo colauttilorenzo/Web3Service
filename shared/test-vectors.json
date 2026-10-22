@@ -15,32 +15,262 @@
   "shrinkAddress": { "input": "0x1234567890abcdef", "output": "0x1234...cdef" },
   "wallets": [
     {
-      "index": 1, "password": "", "path": "m/44'/60'/0'/0/1",
+      "index": 1,
+      "password": "",
+      "path": "m/44'/60'/0'/0/1",
       "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
       "publicKey": "0x02ba5734d8f7091719471e7f7ed6b9df170dc70cc661ca05e688601ad984f068b0",
       "privateKey": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
     },
     {
-      "index": 0, "password": "", "path": "m/44'/60'/0'/0/0",
+      "index": 0,
+      "password": "",
+      "path": "m/44'/60'/0'/0/0",
       "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "publicKey": "0x038318535b54105d4a7aae60c08fc45f9687181b4fdfc625bd1a753fa7397fed75",
       "privateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
     },
     {
-      "index": 1, "password": "certifie", "path": "m/44'/60'/0'/0/1",
+      "index": 1,
+      "password": "certifie",
+      "path": "m/44'/60'/0'/0/1",
       "address": "0xdAf8f5781ba93D3A22B247dE2f74ba5C14E3c1ab",
       "publicKey": "0x03911b07732446991c7e54a55df5d9118d2eaa9fcded1d5dd4df1919dcd6ea4b08",
       "privateKey": "0x028318eb821dc94e52d061d1fa42d281b47d77eff35af856440f13a96f0daf9c"
     }
   ],
   "error": {
-    "code": "RPC_ERROR", "message": "Operation failed.", "secret": "https://secret.test/key",
+    "code": "RPC_ERROR",
+    "message": "Operation failed.",
+    "secret": "https://secret.test/key",
     "json": { "name": "Web3Error", "code": "RPC_ERROR", "message": "Operation failed." }
   },
   "contract": { "label": "CERTIFIE", "numbers": ["9007199254740993", "-42", true] },
   "largeFee": { "gasUsed": "123456789012345678901", "effectiveGasPrice": "987654321", "amount": "121932631124828532112251181221" },
   "parity": {
-    "$comment": "Fields that differ between two runs on the same chain (hashes, addresses, blocks, times); both sides replace them before comparing.",
-    "variableFields": ["transactionHash", "blockHash", "blockNumber", "contractAddress", "to", "address", "completedAt", "logsBloom"]
-  }
+    "$comment": "Fields that differ between two runs on the same chain (hashes, addresses, blocks, nonces, times); both sides replace them before comparing.",
+    "variableFields": ["transactionHash", "blockHash", "blockNumber", "contractAddress", "to", "address", "completedAt", "logsBloom", "hash", "nonce",
+      "timestamp"]
+  },
+  "contractAbi": {
+    "$comment": "An ABI with every kind of parameter: the expected Web3Contract.methods, the call data of named-parameter calls, and calls rejected with INVALID_ARGUMENT.",
+    "address": "0x00000000000000000000000000000000000000aa",
+    "abi": [
+      {
+        "type": "function",
+        "name": "transfer",
+        "stateMutability": "nonpayable",
+        "inputs": [{ "name": "to", "type": "address" }, { "name": "amount", "type": "uint256" }],
+        "outputs": [{ "name": "", "type": "bool" }]
+      },
+      {
+        "type": "function",
+        "name": "balanceOf",
+        "stateMutability": "view",
+        "inputs": [{ "name": "", "type": "address" }],
+        "outputs": [{ "name": "", "type": "uint256" }]
+      },
+      { "name": "legacy", "constant": true, "inputs": [], "outputs": [{ "name": "value", "type": "int8" }] },
+      { "type": "function", "name": "deposit", "payable": true, "inputs": [{ "name": "note", "type": "string" }], "outputs": [] },
+      {
+        "type": "function",
+        "name": "order",
+        "stateMutability": "nonpayable",
+        "inputs": [
+          { "name": "item", "type": "tuple", "components": [{ "name": "id", "type": "uint256" }, { "name": "tags", "type": "string[]" }] },
+          { "name": "flags", "type": "bool[2]" },
+          { "name": "payload", "type": "bytes" },
+          { "name": "delta", "type": "int256" }
+        ],
+        "outputs": []
+      },
+      { "type": "function", "name": "pick", "stateMutability": "nonpayable", "inputs": [{ "name": "id", "type": "uint256" }], "outputs": [] },
+      {
+        "type": "function",
+        "name": "pick",
+        "stateMutability": "nonpayable",
+        "inputs": [{ "name": "id", "type": "uint256" }, { "name": "data", "type": "bytes" }],
+        "outputs": []
+      },
+      {
+        "type": "event",
+        "name": "Transfer",
+        "anonymous": false,
+        "inputs": [
+          { "name": "from", "type": "address", "indexed": true },
+          { "name": "to", "type": "address", "indexed": true },
+          { "name": "value", "type": "uint256", "indexed": false }
+        ]
+      }
+    ],
+    "methods": [
+      {
+        "name": "transfer",
+        "signature": "transfer(address,uint256)",
+        "kind": "write",
+        "stateMutability": "nonpayable",
+        "parameters": { "to": "string", "amount": "number" },
+        "inputs": { "to": "address", "amount": "uint256" },
+        "outputs": { "result0": "bool" }
+      },
+      {
+        "name": "balanceOf",
+        "signature": "balanceOf(address)",
+        "kind": "read",
+        "stateMutability": "view",
+        "parameters": { "arg0": "string" },
+        "inputs": { "arg0": "address" },
+        "outputs": { "result0": "uint256" }
+      },
+      {
+        "name": "legacy",
+        "signature": "legacy()",
+        "kind": "read",
+        "stateMutability": "view",
+        "parameters": {},
+        "inputs": {},
+        "outputs": { "value": "int8" }
+      },
+      {
+        "name": "deposit",
+        "signature": "deposit(string)",
+        "kind": "payable",
+        "stateMutability": "payable",
+        "parameters": { "note": "string" },
+        "inputs": { "note": "string" },
+        "outputs": {}
+      },
+      {
+        "name": "order",
+        "signature": "order((uint256,string[]),bool[2],bytes,int256)",
+        "kind": "write",
+        "stateMutability": "nonpayable",
+        "parameters": { "item": "object", "flags": "array", "payload": "string", "delta": "number" },
+        "inputs": { "item": "(uint256,string[])", "flags": "bool[2]", "payload": "bytes", "delta": "int256" },
+        "outputs": {}
+      },
+      {
+        "name": "pick",
+        "signature": "pick(uint256)",
+        "kind": "write",
+        "stateMutability": "nonpayable",
+        "parameters": { "id": "number" },
+        "inputs": { "id": "uint256" },
+        "outputs": {}
+      },
+      {
+        "name": "pick",
+        "signature": "pick(uint256,bytes)",
+        "kind": "write",
+        "stateMutability": "nonpayable",
+        "parameters": { "id": "number", "data": "string" },
+        "inputs": { "id": "uint256", "data": "bytes" },
+        "outputs": {}
+      }
+    ],
+    "encoded": [
+      {
+        "method": "transfer",
+        "parameters": { "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "amount": "1000" },
+        "data": "0xa9059cbb00000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c800000000000000000000000000000000000000000000000000000000000003e8"
+      },
+      {
+        "method": "transfer",
+        "parameters": { "to": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8", "amount": 1000 },
+        "data": "0xa9059cbb00000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c800000000000000000000000000000000000000000000000000000000000003e8"
+      },
+      {
+        "method": "transfer(address,uint256)",
+        "parameters": { "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "amount": "0x3e8" },
+        "data": "0xa9059cbb00000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c800000000000000000000000000000000000000000000000000000000000003e8"
+      },
+      {
+        "method": "balanceOf",
+        "parameters": { "arg0": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" },
+        "data": "0x70a0823100000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8"
+      },
+      { "method": "legacy", "parameters": {}, "data": "0xa7f3f0d2" },
+      {
+        "method": "order",
+        "parameters": { "item": { "id": "9007199254740993", "tags": ["a", "b"] }, "flags": [true, false], "payload": "0xcafe", "delta": "-42" },
+        "data": "0x2345093b00000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001c0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd60000000000000000000000000000000000000000000000000020000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000016100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000162000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002cafe000000000000000000000000000000000000000000000000000000000000"
+      },
+      { "method": "pick", "parameters": { "id": 1 }, "data": "0x7701ea4a0000000000000000000000000000000000000000000000000000000000000001" },
+      {
+        "method": "pick",
+        "parameters": { "id": 1, "data": "0x" },
+        "data": "0x593979c4000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000"
+      },
+      {
+        "method": "pick(uint256,bytes)",
+        "parameters": { "id": 1, "data": "0x01" },
+        "data": "0x593979c40000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000010100000000000000000000000000000000000000000000000000000000000000"
+      }
+    ],
+    "invalid": [
+      { "method": "transfer", "parameters": { "to": "0x1234", "amount": 1 } },
+      { "method": "transfer", "parameters": { "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8" } },
+      { "method": "transfer", "parameters": { "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "amount": -1 } },
+      { "method": "transfer", "parameters": { "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "amount": "1.5" } },
+      { "method": "transfer", "parameters": { "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "amount": 1, "memo": "x" } },
+      { "method": "transfer", "parameters": { "to": 42, "amount": 1 } },
+      { "method": "order", "parameters": { "item": { "id": 1 }, "flags": [true, false], "payload": "0x", "delta": 0 } },
+      { "method": "order", "parameters": { "item": { "id": 1, "tags": [] }, "flags": ["yes", false], "payload": "0x", "delta": 0 } },
+      { "method": "order", "parameters": { "item": { "id": 1, "tags": [] }, "flags": [true, false], "payload": "cafe", "delta": 0 } },
+      { "method": "pick", "parameters": { "other": 1 } }
+    ]
+  },
+  "standards": [
+    {
+      "functions": [
+        "totalSupply()",
+        "balanceOf(address)",
+        "transfer(address,uint256)",
+        "transferFrom(address,address,uint256)",
+        "approve(address,uint256)",
+        "allowance(address,address)",
+        "name()",
+        "symbol()",
+        "decimals()"
+      ],
+      "expected": ["ERC-20"]
+    },
+    {
+      "functions": [
+        "balanceOf(address)",
+        "ownerOf(uint256)",
+        "safeTransferFrom(address,address,uint256)",
+        "safeTransferFrom(address,address,uint256,bytes)",
+        "transferFrom(address,address,uint256)",
+        "approve(address,uint256)",
+        "setApprovalForAll(address,bool)",
+        "getApproved(uint256)",
+        "isApprovedForAll(address,address)",
+        "name()",
+        "symbol()",
+        "tokenURI(uint256)",
+        "totalSupply()",
+        "tokenOfOwnerByIndex(address,uint256)",
+        "tokenByIndex(uint256)",
+        "supportsInterface(bytes4)",
+        "owner()",
+        "transferOwnership(address)",
+        "royaltyInfo(uint256,uint256)"
+      ],
+      "expected": ["ERC-721", "ERC-721 Metadata", "ERC-721 Enumerable", "ERC-165", "ERC-173", "ERC-2981"]
+    },
+    {
+      "functions": [
+        "balanceOf(address,uint256)",
+        "balanceOfBatch(address[],uint256[])",
+        "setApprovalForAll(address,bool)",
+        "isApprovedForAll(address,address)",
+        "safeTransferFrom(address,address,uint256,uint256,bytes)",
+        "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)",
+        "uri(uint256)"
+      ],
+      "expected": ["ERC-1155", "ERC-1155 Metadata URI"]
+    },
+    { "functions": ["name()", "symbol()", "tokenURI(uint256)", "uri(uint256)", "transfer(address,uint256)"], "expected": [] }
+  ]
 }

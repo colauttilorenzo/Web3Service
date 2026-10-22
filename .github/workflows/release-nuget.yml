@@ -1,0 +1,103 @@
+# On every push to main that touches the .NET package: .NET tests and the TypeScript/.NET parity test, then the NuGet
+# package on GitHub Packages and a GitHub Release tagged nuget-v<version>.
+# The version comes from <Version> in Certifie.Web3Service.csproj; when it is already published, a build number is added
+# (0.1.0-build.1, …).
+name: NuGet package
+
+on:
+  push:
+    branches: [main]
+    paths: ['dotnet/**', 'shared/**', '.github/scripts/**', '.github/workflows/release-nuget.yml']
+  workflow_dispatch:
+
+# One release at a time, so two pushes never compute the same build number.
+concurrency:
+  group: release-nuget
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 22
+  DOTNET_VERSION: 8.0.x
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: typescript/package-lock.json
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      # The .NET tests run on a local Ganache chain started from Node.js, and the parity test compares them with the
+      # TypeScript build, so Node.js is needed here too.
+      - run: npm ci --force
+      - run: npm run build
+      - name: .NET tests and TypeScript/.NET parity
+        run: npm run test:dotnet
+      - name: Version resolver tests
+        run: node --test ../.github/scripts/resolve-version.test.mjs
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NUGET_SOURCE: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Resolve the version
+        id: version
+        run: node .github/scripts/resolve-version.mjs nuget
+
+      - name: Publish the NuGet package
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          dotnet pack dotnet/src/Certifie.Web3Service -c Release -o artifacts/nuget \
+            -p:Version="$VERSION" -p:RepositoryUrl="${{ github.server_url }}/${{ github.repository }}" -p:RepositoryType=git
+          dotnet nuget push "artifacts/nuget/Certifie.Web3Service.$VERSION.nupkg" --source "$NUGET_SOURCE" --api-key "$GITHUB_TOKEN"
+
+      # Notes: the CHANGELOG.md section of the .csproj version plus the commits since the previous NuGet release.
+      # Build versions (0.1.0-build.N) are prereleases.
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        run: |
+          awk -v heading="## ${VERSION%-build.*}" '$0 == heading { found = 1; next } found && /^## / { exit } found' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          flags=()
+          previous=$(git tag --list 'nuget-v*' --sort=-creatordate | head -n 1)
+          if [ -n "$previous" ]; then flags+=(--notes-start-tag "$previous"); fi
+          if [ "$PRERELEASE" = true ]; then flags+=(--prerelease); fi
+          gh release create "nuget-v$VERSION" --target "$GITHUB_SHA" --title "NuGet $VERSION" \
+            --notes-file "$RUNNER_TEMP/notes.md" --generate-notes "${flags[@]}" \
+            "artifacts/nuget/Certifie.Web3Service.$VERSION.nupkg" \
+            "artifacts/nuget/Certifie.Web3Service.$VERSION.snupkg"
+
+      - name: Summary
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          echo "Published \`Certifie.Web3Service $VERSION\` on GitHub Packages and the release [nuget-v$VERSION](${{ github.server_url }}/${{ github.repository }}/releases/tag/nuget-v$VERSION)." >> "$GITHUB_STEP_SUMMARY"

@@ -5,6 +5,15 @@ export function invalidArgument(message: string): Web3Error {
   return new Web3Error('INVALID_ARGUMENT', message);
 }
 
+/** The contract does not offer the requested feature, e.g. minting on a contract that is not an NFT. */
+export function notSupported(message: string): Web3Error {
+  return new Web3Error('NOT_SUPPORTED', message);
+}
+
+export function methodNotFound(method: string): Web3Error {
+  return new Web3Error('METHOD_NOT_FOUND', `Contract method ${method} is missing from the ABI.`);
+}
+
 export function signerRequired(): Web3Error {
   return new Web3Error('SIGNER_REQUIRED', 'Provide a private key or mnemonic to sign transactions.');
 }
