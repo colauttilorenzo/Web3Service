@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Certifie.Web3</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <PackageId>Certifie.Web3Service</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>CERTIFIE</Authors>
+    <Company>CERTIFIE</Company>
+    <Description>Blockchain notarization, contract deployment and transaction receipts for EVM networks. Native .NET port of @certifie/web3-service with the same JSON output.</Description>
+    <PackageTags>web3;notarization;blockchain;evm;ethereum;certifie</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nethereum.HdWallet" Version="6.1.0" />
+    <PackageReference Include="Nethereum.JsonRpc.WebSocketClient" Version="6.1.0" />
+    <PackageReference Include="Nethereum.Web3" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web3Service · Web3 Service Docs</title>
+<meta name="description" content="Costruttore e metodi di istanza.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="">Docs</a><a href="web3service.html" class="on">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.1.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.1.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="index.html">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link" href="uso-base.html">Uso di base</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link" href="firma.html">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link on" href="web3service.html" aria-current="page">Web3Service</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link" href="tipi.html">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">API</div>
+      <div class="page-head"><h1>Web3Service</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Costruttore e metodi di istanza.</p>
+
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">new Web3Service(input: IEvmProvider | string, options?: Web3ServiceOptions)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const web3 = new Web3Service('https://rpc-amoy.polygon.technology', { signer: { privateKey: process.env.PRIVATE_KEY! } });
+
+web3.provider.nativeCurrency.symbol; // 'ETH': i default di Ethereum, salvo configurazione
+web3.chainId;                        // '0x1', esadecimale minuscolo</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">public Web3Service(string rpcURI, Web3ServiceOptions? options = null)
+public Web3Service(EvmProvider provider, Web3ServiceOptions? options = null)
+
+public EthereumProvider Provider { get; } // configurazione con i default applicati
+public string ChainId { get; }            // es. "0x13882"</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var web3 = new Web3Service("https://rpc-amoy.polygon.technology", new Web3ServiceOptions { PrivateKey = privateKey });
+
+Console.WriteLine(web3.Provider.Symbol); // "ETH": i default di Ethereum, salvo configurazione
+Console.WriteLine(web3.ChainId);         // "0x1", esadecimale minuscolo</code></pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Proprietà</th><th>Tipo</th><th>Descrizione</th></tr></thead><tbody><tr><td><code>provider</code></td><td><code>Readonly&lt;IEthereumProvider&gt;</code></td><td>Configurazione con i default applicati e il chain ID normalizzato (<code>Provider</code> in .NET)</td></tr><tr><td><code>chainId</code></td><td><code>string</code></td><td>Chain ID normalizzato, es. <code>0x13882</code> (<code>ChainId</code> in .NET)</td></tr></tbody></table></div>
+<h2 id="mint">mint</h2>
+<p>Notarizza un documento chiamando <code>mint(contractAddress, hash, algorithm, metadata)</code>. Come nella classe originale, il primo argomento è l’indirizzo del contratto stesso. Attende l’inclusione in un blocco.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">mint(
+  abi: Abi,
+  contractAddress: string,
+  document: NotarizationDocument,
+  onChainEvent?: ITransaction,     // name e requestedAt da conservare
+  options?: TransactionOptions,    // gas, gasPrice, nonce, value
+): Promise&lt;ITransaction&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const result = await web3.mint(notarizerAbi, contractAddress,
+  { hash: { data: hash, algorithm: 'sha2' }, metadata: 'ipfs://bafy...' },
+  { name: 'contratto-42' },     // conservato nel risultato
+  { gasPrice: '30000000000' },  // 30 gwei, opzionale
+);</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;TransactionResult&gt; MintAsync(
+    string abi,                              // ABI in JSON
+    string contractAddress,
+    NotarizationDocument document,
+    TransactionResult? onChainEvent = null,  // Name e RequestedAt da conservare
+    TransactionOptions? options = null,      // Gas, GasPrice, Nonce, Value
+    CancellationToken cancellationToken = default)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var result = await web3.MintAsync(abi, contractAddress,
+    new NotarizationDocument { Hash = new NotarizationHash { Data = hash, Algorithm = "sha2" }, Metadata = "ipfs://bafy..." },
+    new TransactionResult { Name = "contratto-42" },     // conservato nel risultato
+    new TransactionOptions { GasPrice = 30_000_000_000 }, // 30 gwei, opzionale
+    cancellationToken);</code></pre></div></div></div>
+<h2 id="deploy">deploy</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">deploy(
+  abi: Abi,
+  bytecode: string,                         // 0x...
+  constructorArguments?: readonly unknown[],
+  onChainEvent?: ITransaction,
+  options?: TransactionOptions,
+): Promise&lt;ITransaction&gt;                    // indirizzo in tx.contractAddress</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const deployed = await web3.deploy(abi, bytecode, ['CERTIFIE'], undefined, { gas: '3000000' });
+console.log(deployed.tx?.contractAddress);</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;TransactionResult&gt; DeployAsync(
+    string abi,
+    string bytecode,                         // 0x...
+    object[]? constructorArguments = null,
+    TransactionResult? onChainEvent = null,
+    TransactionOptions? options = null,
+    CancellationToken cancellationToken = default) // indirizzo in Tx.ContractAddress</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var deployed = await web3.DeployAsync(abi, bytecode, new object[] { "CERTIFIE" },
+    options: new TransactionOptions { Gas = 3_000_000 });
+Console.WriteLine(deployed.Tx!.ContractAddress);</code></pre></div></div></div>
+<h2 id="call-contract-method">callContractMethod</h2>
+<p>Chiama un metodo in sola lettura. I numeri nel risultato diventano stringhe di interi, anche dentro array e oggetti.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">callContractMethod&lt;T = ContractResult&gt;(
+  method: string, abi: Abi, address: string, parameters?: readonly unknown[],
+): Promise&lt;T&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">// Un solo output restituisce il valore, più output un array; i numeri diventano stringhe.
+const [storedHash, algorithm, metadataURI] = await web3.callContractMethod&lt;string[]&gt;(
+  'metadata', notarizerAbi, contractAddress, [hash],
+);</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;JsonNode?&gt; CallContractMethodAsync(
+    string method, string abi, string address, object[]? parameters = null,
+    CancellationToken cancellationToken = default) // più output in un JsonArray</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">// Un solo output restituisce il valore, più output un JsonArray; i numeri diventano stringhe.
+var outputs = (await web3.CallContractMethodAsync("metadata", abi, contractAddress, new object[] { hash }))!.AsArray();
+var algorithm = outputs[1]!.GetValue&lt;string&gt;();</code></pre></div></div></div>
+<h2 id="get-transaction-receipt">getTransactionReceipt</h2>
+<p>Recupera una transazione già inclusa, anche se revertita (in quel caso con <code>error</code> e <code>rejectedAt</code>). Utile dopo un errore <code>TRANSACTION_SUBMISSION_FAILED</code>, che riporta sempre <code>transactionHash</code>.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">getTransactionReceipt(transactionHash: string, onChainEvent?: ITransaction): Promise&lt;ITransaction&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">// Dopo TRANSACTION_SUBMISSION_FAILED la transazione potrebbe essere stata inclusa comunque.
+const recovered = await web3.getTransactionReceipt(error.transactionHash!); // anche se revertita</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;TransactionResult&gt; GetTransactionReceiptAsync(
+    string transactionHash, TransactionResult? onChainEvent = null, CancellationToken cancellationToken = default)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">// Dopo TRANSACTION_SUBMISSION_FAILED la transazione potrebbe essere stata inclusa comunque.
+var recovered = await web3.GetTransactionReceiptAsync(exception.TransactionHash!); // anche se revertita</code></pre></div></div></div>
+<h2 id="check">check</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">check(): Promise&lt;{ blockNumber: string; gasPrice: string }&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const { blockNumber, gasPrice } = await web3.check();</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;CheckResult&gt; CheckAsync(CancellationToken cancellationToken = default) // BlockNumber, GasPrice</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var health = await web3.CheckAsync(); // BlockNumber, GasPrice</code></pre></div></div></div>
+
+      <nav class="pager" aria-label="Pagine"><a href="numeri-gas.html"><span>Precedente</span>Numeri e gas</a><a class="next" href="wallet-hd.html"><span>Successiva</span>Metodi statici</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.1.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

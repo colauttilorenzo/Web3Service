@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tgz
+.env
+.env.*
+!.env.example
+.DS_Store
+coverage/
+artifacts/
+bin/
+obj/
+__pycache__/

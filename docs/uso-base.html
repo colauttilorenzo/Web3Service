@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uso di base · Web3 Service Docs</title>
+<meta name="description" content="Dal deploy del contratto alla prima notarizzazione.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="on">Docs</a><a href="web3service.html" class="">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.1.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.1.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="index.html">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link on" href="uso-base.html" aria-current="page">Uso di base</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link" href="firma.html">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="web3service.html">Web3Service</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link" href="tipi.html">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">Inizia</div>
+      <div class="page-head"><h1>Uso di base</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Dal deploy del contratto alla prima notarizzazione.</p>
+
+<p>Da qui in avanti il codice da riusare nella tua applicazione è disponibile per cinque ambienti, mentre firme, tipi e metodi della libreria sono mostrati in TypeScript e C#. La scheda che scegli vale per tutta la documentazione e viene ricordata.</p>
+<div class="table-wrap"><table><thead><tr><th>Scheda</th><th>Dove vive l’istanza</th><th>Come la usano gli esempi</th></tr></thead><tbody><tr><td>Next.js</td><td><code>lib/web3.ts</code>, solo server</td><td>Server Action, Route Handler e Server Component</td></tr><tr><td>Vanilla</td><td>Tag script nella pagina</td><td>Firma con il wallet dell’utente, nessuna chiave nel browser</td></tr><tr><td>Fastify</td><td>Plugin che decora <code>app.web3</code></td><td>Rotte con prefisso <code>/api</code> e validazione dello schema</td></tr><tr><td>Express</td><td><code>src/web3.ts</code></td><td>Router montato su <code>/api</code></td></tr><tr><td>.NET</td><td>Singleton di ASP.NET Core</td><td>Minimal API in <code>Program.cs</code></td></tr></tbody></table></div>
+<ol class="steps"><li><h3>Crea l’istanza</h3><p>Passa l’URI del nodo o un oggetto <code>IEvmProvider</code>. Senza signer puoi solo leggere. Crea un’unica istanza per processo, così le scritture ricevono nonce distinti.</p><div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">lib/web3.ts</div><pre><code class="language-ts">import 'server-only';
+import { Web3Service } from '@certifie/web3-service';
+
+// Un'istanza per processo: le scritture vengono serializzate e ricevono nonce distinti.
+export const web3 = new Web3Service(
+  {
+    rpcURI: 'https://rpc-amoy.polygon.technology',
+    chainId: 80002,
+    chainName: 'Polygon Amoy',
+    nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+    blockExplorerURI: 'https://amoy.polygonscan.com',
+  },
+  { signer: { privateKey: process.env.PRIVATE_KEY! } },
+);
+
+export const contractAddress = process.env.CONTRACT_ADDRESS!;</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">index.html</div><pre><code class="language-markup">&lt;script src="https://cdn.jsdelivr.net/npm/@certifie/web3-service@0.1.0/dist/browser/web3-service.min.js"&gt;&lt;/script&gt;
+&lt;script src="notarizer-abi.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  const { Web3Service, Web3Error } = CertifieWeb3;
+  const contractAddress = '0x...';
+
+  // Nel browser firma il wallet dell'utente; senza wallet puoi solo leggere.
+  const service = new Web3Service(
+    {
+      rpcURI: 'https://rpc-amoy.polygon.technology',
+      chainId: 80002,
+      chainName: 'Polygon Amoy',
+      nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+      blockExplorerURI: 'https://amoy.polygonscan.com',
+    },
+    window.ethereum ? { signer: { wallet: window.ethereum } } : {},
+  );
+&lt;/script&gt;
+&lt;!-- gli esempi successivi vanno in app.js --&gt;
+&lt;script src="app.js"&gt;&lt;/script&gt;</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/plugins/web3.ts</div><pre><code class="language-ts">import fp from 'fastify-plugin';
+import { Web3Service } from '@certifie/web3-service';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    web3: Web3Service;
+    contractAddress: string;
+  }
+}
+
+// fastify-plugin rende app.web3 visibile a tutte le rotte; l'istanza è una per processo.
+export default fp(async app =&gt; {
+  app.decorate('web3', new Web3Service(
+    {
+      rpcURI: 'https://rpc-amoy.polygon.technology',
+      chainId: 80002,
+      chainName: 'Polygon Amoy',
+      nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+      blockExplorerURI: 'https://amoy.polygonscan.com',
+    },
+    { signer: { privateKey: process.env.PRIVATE_KEY! } },
+  ));
+  app.decorate('contractAddress', process.env.CONTRACT_ADDRESS!);
+});</code></pre></div><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import type { FastifyPluginAsync } from 'fastify';
+import { notarizerAbi } from '../notarizer-abi.js';
+
+// Gli esempi successivi si aggiungono dentro questo plugin.
+const notarization: FastifyPluginAsync = async app =&gt; {
+};
+
+export default notarization;</code></pre></div><div class="code"><div class="code-title">src/server.ts</div><pre><code class="language-ts">import Fastify from 'fastify';
+import web3 from './plugins/web3.js';
+import notarization from './routes/notarization.js';
+
+const app = Fastify({ logger: true });
+await app.register(web3);
+await app.register(notarization, { prefix: '/api' });
+await app.listen({ port: 3000 });</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/web3.ts</div><pre><code class="language-ts">import { Web3Service } from '@certifie/web3-service';
+
+// Un'istanza per processo: le scritture vengono serializzate e ricevono nonce distinti.
+export const web3 = new Web3Service(
+  {
+    rpcURI: 'https://rpc-amoy.polygon.technology',
+    chainId: 80002,
+    chainName: 'Polygon Amoy',
+    nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+    blockExplorerURI: 'https://amoy.polygonscan.com',
+  },
+  { signer: { privateKey: process.env.PRIVATE_KEY! } },
+);
+
+export const contractAddress = process.env.CONTRACT_ADDRESS!;</code></pre></div><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import { Router } from 'express';
+import { contractAddress, web3 } from '../web3.js';
+import { notarizerAbi } from '../notarizer-abi.js';
+
+// Gli esempi successivi si aggiungono a questo router.
+export const notarization = Router();</code></pre></div><div class="code"><div class="code-title">src/server.ts</div><pre><code class="language-ts">import express from 'express';
+import { notarization } from './routes/notarization.js';
+
+const app = express();
+app.use(express.json());
+app.use('/api', notarization); // Express 5: le promise rifiutate arrivano al middleware di errore
+app.listen(3000);</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">using Certifie.Web3;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Singleton: le scritture della stessa istanza sono serializzate e i nonce restano distinti.
+builder.Services.AddSingleton(new Web3Service(
+    new EvmProvider
+    {
+        RpcURI = "https://rpc-amoy.polygon.technology",
+        ChainId = "80002",
+        ChainName = "Polygon Amoy",
+        NativeCurrency = new NativeCurrency { Name = "POL", Symbol = "POL", Decimals = 18 },
+        BlockExplorerURI = "https://amoy.polygonscan.com",
+    },
+    new Web3ServiceOptions { PrivateKey = builder.Configuration["Web3:PrivateKey"] }));
+
+var app = builder.Build();
+var abi = await File.ReadAllTextAsync("notarizer-abi.json");
+var contractAddress = app.Configuration["Web3:Contract"]!;
+
+// Gli endpoint degli esempi successivi vanno qui.
+
+app.Run();</code></pre></div></div></div></li><li><h3>Distribuisci il contratto (una volta)</h3><div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">app/admin/actions.ts</div><pre><code class="language-ts">'use server';
+
+import type { Abi } from '@certifie/web3-service';
+import artifact from '@/contracts/Notarizer.json';
+import { web3 } from '@/lib/web3';
+
+// Solo per amministratori: ogni chiamata distribuisce un nuovo contratto e spende gas.
+export async function deployNotarizer(): Promise&lt;string&gt; {
+  const deployed = await web3.deploy(artifact.abi as Abi, artifact.bytecode, ['CERTIFIE']);
+  return deployed.tx!.contractAddress!; // salvalo in CONTRACT_ADDRESS
+}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">app.js</div><pre><code class="language-js">// Il wallet dell'utente firma il deploy e paga il gas.
+document.getElementById('deploy').addEventListener('click', async () =&gt; {
+  const artifact = await fetch('/contracts/Notarizer.json').then(response =&gt; response.json());
+  const deployed = await service.deploy(artifact.abi, artifact.bytecode, ['CERTIFIE']);
+  console.log(deployed.tx.contractAddress); // salva questo indirizzo
+});</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import type { Abi } from '@certifie/web3-service';
+import artifact from '../contracts/Notarizer.json' with { type: 'json' };
+
+// Solo per amministratori: ogni chiamata distribuisce un nuovo contratto e spende gas.
+app.post('/admin/deploy', async () =&gt; {
+  const deployed = await app.web3.deploy(artifact.abi as Abi, artifact.bytecode, ['CERTIFIE']);
+  return { contractAddress: deployed.tx?.contractAddress }; // salvalo in CONTRACT_ADDRESS
+});</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import type { Abi } from '@certifie/web3-service';
+import artifact from '../contracts/Notarizer.json' with { type: 'json' };
+
+// Solo per amministratori: ogni chiamata distribuisce un nuovo contratto e spende gas.
+notarization.post('/admin/deploy', async (_req, res) =&gt; {
+  const deployed = await web3.deploy(artifact.abi as Abi, artifact.bytecode, ['CERTIFIE']);
+  res.json({ contractAddress: deployed.tx?.contractAddress }); // salvalo in CONTRACT_ADDRESS
+});</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">using System.Text.Json.Nodes;
+
+// Solo per amministratori: ogni chiamata distribuisce un nuovo contratto e spende gas.
+app.MapPost("/api/admin/deploy", async (Web3Service web3) =&gt;
+{
+    var artifact = JsonNode.Parse(await File.ReadAllTextAsync("Notarizer.json"))!;
+    var deployed = await web3.DeployAsync(
+        artifact["abi"]!.ToJsonString(), artifact["bytecode"]!.GetValue&lt;string&gt;(), new object[] { "CERTIFIE" });
+    return Results.Ok(new { contractAddress = deployed.Tx?.ContractAddress }); // salvalo in Web3:Contract
+});</code></pre></div></div></div></li><li><h3>Calcola l’hash e notarizza</h3><div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">app/actions.ts</div><pre><code class="language-ts">'use server';
+
+import { contractAddress, web3 } from '@/lib/web3';
+import { notarizerAbi } from '@/lib/notarizer-abi';
+
+export async function notarize(hash: string, metadata?: string) {
+  if (!/^[0-9a-f]{64}$/.test(hash)) throw new Error('hash deve essere uno SHA-256 esadecimale.');
+  return web3.mint(notarizerAbi, contractAddress, { hash: { data: hash, algorithm: 'sha2' }, metadata });
+}</code></pre></div><div class="code"><div class="code-title">app/notarize/notarize-form.tsx</div><pre><code class="language-tsx">'use client';
+
+import { useState } from 'react';
+import { notarize } from '@/app/actions';
+import { sha256 } from '@/lib/sha256';
+
+// L'hash si calcola nel browser: il file non lascia mai il dispositivo.
+export function NotarizeForm() {
+  const [transactionHash, setTransactionHash] = useState&lt;string&gt;();
+
+  async function onFile(file: File) {
+    const result = await notarize(await sha256(file), file.name);
+    setTransactionHash(result.tx?.transactionHash);
+  }
+
+  return (
+    &lt;&gt;
+      &lt;input type="file" onChange={event =&gt; event.target.files?.[0] &amp;&amp; onFile(event.target.files[0])} /&gt;
+      {transactionHash &amp;&amp; &lt;p&gt;Notarizzato: {transactionHash}&lt;/p&gt;}
+    &lt;/&gt;
+  );
+}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">app.js</div><pre><code class="language-js">async function sha256(file) {
+  const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  return [...new Uint8Array(digest)].map(byte =&gt; byte.toString(16).padStart(2, '0')).join('');
+}
+
+document.getElementById('file').addEventListener('change', async event =&gt; {
+  const file = event.target.files[0];
+  const result = await service.mint(notarizerAbi, contractAddress, { // il wallet chiede la firma
+    hash: { data: await sha256(file), algorithm: 'sha2' },
+    metadata: file.name,
+  });
+  console.log(result.tx.transactionHash);
+});</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">app.post&lt;{ Body: { hash: string; metadata?: string } }&gt;('/notarize', {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['hash'],
+      properties: { hash: { type: 'string', pattern: '^[0-9a-f]{64}$' }, metadata: { type: 'string' } },
+    },
+  },
+}, async request =&gt; app.web3.mint(notarizerAbi, app.contractAddress, {
+  hash: { data: request.body.hash, algorithm: 'sha2' },
+  metadata: request.body.metadata,
+}));</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import multer from 'multer';
+import { createHash } from 'node:crypto';
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+
+// Arriva il file intero: l'hash si calcola qui e il file non viene conservato.
+notarization.post('/notarize', upload.single('file'), async (req, res) =&gt; {
+  if (!req.file) return void res.status(400).json({ message: 'Campo file mancante.' });
+  const hash = createHash('sha256').update(req.file.buffer).digest('hex');
+  res.json(await web3.mint(notarizerAbi, contractAddress, {
+    hash: { data: hash, algorithm: 'sha2' },
+    metadata: req.file.originalname,
+  }));
+});</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">using System.Security.Cryptography;
+
+app.MapPost("/api/notarize", async (IFormFile file, Web3Service web3) =&gt;
+{
+    await using var stream = file.OpenReadStream();
+    var hash = Convert.ToHexString(await SHA256.HashDataAsync(stream)).ToLowerInvariant();
+    var result = await web3.MintAsync(abi, contractAddress, new NotarizationDocument
+    {
+        Hash = new NotarizationHash { Data = hash, Algorithm = "sha2" },
+        Metadata = file.FileName,
+    });
+    return Results.Ok(result);
+}).DisableAntiforgery();</code></pre></div></div></div></li><li><h3>Verifica in seguito</h3><div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">app/documents/[hash]/page.tsx</div><pre><code class="language-tsx">import { contractAddress, web3 } from '@/lib/web3';
+import { notarizerAbi } from '@/lib/notarizer-abi';
+
+// Server Component: la lettura avviene sul server durante il rendering.
+export default async function DocumentPage({ params }: { params: Promise&lt;{ hash: string }&gt; }) {
+  const { hash } = await params;
+  const [storedHash, algorithm, metadataURI] = await web3.callContractMethod&lt;string[]&gt;(
+    'metadata', notarizerAbi, contractAddress, [hash],
+  );
+  return storedHash ? &lt;p&gt;{algorithm} · {metadataURI}&lt;/p&gt; : &lt;p&gt;Documento non notarizzato.&lt;/p&gt;;
+}</code></pre></div><div class="code"><div class="code-title">app/api/transactions/[hash]/route.ts</div><pre><code class="language-ts">import { web3 } from '@/lib/web3';
+
+export async function GET(_request: Request, { params }: { params: Promise&lt;{ hash: string }&gt; }) {
+  const receipt = await web3.getTransactionReceipt((await params).hash);
+  return Response.json(receipt); // receipt.completedAt: millisecondi del blocco
+}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">app.js</div><pre><code class="language-js">// Le letture passano dal nodo rpcURI e non chiedono nulla al wallet.
+async function verify(hash, transactionHash) {
+  const [storedHash, algorithm, metadataURI] = await service.callContractMethod(
+    'metadata', notarizerAbi, contractAddress, [hash],
+  );
+  const receipt = await service.getTransactionReceipt(transactionHash);
+  return { notarized: storedHash !== '', algorithm, metadataURI, completedAt: receipt.completedAt };
+}</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">app.get&lt;{ Params: { hash: string } }&gt;('/documents/:hash', async request =&gt; {
+  const [hash, algorithm, metadataURI] = await app.web3.callContractMethod&lt;string[]&gt;(
+    'metadata', notarizerAbi, app.contractAddress, [request.params.hash],
+  );
+  return { notarized: hash !== '', algorithm, metadataURI };
+});
+
+app.get&lt;{ Params: { hash: string } }&gt;('/transactions/:hash', async request =&gt;
+  app.web3.getTransactionReceipt(request.params.hash)); // completedAt: millisecondi del blocco</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">notarization.get('/documents/:hash', async (req, res) =&gt; {
+  const [hash, algorithm, metadataURI] = await web3.callContractMethod&lt;string[]&gt;(
+    'metadata', notarizerAbi, contractAddress, [req.params.hash],
+  );
+  res.json({ notarized: hash !== '', algorithm, metadataURI });
+});
+
+notarization.get('/transactions/:hash', async (req, res) =&gt; {
+  res.json(await web3.getTransactionReceipt(req.params.hash)); // completedAt: millisecondi del blocco
+});</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">app.MapGet("/api/documents/{hash}", async (string hash, Web3Service web3) =&gt;
+{
+    var stored = (await web3.CallContractMethodAsync("metadata", abi, contractAddress, new object[] { hash }))!.AsArray();
+    var values = stored.Select(node =&gt; node!.GetValue&lt;string&gt;()).ToArray();
+    return Results.Ok(new { notarized = values[0] != "", algorithm = values[1], metadataURI = values[2] });
+});
+
+app.MapGet("/api/transactions/{hash}", async (string hash, Web3Service web3) =&gt;
+    Results.Ok(await web3.GetTransactionReceiptAsync(hash))); // CompletedAt: millisecondi del blocco</code></pre></div></div></div></li></ol>
+<h2 id="abi">File condivisi</h2>
+<p>Gli esempi importano l’ABI del contratto e, dove l’hash si calcola nel browser, la funzione <code>sha256</code>.</p>
+<div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">lib/notarizer-abi.ts</div><pre><code class="language-ts">import type { Abi } from '@certifie/web3-service';
+
+/** ABI minimo: mint per notarizzare, metadata per rileggere. Usa l'ABI completo del tuo contratto. */
+export const notarizerAbi = [
+  {
+    type: 'function', name: 'mint', stateMutability: 'nonpayable', outputs: [],
+    inputs: [
+      { name: 'recipient', type: 'address' },
+      { name: 'hash', type: 'string' },
+      { name: 'algorithm', type: 'string' },
+      { name: 'metadataURI', type: 'string' },
+    ],
+  },
+  {
+    type: 'function', name: 'metadata', stateMutability: 'view',
+    inputs: [{ name: 'hash', type: 'string' }],
+    outputs: [{ type: 'string' }, { type: 'string' }, { type: 'string' }],
+  },
+] as const satisfies Abi;</code></pre></div><div class="code"><div class="code-title">lib/sha256.ts</div><pre><code class="language-ts">/** SHA-256 esadecimale di un file, calcolato nel browser con Web Crypto. */
+export async function sha256(file: Blob): Promise&lt;string&gt; {
+  const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+  return [...new Uint8Array(digest)].map(byte =&gt; byte.toString(16).padStart(2, '0')).join('');
+}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">notarizer-abi.js</div><pre><code class="language-js">/** ABI minimo: mint per notarizzare, metadata per rileggere. Usa l'ABI completo del tuo contratto. */
+const notarizerAbi = [
+  {
+    type: 'function', name: 'mint', stateMutability: 'nonpayable', outputs: [],
+    inputs: [
+      { name: 'recipient', type: 'address' },
+      { name: 'hash', type: 'string' },
+      { name: 'algorithm', type: 'string' },
+      { name: 'metadataURI', type: 'string' },
+    ],
+  },
+  {
+    type: 'function', name: 'metadata', stateMutability: 'view',
+    inputs: [{ name: 'hash', type: 'string' }],
+    outputs: [{ type: 'string' }, { type: 'string' }, { type: 'string' }],
+  },
+];</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/notarizer-abi.ts</div><pre><code class="language-ts">import type { Abi } from '@certifie/web3-service';
+
+/** ABI minimo: mint per notarizzare, metadata per rileggere. Usa l'ABI completo del tuo contratto. */
+export const notarizerAbi = [
+  {
+    type: 'function', name: 'mint', stateMutability: 'nonpayable', outputs: [],
+    inputs: [
+      { name: 'recipient', type: 'address' },
+      { name: 'hash', type: 'string' },
+      { name: 'algorithm', type: 'string' },
+      { name: 'metadataURI', type: 'string' },
+    ],
+  },
+  {
+    type: 'function', name: 'metadata', stateMutability: 'view',
+    inputs: [{ name: 'hash', type: 'string' }],
+    outputs: [{ type: 'string' }, { type: 'string' }, { type: 'string' }],
+  },
+] as const satisfies Abi;</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/notarizer-abi.ts</div><pre><code class="language-ts">import type { Abi } from '@certifie/web3-service';
+
+/** ABI minimo: mint per notarizzare, metadata per rileggere. Usa l'ABI completo del tuo contratto. */
+export const notarizerAbi = [
+  {
+    type: 'function', name: 'mint', stateMutability: 'nonpayable', outputs: [],
+    inputs: [
+      { name: 'recipient', type: 'address' },
+      { name: 'hash', type: 'string' },
+      { name: 'algorithm', type: 'string' },
+      { name: 'metadataURI', type: 'string' },
+    ],
+  },
+  {
+    type: 'function', name: 'metadata', stateMutability: 'view',
+    inputs: [{ name: 'hash', type: 'string' }],
+    outputs: [{ type: 'string' }, { type: 'string' }, { type: 'string' }],
+  },
+] as const satisfies Abi;</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">notarizer-abi.json</div><pre><code class="language-json">[
+  {
+    "type": "function", "name": "mint", "stateMutability": "nonpayable", "outputs": [],
+    "inputs": [
+      { "name": "recipient", "type": "address" },
+      { "name": "hash", "type": "string" },
+      { "name": "algorithm", "type": "string" },
+      { "name": "metadataURI", "type": "string" }
+    ]
+  },
+  {
+    "type": "function", "name": "metadata", "stateMutability": "view",
+    "inputs": [{ "name": "hash", "type": "string" }],
+    "outputs": [{ "type": "string" }, { "type": "string" }, { "type": "string" }]
+  }
+]</code></pre></div><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">// In .NET l'ABI si passa come stringa JSON.
+var abi = await File.ReadAllTextAsync("notarizer-abi.json");</code></pre></div></div></div>
+
+      <nav class="pager" aria-label="Pagine"><a href="installazione.html"><span>Precedente</span>Installazione</a><a class="next" href="configurazione.html"><span>Successiva</span>Configurazione</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.1.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

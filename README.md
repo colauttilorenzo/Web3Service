@@ -1,0 +1,58 @@
+# CERTIFIE Web3 Service
+
+Notarization of document hashes on EVM networks, in two implementations that behave the same way:
+
+| Folder | Package | Readme |
+| --- | --- | --- |
+| [`typescript/`](typescript/) | npm `@certifie/web3-service` (Node.js, bundled frontends, browser script) | [`typescript/README.md`](typescript/README.md) |
+| [`dotnet/`](dotnet/) | NuGet `Certifie.Web3Service` (net8.0, netstandard2.0) | [`dotnet/README.md`](dotnet/README.md) |
+| [`docs/`](docs/index.html) | Documentation in Italian, open `docs/index.html` in a browser | |
+| [`shared/`](shared/) | Expected values used by the tests of both implementations | |
+
+Release notes are in [`CHANGELOG.md`](CHANGELOG.md).
+
+## Same structure in both languages
+
+Each implementation has a `src` and a `test` folder, and every source file has a counterpart with the same name:
+
+| TypeScript (`typescript/src`) | C# (`dotnet/src/Certifie.Web3Service`) | Role |
+| --- | --- | --- |
+| `Web3Service.ts` | `Web3Service.cs` | Public API |
+| `Models.ts` | `Models.cs` | Public types |
+| `Web3Exception.ts` (`Web3Error`) | `Web3Exception.cs` | Errors and their JSON |
+| `Internal/Configuration.ts` | `Internal/Configuration.cs` | Defaults and validation |
+| `Internal/ContractCalls.ts` | `Internal/ContractCalls.cs` | ABI lookups, JSON-safe outputs |
+| `Internal/Errors.ts` | `Internal/Errors.cs` | Shared error factories |
+| `Internal/HdWallets.ts` | `Internal/HdWallets.cs` | BIP-39 / BIP-44 wallets |
+| `Internal/Integers.ts` | `Internal/Integers.cs` | Integer parsing and formatting |
+| `Internal/KeySigner.ts` | `Internal/KeySigner.cs` | Local signing with a private key or mnemonic |
+| `Internal/Receipts.ts` | `Internal/Receipts.cs` | Receipt lookups and polling |
+| `Internal/RpcConnector.ts` | `Internal/RpcConnector.cs` | Endpoint selection and chain check |
+| `Internal/RpcSession.ts` | `Internal/RpcSession.cs` | One connection with timeouts |
+| `Internal/TransactionRequest.ts` | `Internal/TransactionRequest.cs` | Encoded call, gas limit |
+| `Internal/TransactionResults.ts` | `Internal/TransactionResults.cs` | Receipt to `ITransaction` / `TransactionResult` |
+| `Internal/WriteQueue.ts` | `Internal/WriteQueue.cs` | One write at a time per service |
+
+Method names match too: the TypeScript name is the C# name with a lowercase first letter and without `Async` (`MintAsync` → `mint`, `Receipts.WaitAsync` → `Receipts.wait`). C# static classes are TypeScript modules imported as namespaces (`import * as Receipts from './Receipts.js'`), so the call sites read the same. A fix or change goes in the file with the same name on both sides.
+
+Only three TypeScript files have no C# counterpart, because they cover what exists only in JavaScript: `Internal/WalletSigner.ts` (browser wallets such as MetaMask), `Internal/TimeoutHttpProvider.ts` and `Internal/TimeoutWebSocketProvider.ts` (web3.js transports; .NET uses `HttpClient` and `WebSocketClient`).
+
+## Tests
+
+The tests have the same names in both languages and read their expected values from [`shared/test-vectors.json`](shared/test-vectors.json):
+
+| TypeScript (`typescript/test`) | C# (`dotnet/test/Certifie.Web3Service.Tests`) |
+| --- | --- |
+| `UnitTests.test.mjs` | `UnitTests.cs` |
+| `ChainTests.test.mjs` | `ChainTests.cs` |
+| `fixtures/Chain.mjs`, `fixtures/RpcProxy.mjs`, `fixtures/ParityScenario.mjs` | `Fixtures/Chain.cs`, `Fixtures/RpcProxy.cs`, `Fixtures/ParityScenario.cs` |
+| | `ParityTests.cs` |
+
+`ParityTests` checks that the two implementations are consistent: the TypeScript package runs the parity scenario (deploy, mint, receipt and contract reads) on a local chain, then .NET runs the same calls and compares the JSON field by field, ignoring only hashes, addresses, block numbers and times.
+
+```sh
+cd typescript
+npm ci
+npm test              # TypeScript tests
+npm run test:dotnet   # .NET tests and the TypeScript/.NET parity test (requires the .NET 8 SDK)
+```

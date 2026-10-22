@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tipi · Web3 Service Docs</title>
+<meta name="description" content="Le dichiarazioni TypeScript esportate dal pacchetto e le classi .NET.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="">Docs</a><a href="web3service.html" class="on">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.1.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.1.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="index.html">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link" href="uso-base.html">Uso di base</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link" href="firma.html">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="web3service.html">Web3Service</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link on" href="tipi.html" aria-current="page">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">API</div>
+      <div class="page-head"><h1>Tipi</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Le dichiarazioni TypeScript esportate dal pacchetto e le classi .NET.</p>
+
+<p>Tutti i tipi si importano dall’entry point: <code>import type { ITransaction } from '@certifie/web3-service'</code>. La scheda TypeScript mostra la dichiarazione, la scheda C# la classe corrispondente del pacchetto NuGet, serializzata con gli stessi nomi JSON.</p>
+<h2 id="ievmprovider">IEvmProvider</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface IEvmProvider {
+  rpcURI: string;                 // http(s):// o ws(s)://
+  rpcPublicURI?: string;          // fallback
+  chainId?: ChainId;              // default '0x1'
+  chainName?: string;             // default 'Ethereum'
+  nativeCurrency?: Partial&lt;NativeCurrency&gt;;
+  blockExplorerURI?: string;
+}
+
+interface NativeCurrency {
+  name?: string;      // default 'Ether'
+  symbol: string;     // default 'ETH'
+  decimals: number;   // default 18, solo informativo
+}
+
+type ChainId = string | number | bigint;
+type EthereumProviderConfig = IEvmProvider; // alias di compatibilità</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class EvmProvider
+{
+    public string RpcURI { get; set; } = "";       // http(s):// o ws(s)://
+    public string? RpcPublicURI { get; set; }      // fallback
+    public string? ChainId { get; set; }           // "1337" o "0x539", default "0x1"
+    public string? ChainName { get; set; }         // default "Ethereum"
+    public NativeCurrency? NativeCurrency { get; set; }
+    public string? BlockExplorerURI { get; set; }
+}
+
+public sealed class NativeCurrency
+{
+    public string? Name { get; set; }   // default "Ether"
+    public string? Symbol { get; set; } // default "ETH"
+    public int? Decimals { get; set; }  // default 18, solo informativo
+}</code></pre></div></div></div>
+<h2 id="web3serviceoptions">Web3ServiceOptions</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface Web3ServiceOptions {
+  signer?: SignerOptions;
+  timeoutMs?: number;            // 30000
+  transactionTimeoutMs?: number; // 120000
+  pollingIntervalMs?: number;    // 1000
+  gasBuffer?: ChainId;           // 10000
+  web3Factory?: (rpcURI: string) =&gt; Web3;
+}
+
+type SignerOptions =
+  | { privateKey: string }
+  | { mnemonic: string | { phrase: string; password?: string }; walletIndex?: number }
+  | { wallet: Eip1193Provider; switchChain?: boolean };
+
+interface Eip1193Provider {
+  request(args: { method: string; params?: readonly unknown[] | object }): Promise&lt;unknown&gt;;
+}</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class Web3ServiceOptions
+{
+    public string? PrivateKey { get; set; }              // oppure Mnemonic
+    public string? Mnemonic { get; set; }
+    public string MnemonicPassword { get; set; } = "";
+    public int WalletIndex { get; set; } = 1;            // m/44'/60'/0'/0/{WalletIndex}
+    public TimeSpan Timeout { get; set; }                // 30 secondi
+    public TimeSpan TransactionTimeout { get; set; }     // 120 secondi
+    public TimeSpan PollingInterval { get; set; }        // 1 secondo
+    public BigInteger GasBuffer { get; set; } = 10_000;
+}</code></pre></div></div></div>
+<h2 id="notarizationdocument">NotarizationDocument</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface NotarizationDocument {
+  hash: { data: string; algorithm: string }; // es. { data: 'e3b0…', algorithm: 'sha2' }
+  metadata?: string;                         // es. 'ipfs://…'
+}</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class NotarizationDocument
+{
+    public NotarizationHash Hash { get; set; } = new NotarizationHash();
+    public string? Metadata { get; set; }  // es. "ipfs://…"
+}
+
+public sealed class NotarizationHash
+{
+    public string Data { get; set; } = "";      // es. "e3b0…"
+    public string Algorithm { get; set; } = ""; // es. "sha2"
+}</code></pre></div></div></div>
+<h2 id="itransaction">ITransaction</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface ITransaction {
+  name?: 'mint' | 'deploy' | string;
+  requestedAt?: string;   // millisecondi
+  completedAt?: string;   // timestamp del blocco, se riuscita
+  rejectedAt?: string;    // timestamp del blocco, se revertita
+  tx?: ITransactionReceipt;
+  error?: Web3ErrorJSON;
+  nativeFee?: { amount: string; symbol: string; decimals: string };
+}</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class TransactionResult
+{
+    public string? Name { get; set; }           // "mint", "deploy"
+    public string? RequestedAt { get; set; }    // millisecondi
+    public string? CompletedAt { get; set; }    // timestamp del blocco, se riuscita
+    public string? RejectedAt { get; set; }     // timestamp del blocco, se revertita
+    public TransactionReceipt? Tx { get; set; }
+    public Web3ErrorInfo? Error { get; set; }
+    public NativeFee? NativeFee { get; set; }   // Amount, Symbol, Decimals
+}</code></pre></div></div></div>
+<h2 id="itransactionreceipt">ITransactionReceipt</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface ITransactionReceipt {
+  transactionHash: string;
+  blockHash: string;
+  blockNumber: string;
+  transactionIndex: string;
+  from: string;
+  to?: string | null;
+  contractAddress?: string | null;
+  type?: string;
+  status: string;            // '1' riuscita, '0' revertita
+  cumulativeGasUsed: string;
+  gasUsed: string;
+  effectiveGasPrice?: string;
+  logsBloom: string;
+  logs: ITransactionLog[];
+}
+
+interface ITransactionLog {
+  address?: string; data?: string; topics?: string[];
+  logIndex?: string; transactionIndex?: string; transactionHash?: string;
+  blockHash?: string; blockNumber?: string; removed?: boolean;
+}</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class TransactionReceipt
+{
+    public string TransactionHash { get; set; } = "";
+    public string BlockHash { get; set; } = "";
+    public string BlockNumber { get; set; } = "";
+    public string TransactionIndex { get; set; } = "";
+    public string From { get; set; } = "";
+    public string? To { get; set; }
+    public string? ContractAddress { get; set; }
+    public string? Type { get; set; }
+    public string Status { get; set; } = "";    // "1" riuscita, "0" revertita
+    public string CumulativeGasUsed { get; set; } = "";
+    public string GasUsed { get; set; } = "";
+    public string? EffectiveGasPrice { get; set; }
+    public string LogsBloom { get; set; } = "";
+    public List&lt;TransactionLog&gt; Logs { get; set; } = new List&lt;TransactionLog&gt;();
+}</code></pre></div></div></div>
+<h2 id="altri-tipi">Altri tipi</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface TransactionOptions { gas?: ChainId; gasPrice?: ChainId; nonce?: ChainId; value?: ChainId }
+
+interface IWallet { address: string; publicKey: string; privateKey: string; path: string | null; index: string }
+
+interface IEthereumProvider extends IEvmProvider { chainId: ChainId; nativeCurrency: NativeCurrency }
+
+type Abi = ContractAbi; // da web3
+type ContractResult = string | boolean | null | ContractResult[] | { [key: string]: ContractResult };
+
+interface Web3ErrorJSON { name: string; code: string; message: string; transactionHash?: string }</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class TransactionOptions
+{
+    public BigInteger? Gas { get; set; }
+    public BigInteger? GasPrice { get; set; }
+    public BigInteger? Nonce { get; set; }
+    public BigInteger? Value { get; set; }
+}
+
+public sealed class WalletInfo
+{
+    public string Address { get; set; } = "";
+    public string PublicKey { get; set; } = "";
+    public string PrivateKey { get; set; } = "";
+    public string? Path { get; set; }
+    public string Index { get; set; } = "";
+}
+
+public sealed class EthereumProvider // Web3Service.Provider, di sola lettura
+{
+    public string ChainId { get; }
+    public string RpcURI { get; }
+    public string? RpcPublicURI { get; }
+    public string ChainName { get; }
+    public string CurrencyName { get; }
+    public string Symbol { get; }
+    public int Decimals { get; }
+    public string? BlockExplorerURI { get; }
+}
+
+public sealed class CheckResult
+{
+    public string BlockNumber { get; set; } = "";
+    public string GasPrice { get; set; } = "";
+}
+
+public sealed class Web3ErrorInfo // Web3Exception.ToInfo()
+{
+    public string Name { get; set; } = "Web3Error";
+    public string Code { get; set; } = "";
+    public string Message { get; set; } = "";
+    public string? TransactionHash { get; set; }
+}</code></pre></div></div></div>
+
+      <nav class="pager" aria-label="Pagine"><a href="wallet-hd.html"><span>Precedente</span>Metodi statici</a><a class="next" href="errori.html"><span>Successiva</span>Errori</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.1.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

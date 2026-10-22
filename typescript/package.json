@@ -1,0 +1,72 @@
+{
+  "name": "@certifie/web3-service",
+  "version": "0.1.0",
+  "description": "Blockchain notarization, contract deployment and transaction receipts for EVM networks.",
+  "license": "UNLICENSED",
+  "author": "CERTIFIE <info@certifie.me>",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "unpkg": "./dist/browser/web3-service.min.js",
+  "jsdelivr": "./dist/browser/web3-service.min.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./browser": {
+      "types": "./dist/esm/index.d.ts",
+      "default": "./dist/browser/web3-service.esm.min.js"
+    },
+    "./web3-service.min.js": "./dist/browser/web3-service.min.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "examples",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "build": "npm run clean && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json && node scripts/finalize-build.mjs && node scripts/build-browser.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && npm run test:types && node --test test/*.test.mjs",
+    "test:types": "tsc -p test/tsconfig.json",
+    "prepack": "npm run build",
+    "test:dotnet": "node scripts/test-dotnet.mjs",
+    "pack:nuget": "dotnet pack ../dotnet/src/Certifie.Web3Service -c Release -o ../artifacts/nuget"
+  },
+  "keywords": [
+    "web3",
+    "notarization",
+    "blockchain",
+    "evm",
+    "ethereum",
+    "certifie"
+  ],
+  "dependencies": {
+    "big.js": "^6.2.1",
+    "ethers": "^6.13.2",
+    "web3": "^4.12.1"
+  },
+  "devDependencies": {
+    "@types/big.js": "^6.2.2",
+    "@types/node": "^22.5.0",
+    "esbuild": "^0.25.11",
+    "ganache": "^7.9.2",
+    "solc": "^0.8.28",
+    "typescript": "^5.5.4",
+    "ws": "^8.18.0"
+  }
+}

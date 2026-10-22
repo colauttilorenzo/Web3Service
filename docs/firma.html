@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Firma delle transazioni · Web3 Service Docs</title>
+<meta name="description" content="Chiave privata, mnemonic o wallet del browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="on">Docs</a><a href="web3service.html" class="">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.1.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.1.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="index.html">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link" href="uso-base.html">Uso di base</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link on" href="firma.html" aria-current="page">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="web3service.html">Web3Service</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link" href="tipi.html">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">Concetti</div>
+      <div class="page-head"><h1>Firma delle transazioni</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Chiave privata, mnemonic o wallet del browser.</p>
+
+<p>Le letture non richiedono credenziali. Per <code>mint</code> e <code>deploy</code> scegli uno dei tre signer: sul server una chiave privata o un mnemonic, nel browser il wallet dell’utente.</p>
+<div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">lib/web3.ts</div><pre><code class="language-ts">import 'server-only';
+import { Web3Service } from '@certifie/web3-service';
+
+const provider = { rpcURI: process.env.RPC_URL!, chainId: process.env.CHAIN_ID };
+
+// Sul server: chiave privata…
+export const web3 = new Web3Service(provider, { signer: { privateKey: process.env.PRIVATE_KEY! } });
+
+// …oppure mnemonic, derivato in m/44'/60'/0'/0/1 (anche { mnemonic: { phrase, password } })
+export const web3FromMnemonic = new Web3Service(provider, {
+  signer: { mnemonic: process.env.MNEMONIC!, walletIndex: 1 },
+});</code></pre></div><div class="code"><div class="code-title">lib/browser-web3.ts</div><pre><code class="language-ts">import { Web3Service, type Eip1193Provider } from '@certifie/web3-service';
+
+// Nel browser firma il wallet dell'utente: chiamala solo da componenti 'use client'.
+export function browserWeb3(): Web3Service | null {
+  const wallet = (window as { ethereum?: Eip1193Provider }).ethereum;
+  if (!wallet) return null;
+  const provider = { rpcURI: process.env.NEXT_PUBLIC_RPC_URL!, chainId: process.env.NEXT_PUBLIC_CHAIN_ID };
+  return new Web3Service(provider, { signer: { wallet, switchChain: true } });
+}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">index.html · script</div><pre><code class="language-js">// Nel browser solo il wallet: una chiave o un mnemonic sarebbero leggibili da chiunque apra la pagina.
+const service = new Web3Service({ rpcURI: 'https://rpc-amoy.polygon.technology', chainId: 80002 }, {
+  signer: { wallet: window.ethereum, switchChain: true }, // false: CHAIN_ID_MISMATCH invece di cambiare rete
+});</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/plugins/web3.ts</div><pre><code class="language-ts">import fp from 'fastify-plugin';
+import { Web3Service } from '@certifie/web3-service';
+
+// Sul server firma una chiave del backend: il wallet del browser non è disponibile.
+const signer = process.env.MNEMONIC
+  ? { mnemonic: process.env.MNEMONIC, walletIndex: Number(process.env.WALLET_INDEX ?? 1) } // m/44'/60'/0'/0/1
+  : { privateKey: process.env.PRIVATE_KEY! };
+
+export default fp(async app =&gt; {
+  app.decorate('web3', new Web3Service({ rpcURI: process.env.RPC_URL!, chainId: process.env.CHAIN_ID }, { signer }));
+});</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/web3.ts</div><pre><code class="language-ts">import { Web3Service } from '@certifie/web3-service';
+
+// Mnemonic con password, derivato in m/44'/60'/0'/0/1…
+export const web3 = new Web3Service(process.env.RPC_URL!, {
+  signer: { mnemonic: { phrase: process.env.MNEMONIC!, password: process.env.MNEMONIC_PASSWORD }, walletIndex: 1 },
+});
+
+// …oppure chiave privata
+export const web3FromKey = new Web3Service(process.env.RPC_URL!, {
+  signer: { privateKey: process.env.PRIVATE_KEY! },
+});</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">// Chiave privata…
+var web3 = new Web3Service(provider, new Web3ServiceOptions { PrivateKey = builder.Configuration["Web3:PrivateKey"] });
+
+// …oppure mnemonic, derivato in m/44'/60'/0'/0/1
+var fromMnemonic = new Web3Service(provider, new Web3ServiceOptions
+{
+    Mnemonic = builder.Configuration["Web3:Mnemonic"],
+    MnemonicPassword = builder.Configuration["Web3:MnemonicPassword"] ?? "",
+    WalletIndex = 1,
+});
+// La firma tramite wallet del browser esiste solo nella versione JavaScript.</code></pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Signer</th><th>Dove</th><th>Chi paga il gas</th></tr></thead><tbody><tr><td><code>privateKey</code></td><td>Backend</td><td>L’account della chiave</td></tr><tr><td><code>mnemonic</code></td><td>Backend</td><td>L’account derivato all’indice <code>walletIndex</code> (default 1)</td></tr><tr><td><code>wallet</code></td><td>Browser</td><td>L’account selezionato dall’utente nel wallet</td></tr></tbody></table></div>
+<div class="callout callout-warn"><strong>Attenzione</strong><div><p>Non mettere mai una chiave privata o un mnemonic nel codice del frontend: chiunque apra la pagina può leggerli. Nel browser usa <code>wallet</code>, oppure chiama un endpoint del tuo backend.</p></div></div>
+<h2 id="wallet-browser">Wallet del browser (EIP-1193)</h2>
+<p>Con <code>signer: { wallet }</code> il wallet firma e invia la transazione, mentre stima del gas, attesa del blocco e ricevuta passano dal nodo <code>rpcURI</code>. Il risultato ha quindi la stessa forma del backend.</p>
+<ol>
+<li>La libreria chiede l’account con <code>eth_requestAccounts</code>.</li>
+<li>Se il wallet è su un’altra rete chiede <code>wallet_switchEthereumChain</code>. Se la rete è sconosciuta la aggiunge con <code>wallet_addEthereumChain</code> usando <code>chainName</code>, <code>nativeCurrency</code>, <code>rpcPublicURI</code>/<code>rpcURI</code> e <code>blockExplorerURI</code>. Con <code>switchChain: false</code> restituisce invece <code>CHAIN_ID_MISMATCH</code>.</li>
+<li>Stima il gas tramite il nodo e lascia al wallet le commissioni, salvo un <code>gasPrice</code> esplicito.</li>
+<li>Invia con <code>eth_sendTransaction</code>. Se l’utente annulla ottieni <code>USER_REJECTED</code> e nulla viene inviato.</li>
+</ol>
+<p>Fastify, Express e .NET non hanno un wallet: nelle loro schede l’esempio gestisce l’errore equivalente lato server, cioè un invio non confermato.</p>
+<div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">app/notarize/sign-button.tsx</div><pre><code class="language-tsx">'use client';
+
+import { useState } from 'react';
+import { Web3Error, type NotarizationDocument } from '@certifie/web3-service';
+import { browserWeb3 } from '@/lib/browser-web3';
+import { notarizerAbi } from '@/lib/notarizer-abi';
+
+export function SignButton({ document }: { document: NotarizationDocument }) {
+  const [message, setMessage] = useState&lt;string&gt;();
+
+  async function sign() {
+    try {
+      await browserWeb3()?.mint(notarizerAbi, process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!, document);
+    } catch (error) {
+      if (error instanceof Web3Error &amp;&amp; error.code === 'USER_REJECTED') setMessage('Firma annullata');
+      else throw error;
+    }
+  }
+
+  return &lt;&gt;&lt;button onClick={sign}&gt;Firma con il wallet&lt;/button&gt;{message &amp;&amp; &lt;p role="status"&gt;{message}&lt;/p&gt;}&lt;/&gt;;
+}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">app.js</div><pre><code class="language-js">async function sign(notarization) {
+  try {
+    await service.mint(notarizerAbi, contractAddress, notarization);
+  } catch (error) {
+    if (error instanceof Web3Error &amp;&amp; error.code === 'USER_REJECTED') {
+      document.getElementById('status').textContent = 'Firma annullata';
+    } else {
+      throw error;
+    }
+  }
+}</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import { Web3Error, type NotarizationDocument } from '@certifie/web3-service';
+
+// Sul server nessun utente firma: l'errore da gestire è l'invio non confermato.
+app.post&lt;{ Body: NotarizationDocument }&gt;('/notarize', async (request, reply) =&gt; {
+  try {
+    return await app.web3.mint(notarizerAbi, app.contractAddress, request.body);
+  } catch (error) {
+    if (error instanceof Web3Error &amp;&amp; error.code === 'TRANSACTION_SUBMISSION_FAILED') {
+      return reply.status(202).send({ pending: error.transactionHash }); // controlla la ricevuta prima di riprovare
+    }
+    throw error;
+  }
+});</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import { Web3Error } from '@certifie/web3-service';
+
+// Sul server nessun utente firma: l'errore da gestire è l'invio non confermato.
+notarization.post('/notarize', async (req, res) =&gt; {
+  try {
+    res.json(await web3.mint(notarizerAbi, contractAddress, req.body));
+  } catch (error) {
+    if (!(error instanceof Web3Error &amp;&amp; error.code === 'TRANSACTION_SUBMISSION_FAILED')) throw error;
+    res.status(202).json({ pending: error.transactionHash }); // controlla la ricevuta prima di riprovare
+  }
+});</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">// Il wallet del browser esiste solo in JavaScript: in .NET gestisci l'invio non confermato.
+app.MapPost("/api/notarize", async (NotarizationDocument document, Web3Service web3) =&gt;
+{
+    try
+    {
+        return Results.Ok(await web3.MintAsync(abi, contractAddress, document));
+    }
+    catch (Web3Exception error) when (error.Code == "TRANSACTION_SUBMISSION_FAILED")
+    {
+        return Results.Accepted(value: new { pending = error.TransactionHash }); // controlla la ricevuta prima di riprovare
+    }
+});</code></pre></div></div></div>
+<h2 id="nonce">Nonce e scritture concorrenti</h2>
+<p>Le scritture della stessa istanza vengono eseguite una alla volta, così ricevono nonce distinti. Nel backend crea quindi un’unica istanza condivisa. Se più processi usano lo stesso account devi coordinare i nonce, per esempio passando <code>nonce</code> nelle opzioni o usando un account per processo.</p>
+
+      <nav class="pager" aria-label="Pagine"><a href="configurazione.html"><span>Precedente</span>Configurazione</a><a class="next" href="numeri-gas.html"><span>Successiva</span>Numeri e gas</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.1.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

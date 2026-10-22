@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Introduzione · Web3 Service Docs</title>
+<meta name="description" content="Notarizzazione su blockchain EVM per backend, frontend e .NET.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="on">Docs</a><a href="web3service.html" class="">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.1.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.1.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link on" href="index.html" aria-current="page">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link" href="uso-base.html">Uso di base</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link" href="firma.html">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="web3service.html">Web3Service</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link" href="tipi.html">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">Inizia</div>
+      <div class="page-head"><h1>Introduzione</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Notarizzazione su blockchain EVM per backend, frontend e .NET.</p>
+
+<p><code>@certifie/web3-service</code> è la libreria che CERTIFIE usa per scrivere su blockchain l'impronta (hash) di un documento e dimostrare in seguito che esisteva in quella forma a una certa data. Distribuisce il contratto di notarizzazione, registra gli hash con <code>mint</code>, rilegge i dati dal contratto e restituisce ricevute con il gas speso, tutto su qualsiasi rete EVM: Ethereum, Polygon, reti private o un nodo locale.</p>
+<p>Funziona nel backend Node.js, nel browser (con il wallet dell'utente, per esempio MetaMask) e in .NET tramite un pacchetto NuGet nativo. Le tre versioni restituiscono lo stesso JSON.</p>
+<h2 id="funzionalita">Funzionalità</h2>
+<div class="cards"><a class="card" href="web3service.html"><span class="card-title">Notarizzazione</span><span class="card-body">Registra hash e metadati di un documento con una chiamata a mint.</span></a><a class="card" href="web3service.html"><span class="card-title">Deploy dei contratti</span><span class="card-body">Distribuisce il contratto di notarizzazione e restituisce il suo indirizzo.</span></a><a class="card" href="numeri-gas.html"><span class="card-title">Ricevute e gas</span><span class="card-body">Ricevute arricchite con timestamp e costo esatto nell’unità minima del token.</span></a><a class="card" href="firma.html"><span class="card-title">Backend e frontend</span><span class="card-body">Stessa API in Node.js e nel browser, con firma tramite chiave o wallet EIP-1193.</span></a><a class="card" href="configurazione.html"><span class="card-title">HTTP e WebSocket</span><span class="card-body">URI https:// o wss://, endpoint di fallback e verifica del chainId.</span></a><a class="card" href="dotnet.html"><span class="card-title">Pacchetto .NET</span><span class="card-body">Client C# nativo su NuGet, con le stesse API e lo stesso JSON.</span></a></div>
+<h2 id="come-funziona">Come funziona</h2>
+<p>Ogni operazione apre una connessione al nodo, verifica che il <code>chainId</code> sia quello configurato e la chiude al termine. Le scritture vengono firmate localmente (chiave privata o mnemonic) oppure dal wallet del browser, poi la libreria attende l'inclusione in un blocco e legge la ricevuta dal nodo.</p>
+<div class="code"><pre><code class="language-ts">import { Web3Service } from '@certifie/web3-service';
+
+const service = new Web3Service('https://rpc.example', { signer: { privateKey: process.env.PRIVATE_KEY! } });
+
+const result = await service.mint(abi, contractAddress, {
+  hash: { data: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', algorithm: 'sha2' },
+  metadata: 'ipfs://bafy...',
+});
+
+result.tx?.transactionHash; // '0x5c50...'
+result.nativeFee;           // { amount: '48295000000000', symbol: 'ETH', decimals: '18' }</code></pre></div>
+<h2 id="cosa-non-fa">Cosa non fa</h2>
+<ul>
+<li>Non calcola l'hash del file: lo calcola la tua applicazione (vedi <a href="react.html">gli esempi</a> con Web Crypto e Node).</li>
+<li>Non carica file su IPFS o altri storage: <code>metadata</code> è una stringa che passi tu.</li>
+<li>Non converte prezzi in valuta: restituisce solo il gas speso nel token nativo.</li>
+<li>Richiede un contratto che esponga <code>mint(address,string,string,string)</code>.</li>
+</ul>
+
+      <nav class="pager" aria-label="Pagine"><a class="next" href="installazione.html"><span>Successiva</span>Installazione</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.1.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "$comment": "Expected values shared by the TypeScript and .NET tests, so both implementations are checked against the same data.",
+  "mnemonic": "test test test test test test test test test test test junk",
+  "defaults": { "chainId": "0x1", "chainName": "Ethereum", "currencyName": "Ether", "symbol": "ETH", "decimals": 18 },
+  "customProvider": { "rpcURI": "wss://node.example", "chainId": "1337", "symbol": "GAS", "decimals": 0, "normalizedChainId": "0x539" },
+  "chainIds": [
+    { "input": "9007199254740993", "hex": "0x20000000000001" },
+    { "input": "0X89", "hex": "0x89" },
+    { "input": "137", "hex": "0x89" },
+    { "input": "0", "hex": "0x0" }
+  ],
+  "invalidChainIds": ["", "1.1", "NaN", "-1"],
+  "validUris": ["https://node.example", "wss://node.example", "http://localhost", "ws://localhost"],
+  "invalidUris": ["", "not-a-uri", "ftp://localhost", "file:///tmp/node"],
+  "shrinkAddress": { "input": "0x1234567890abcdef", "output": "0x1234...cdef" },
+  "wallets": [
+    {
+      "index": 1, "password": "", "path": "m/44'/60'/0'/0/1",
+      "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      "publicKey": "0x02ba5734d8f7091719471e7f7ed6b9df170dc70cc661ca05e688601ad984f068b0",
+      "privateKey": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+    },
+    {
+      "index": 0, "password": "", "path": "m/44'/60'/0'/0/0",
+      "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "publicKey": "0x038318535b54105d4a7aae60c08fc45f9687181b4fdfc625bd1a753fa7397fed75",
+      "privateKey": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+    },
+    {
+      "index": 1, "password": "certifie", "path": "m/44'/60'/0'/0/1",
+      "address": "0xdAf8f5781ba93D3A22B247dE2f74ba5C14E3c1ab",
+      "publicKey": "0x03911b07732446991c7e54a55df5d9118d2eaa9fcded1d5dd4df1919dcd6ea4b08",
+      "privateKey": "0x028318eb821dc94e52d061d1fa42d281b47d77eff35af856440f13a96f0daf9c"
+    }
+  ],
+  "error": {
+    "code": "RPC_ERROR", "message": "Operation failed.", "secret": "https://secret.test/key",
+    "json": { "name": "Web3Error", "code": "RPC_ERROR", "message": "Operation failed." }
+  },
+  "contract": { "label": "CERTIFIE", "numbers": ["9007199254740993", "-42", true] },
+  "largeFee": { "gasUsed": "123456789012345678901", "effectiveGasPrice": "987654321", "amount": "121932631124828532112251181221" },
+  "parity": {
+    "$comment": "Fields that differ between two runs on the same chain (hashes, addresses, blocks, times); both sides replace them before comparing.",
+    "variableFields": ["transactionHash", "blockHash", "blockNumber", "contractAddress", "to", "address", "completedAt", "logsBloom"]
+  }
+}
