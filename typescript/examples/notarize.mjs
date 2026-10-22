@@ -19,9 +19,13 @@ try {
       decimals: process.env.GAS_TOKEN_DECIMALS === undefined ? undefined : Number(process.env.GAS_TOKEN_DECIMALS),
     },
   }, { signer: { privateKey: required('PRIVATE_KEY') } });
-  const result = await service.mint(artifact.abi ?? artifact, required('CONTRACT_ADDRESS'), {
-    hash: { data: required('DOCUMENT_HASH'), algorithm: process.env.HASH_ALGORITHM ?? 'sha2' },
-    metadata: process.env.METADATA_URI,
+  const address = required('CONTRACT_ADDRESS');
+  // mint(address recipient, string hash, string algorithm, string uri): the parameter names come from the contract's ABI.
+  const result = await service.getContract(artifact.abi ?? artifact, address).send('mint', {
+    recipient: address,
+    hash: required('DOCUMENT_HASH'),
+    algorithm: process.env.HASH_ALGORITHM ?? 'sha2',
+    uri: process.env.METADATA_URI ?? '',
   });
   console.log(JSON.stringify(result, null, 2));
 } catch (error) {

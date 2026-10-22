@@ -59,9 +59,8 @@ export class NotarizationService {
     this.busy.set(true);
     this.error.set(null);
     try {
-      const result = await this.web3.mint(notarizerAbi, environment.contractAddress, {
-        hash: { data: await sha256(file), algorithm: 'sha2' },
-        metadata: file.name,
+      const result = await this.web3.getContract(notarizerAbi, environment.contractAddress).send('mint', {
+        recipient: environment.contractAddress, hash: await sha256(file), algorithm: 'sha2', metadataURI: file.name,
       });
       this.last.set(result);
     } catch (error) {

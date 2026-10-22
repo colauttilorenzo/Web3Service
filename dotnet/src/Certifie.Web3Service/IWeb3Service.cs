@@ -29,10 +29,6 @@ namespace Certifie.Web3
         /// <summary>Calls a read-only method. A single output is returned as its value, several outputs as a JSON array. Integers become decimal strings.</summary>
         Task<JsonNode?> CallContractMethodAsync(string method, string abi, string address, object[]? parameters = null, CancellationToken cancellationToken = default);
 
-        /// <summary>Notarizes a document hash by calling <c>mint(address,string,string,string)</c> on the contract.</summary>
-        Task<TransactionResult> MintAsync(string abi, string contractAddress, NotarizationDocument document, TransactionResult? onChainEvent = null,
-            TransactionOptions? options = null, CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Deploys a contract; <c>Tx.ContractAddress</c> is its address (its application ID on Algorand).
         /// On Algorand an empty bytecode takes the programs from the ARC-56 description.

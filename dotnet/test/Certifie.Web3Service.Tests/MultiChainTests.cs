@@ -46,7 +46,7 @@ public class MultiChainTests
         var operations = new Dictionary<string, Func<Task>>
         {
             ["getContract"] = () => Task.FromResult(service.GetContract("{}", "1")), ["callContractMethod"] = () => service.CallContractMethodAsync("m", "{}", "1"),
-            ["mint"] = () => service.MintAsync("{}", "1", new NotarizationDocument()), ["deploy"] = () => service.DeployAsync("{}", ""),
+            ["deploy"] = () => service.DeployAsync("{}", ""),
             ["createToken"] = () => service.CreateTokenAsync(new TokenDefinition()), ["getTokenInfo"] = () => service.GetTokenInfoAsync("1"),
         };
         foreach (var operation in Texts(Bitcoin["notImplemented"])) await Assert.ThrowsAsync<NotImplementedException>(operations[operation]);

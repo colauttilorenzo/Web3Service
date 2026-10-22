@@ -59,17 +59,21 @@ Web3Service.detectStandards(arc200); // ['ARC-200']: descrizione ARC-56 di un'ap
 Web3Service.DetectStandards(tokenAbi); // ["ERC-20", "ERC-173"]
 Web3Service.DetectStandards(arc200);   // ["ARC-200"]: descrizione ARC-56 di un'applicazione</code></pre></div></div></div>
 <h2 id="algorand-wallets">AlgorandWallets</h2>
-<p>Gli account Algorand non sono wallet HD: ogni account ha il suo mnemonic di 25 parole, che contiene il seed della chiave Ed25519. <code>getWallet</code> restituisce un <code>IWallet</code> con <code>path</code> <code>null</code> e <code>index</code> <code>'0'</code>; <code>privateKey</code> è il seed di 32 byte, accettato anche come <code>signer.privateKey</code>.</p>
+<p>Gli account Algorand non sono wallet HD: ogni account ha il suo mnemonic di 25 parole, che contiene il seed della chiave Ed25519. <code>getWallet</code> restituisce un <code>IWallet</code> con <code>path</code> <code>null</code> e <code>index</code> <code>'0'</code>; <code>privateKey</code> è il seed di 32 byte, accettato anche come <code>signer.privateKey</code>. <code>getApplicationAddress</code> restituisce il conto di un’applicazione dal suo ID, per esempio come destinatario di <code>mint</code>.</p>
 <div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import { AlgorandWallets } from '@certifie/web3-service';
 
 const mnemonic = AlgorandWallets.createMnemonic(); // 25 parole
 const account = AlgorandWallets.getWallet(mnemonic);
 account.address;    // 'ALGO…', 58 caratteri
 account.publicKey;  // '0x…', 32 byte
-account.privateKey; // '0x…', seed di 32 byte</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">using Certifie.Web3.Algorand;
+account.privateKey; // '0x…', seed di 32 byte
+
+AlgorandWallets.getApplicationAddress('1002'); // conto dell'applicazione 1002</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">using Certifie.Web3.Algorand;
 
 var mnemonic = AlgorandWallets.CreateMnemonic();   // 25 parole
-var account = AlgorandWallets.GetWallet(mnemonic); // WalletInfo: Address, PublicKey, PrivateKey (seed), Path null</code></pre></div></div></div>
+var account = AlgorandWallets.GetWallet(mnemonic); // WalletInfo: Address, PublicKey, PrivateKey (seed), Path null
+
+AlgorandWallets.GetApplicationAddress("1002");      // conto dell'applicazione 1002</code></pre></div></div></div>
 
       <nav class="pager" aria-label="Pagine"><a href="web3contract.html"><span>Precedente</span>Web3Contract</a><a class="next" href="tipi.html"><span>Successiva</span>Tipi</a></nav>
       <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.2.0</span></footer>

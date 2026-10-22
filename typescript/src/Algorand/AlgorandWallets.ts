@@ -1,6 +1,7 @@
-import { bytesToHex, generateAccount, mnemonicToSecretKey, secretKeyToMnemonic } from 'algosdk';
+import { bytesToHex, generateAccount, getApplicationAddress, mnemonicToSecretKey, secretKeyToMnemonic } from 'algosdk';
 import type { IWallet } from '../Models.js';
 import { invalidArgument } from '../Internal/Errors.js';
+import { applicationId } from './AlgorandContract.js';
 
 const SEED_BYTES = 32;
 
@@ -18,6 +19,11 @@ export class AlgorandWallets {
       address: addr.toString(), publicKey: `0x${bytesToHex(sk.slice(SEED_BYTES))}`, privateKey: `0x${bytesToHex(sk.slice(0, SEED_BYTES))}`,
       path: null, index: '0',
     };
+  }
+
+  /** The account of an application, which holds its Algos and assets: e.g. the recipient that a notarization contract expects. */
+  static getApplicationAddress(appId: string): string {
+    return getApplicationAddress(applicationId(appId)).toString();
   }
 }
 

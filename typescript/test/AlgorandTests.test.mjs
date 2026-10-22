@@ -11,7 +11,9 @@ const FUNDING = { value: '1000000' };
 const NOT_A_TRANSACTION = 'A'.repeat(52);
 const { Notarizer } = contracts;
 const recipient = vectors.algorand.wallets[1].address;
-const document = letter => ({ hash: { data: letter.repeat(64), algorithm: 'sha2' } });
+// Notarization is a call to mint(address,string,string,string) on the test application, whose own account is the recipient.
+const notarization = (address, letter, uri = '') =>
+  ({ recipient: AlgorandWallets.getApplicationAddress(address), hash: letter.repeat(64), algorithm: 'sha2', uri });
 
 let node;
 before(async () => { if (!skip) node = await AlgorandNode.start(); });
@@ -23,21 +25,21 @@ async function deployContract(service, name, constructorArguments = []) {
 
 test('AlgorandDeploysNotarizesReadsAndReturnsJsonSafeReceipts', { skip }, async () => {
   const service = new Web3Service(node.provider(), node.signer());
-  const deployed = await service.deploy(Notarizer, '', [vectors.contract.label], undefined, FUNDING);
-  assert.deepEqual([deployed.name, deployed.tx.status, deployed.tx.type], ['deploy', '1', 'appl']);
+  const deployed = await service.deploy(Notarizer, '', [vectors.contract.label], { requestedAt: '123', rejectedAt: '999' }, FUNDING);
+  assert.deepEqual([deployed.name, deployed.tx.status, deployed.tx.type, deployed.requestedAt, deployed.rejectedAt], ['deploy', '1', 'appl', '123', undefined]);
   assert.match(deployed.completedAt, /^\d+$/);
   const address = deployed.tx.contractAddress;
   assert.match(address, /^\d+$/);
   assert.equal(await service.callContractMethod('label', Notarizer, address), vectors.contract.label);
 
-  const notarized = { ...document('a'), metadata: 'ipfs://example' };
-  const minted = await service.mint(Notarizer, address, notarized, { requestedAt: '123', rejectedAt: '999' });
-  assert.deepEqual([minted.name, minted.tx.status, minted.requestedAt, minted.rejectedAt], ['mint', '1', '123', undefined]);
+  const notarized = notarization(address, 'a', 'ipfs://example');
+  const minted = await service.getContract(Notarizer, address).send('mint', notarized);
+  assert.deepEqual([minted.name, minted.tx.status], ['mint', '1']);
   assert.deepEqual([minted.tx.logs.length, minted.tx.logs[0].logIndex, minted.tx.gasUsed], [1, '0', '0']);
   assert.deepEqual(minted.nativeFee, { amount: '1000', symbol: 'ALGO', decimals: '6' });
 
-  const metadata = await service.callContractMethod('metadata', Notarizer, address, [notarized.hash.data]);
-  assert.deepEqual(metadata, [notarized.hash.data, 'sha2', 'ipfs://example']);
+  const metadata = await service.callContractMethod('metadata', Notarizer, address, [notarized.hash]);
+  assert.deepEqual(metadata, [notarized.hash, 'sha2', 'ipfs://example']);
   assert.deepEqual(await service.callContractMethod('numbers', Notarizer, address), vectors.algorand.numbers);
 
   const confirmed = await service.getTransactionReceipt(minted.tx.transactionHash, { rejectedAt: '1' });
@@ -45,17 +47,18 @@ test('AlgorandDeploysNotarizesReadsAndReturnsJsonSafeReceipts', { skip }, async 
 
   await assert.rejects(service.getTransactionReceipt(NOT_A_TRANSACTION), error => error.code === 'TRANSACTION_NOT_FOUND');
   await assert.rejects(service.callContractMethod('missing', Notarizer, address), error => error.code === 'METHOD_NOT_FOUND');
-  await assert.rejects(new Web3Service(node.provider()).mint(Notarizer, address, notarized), error => error.code === 'SIGNER_REQUIRED');
+  await assert.rejects(new Web3Service(node.provider()).getContract(Notarizer, address).send('mint', notarized), error => error.code === 'SIGNER_REQUIRED');
 });
 
 test('AlgorandQueuesConcurrentWritesAndRejectsFailingCalls', { skip }, async () => {
   const service = new Web3Service(node.provider(), node.signer());
   const address = (await service.deploy(Notarizer, '', ['Queue'], undefined, FUNDING)).tx.contractAddress;
-  const results = await Promise.all(['b', 'c'].map(letter => service.mint(Notarizer, address, document(letter))));
+  const contract = service.getContract(Notarizer, address);
+  const results = await Promise.all(['b', 'c'].map(letter => contract.send('mint', notarization(address, letter))));
   assert.deepEqual(results.map(result => result.tx.status), ['1', '1']);
 
   let failure;
-  await assert.rejects(service.mint(Notarizer, address, document('b')), error => (failure = error).code === 'TRANSACTION_REVERTED');
+  await assert.rejects(contract.send('mint', notarization(address, 'b')), error => (failure = error).code === 'TRANSACTION_REVERTED');
   assert.match(failure.transactionHash, /^[A-Z2-7]{52}$/);
   assert.match(failure.message, /already notarized/);
   await assert.rejects(service.getTransactionReceipt(failure.transactionHash), error => error.code === 'TRANSACTION_NOT_FOUND');

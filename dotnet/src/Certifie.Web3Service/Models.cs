@@ -175,18 +175,6 @@ namespace Certifie.Web3
         public BigInteger? Value { get; set; }
     }
 
-    public sealed class NotarizationHash
-    {
-        [JsonPropertyName("data")] public string Data { get; set; } = "";
-        [JsonPropertyName("algorithm")] public string Algorithm { get; set; } = "";
-    }
-
-    public sealed class NotarizationDocument
-    {
-        [JsonPropertyName("hash")] public NotarizationHash Hash { get; set; } = new NotarizationHash();
-        [JsonPropertyName("metadata")] public string? Metadata { get; set; }
-    }
-
     public sealed class WalletInfo
     {
         [JsonPropertyName("address")] public string Address { get; set; } = "";

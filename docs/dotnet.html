@@ -56,10 +56,9 @@ var hash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(args
 
 try
 {
-    var result = await web3.MintAsync(abi, Environment.GetEnvironmentVariable("CONTRACT_ADDRESS")!, new NotarizationDocument
+    var result = await web3.GetContract(abi, Environment.GetEnvironmentVariable("CONTRACT_ADDRESS")!).SendAsync("mint", new
     {
-        Hash = new NotarizationHash { Data = hash, Algorithm = "sha2" },
-        Metadata = Path.GetFileName(args[0]),
+        recipient = Environment.GetEnvironmentVariable("CONTRACT_ADDRESS")!, hash, algorithm = "sha2", metadataURI = Path.GetFileName(args[0]),
     });
     Console.WriteLine(JsonSerializer.Serialize(result)); // stesso JSON della libreria JS
 }
@@ -81,8 +80,9 @@ builder.Services.AddSingleton(_ =&gt; new Web3Service(
 
 var app = builder.Build();
 
-app.MapPost("/notarize", async (Web3Service web3, NotarizationDocument document, CancellationToken token) =&gt;
-    Results.Ok(await web3.MintAsync(abi, contract, document, cancellationToken: token)));
+app.MapPost("/notarize", async (Web3Service web3, NotarizeRequest body, CancellationToken token) =&gt;
+    Results.Ok(await web3.GetContract(abi, contract).SendAsync("mint",
+        new { recipient = contract, hash = body.Hash, algorithm = "sha2", metadataURI = body.Metadata ?? "" }, cancellationToken: token)));
 
 app.MapGet("/transactions/{hash}", async (Web3Service web3, string hash) =&gt;
     Results.Ok(await web3.GetTransactionReceiptAsync(hash)));
@@ -104,9 +104,11 @@ app.Use(async (context, next) =&gt;
     }
 });
 
-app.Run();</code></pre></div>
+app.Run();
+
+record NotarizeRequest(string Hash, string? Metadata);</code></pre></div>
 <h2 id="api-net">Corrispondenza delle API</h2>
-<div class="table-wrap"><table><thead><tr><th>JavaScript</th><th>.NET</th></tr></thead><tbody><tr><td><code>new Web3Service(uri | provider, options)</code></td><td><code>new Web3Service(string | IBlockchainProvider, Web3ServiceOptions)</code></td></tr><tr><td><code>{ kind: 'avm', rpcURI }</code>, <code>{ kind: 'bitcoin', rpcURI }</code></td><td><code>new AvmProvider { RpcURI }</code>, <code>new BitcoinProvider { RpcURI }</code></td></tr><tr><td><code>kind</code>, <code>provider</code>, <code>chainId</code></td><td><code>Kind</code>, <code>Provider</code> (<code>ResolvedProvider</code>), <code>ChainId</code></td></tr><tr><td><code>mint(abi, address, document, event, options)</code></td><td><code>MintAsync(abi, address, document, onChainEvent, options, token)</code></td></tr><tr><td><code>deploy(abi, bytecode, args)</code></td><td><code>DeployAsync(abi, bytecode, object[] args)</code></td></tr><tr><td><code>deploy(abi, { approval, clear }, args)</code></td><td><code>DeployAsync(abi, AvmPrograms, object[] args)</code></td></tr><tr><td><code>createToken(token)</code>, <code>getTokenInfo(id)</code></td><td><code>CreateTokenAsync(TokenDefinition)</code>, <code>GetTokenInfoAsync(id)</code></td></tr><tr><td><code>callContractMethod(method, abi, address, params)</code></td><td><code>CallContractMethodAsync(...)</code> → <code>JsonNode</code> (più output in un <code>JsonArray</code>)</td></tr><tr><td><code>getTransactionReceipt(hash)</code></td><td><code>GetTransactionReceiptAsync(hash)</code></td></tr><tr><td><code>check()</code></td><td><code>CheckAsync()</code></td></tr><tr><td><code>Web3Service.getWallet(mnemonic, 1)</code></td><td><code>Web3Service.GetWallet(phrase, 1)</code></td></tr><tr><td><code>AlgorandWallets.getWallet(mnemonic)</code></td><td><code>AlgorandWallets.GetWallet(mnemonic)</code> (namespace <code>Certifie.Web3.Algorand</code>)</td></tr><tr><td><code>timeoutMs</code>, <code>transactionTimeoutMs</code>, <code>pollingIntervalMs</code></td><td><code>Timeout</code>, <code>TransactionTimeout</code>, <code>PollingInterval</code> (<code>TimeSpan</code>)</td></tr><tr><td><code>Web3Error</code> / <code>toJSON()</code></td><td><code>Web3Exception</code> / <code>ToInfo()</code></td></tr><tr><td><code>NotImplementedError</code></td><td><code>NotImplementedException</code></td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>JavaScript</th><th>.NET</th></tr></thead><tbody><tr><td><code>new Web3Service(uri | provider, options)</code></td><td><code>new Web3Service(string | IBlockchainProvider, Web3ServiceOptions)</code></td></tr><tr><td><code>{ kind: 'avm', rpcURI }</code>, <code>{ kind: 'bitcoin', rpcURI }</code></td><td><code>new AvmProvider { RpcURI }</code>, <code>new BitcoinProvider { RpcURI }</code></td></tr><tr><td><code>kind</code>, <code>provider</code>, <code>chainId</code></td><td><code>Kind</code>, <code>Provider</code> (<code>ResolvedProvider</code>), <code>ChainId</code></td></tr><tr><td><code>deploy(abi, bytecode, args)</code></td><td><code>DeployAsync(abi, bytecode, object[] args)</code></td></tr><tr><td><code>deploy(abi, { approval, clear }, args)</code></td><td><code>DeployAsync(abi, AvmPrograms, object[] args)</code></td></tr><tr><td><code>createToken(token)</code>, <code>getTokenInfo(id)</code></td><td><code>CreateTokenAsync(TokenDefinition)</code>, <code>GetTokenInfoAsync(id)</code></td></tr><tr><td><code>callContractMethod(method, abi, address, params)</code></td><td><code>CallContractMethodAsync(...)</code> → <code>JsonNode</code> (più output in un <code>JsonArray</code>)</td></tr><tr><td><code>getTransactionReceipt(hash)</code></td><td><code>GetTransactionReceiptAsync(hash)</code></td></tr><tr><td><code>check()</code></td><td><code>CheckAsync()</code></td></tr><tr><td><code>Web3Service.getWallet(mnemonic, 1)</code></td><td><code>Web3Service.GetWallet(phrase, 1)</code></td></tr><tr><td><code>AlgorandWallets.getWallet(mnemonic)</code></td><td><code>AlgorandWallets.GetWallet(mnemonic)</code> (namespace <code>Certifie.Web3.Algorand</code>)</td></tr><tr><td><code>AlgorandWallets.getApplicationAddress(appId)</code></td><td><code>AlgorandWallets.GetApplicationAddress(appId)</code></td></tr><tr><td><code>timeoutMs</code>, <code>transactionTimeoutMs</code>, <code>pollingIntervalMs</code></td><td><code>Timeout</code>, <code>TransactionTimeout</code>, <code>PollingInterval</code> (<code>TimeSpan</code>)</td></tr><tr><td><code>Web3Error</code> / <code>toJSON()</code></td><td><code>Web3Exception</code> / <code>ToInfo()</code></td></tr><tr><td><code>NotImplementedError</code></td><td><code>NotImplementedException</code></td></tr></tbody></table></div>
 <div class="callout callout-note"><strong>Nota</strong><div><p>La firma tramite wallet del browser esiste solo nella versione JavaScript. In .NET usa <code>PrivateKey</code> oppure <code>Mnemonic</code> con <code>WalletIndex</code>; su Algorand <code>Mnemonic</code> è la frase di 25 parole.</p></div></div>
 
       <nav class="pager" aria-label="Pagine"><a href="vanilla.html"><span>Precedente</span>JavaScript vanilla</a><a class="next" href="changelog.html"><span>Successiva</span>Changelog</a></nav>

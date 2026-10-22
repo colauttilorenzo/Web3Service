@@ -5,7 +5,7 @@ import type { ResolvedOptions } from '../Internal/Configuration.js';
 import * as ContractCalls from './ContractCalls.js';
 import { invalidArgument, notImplemented, receiptDetailsFailed, transactionNotFound, transactionReverted } from '../Internal/Errors.js';
 import * as Integers from '../Internal/Integers.js';
-import * as Notarization from '../Internal/Notarization.js';
+import * as ChainEvents from '../Internal/ChainEvents.js';
 import * as SharedResults from '../Internal/SharedResults.js';
 import type { IWeb3Service } from '../IWeb3Service.js';
 import { KeySigner } from './KeySigner.js';
@@ -20,17 +20,16 @@ import { WalletSigner } from './WalletSigner.js';
 import { WriteQueue } from '../Internal/WriteQueue.js';
 import type {
   Abi, Bytecode, ContractResult, ICheckResult, IEthereumProvider, IEvmProvider, ITokenCreation, ITokenInfo, ITransaction, ITransactionDetails,
-  NotarizationDocument, TransactionOptions, Web3ServiceOptions,
+  TransactionOptions, Web3ServiceOptions,
 } from '../Models.js';
 import { EvmContract } from './EvmContract.js';
 import type { IContractRunner } from './EvmContract.js';
 
-const MINT_SIGNATURE = 'mint(address,string,string,string)';
 const BYTECODE_PATTERN = /^0x(?:[0-9a-f]{2})+$/i;
 const TOKEN_HINT = 'EVM tokens are contracts: deploy one with deploy() and use getContract().mintNft() and getTokenInfo().';
 
 /**
- * Deploys contracts, notarizes document hashes with `mint`, and reads contracts and receipts on EVM networks.
+ * Deploys and calls contracts, and reads transactions and receipts on EVM networks.
  * Mirrors EvmChain in .NET: same defaults, error codes and JSON output,
  * with numeric values returned as decimal integer strings. Arithmetic uses big.js.
  */
@@ -78,25 +77,12 @@ export class EvmChain implements IWeb3Service {
     });
   }
 
-  /** Notarizes a document hash by calling mint(address,string,string,string) on the contract. */
-  async mint(
-    abi: Abi, contractAddress: string, document: NotarizationDocument, onChainEvent?: ITransaction, options?: TransactionOptions,
-  ): Promise<ITransaction> {
-    const args = Notarization.mintArguments(contractAddress, document);
-    const evmAbi = AbiMethods.requireEvmAbi(abi);
-    return this.#write(Notarization.named(onChainEvent, 'mint'), session => {
-      const call = ContractCalls.getFunction(session.web3, evmAbi, contractAddress, 'mint', `The ABI must contain ${MINT_SIGNATURE}.`)(...args);
-      return new TransactionRequest(call.encodeABI(), contractAddress,
-        (from, value) => call.estimateGas({ from, value: value.toFixed(0) }), options);
-    });
-  }
-
   async deploy(
     abi: Abi, bytecode: Bytecode, constructorArguments: readonly unknown[] = [], onChainEvent?: ITransaction, options?: TransactionOptions,
   ): Promise<ITransaction> {
     const data = validateBytecode(bytecode);
     const evmAbi = AbiMethods.requireEvmAbi(abi);
-    return this.#write(Notarization.named(onChainEvent, 'deploy'), session => {
+    return this.#write(ChainEvents.named(onChainEvent, 'deploy'), session => {
       const deployment = new session.web3.eth.Contract(evmAbi).deploy({ data, arguments: [...constructorArguments] as never });
       return new TransactionRequest(deployment.encodeABI(), undefined,
         (from, value) => deployment.estimateGas({ from, value: value.toFixed(0) }), options);

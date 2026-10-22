@@ -8,7 +8,7 @@ namespace Certifie.Web3.Bitcoin
 {
     /// <summary>
     /// Bitcoin through an Esplora REST API: reads blocks, fees and transactions. Bitcoin has no smart contracts or tokens,
-    /// so contract, deploy, mint and token operations throw <see cref="NotImplementedException"/>.
+    /// so contract, deploy and token operations throw <see cref="NotImplementedException"/>.
     /// </summary>
     internal sealed class BitcoinChain : IWeb3Service
     {
@@ -49,10 +49,6 @@ namespace Certifie.Web3.Bitcoin
         public Task<JsonNode?> CallContractMethodAsync(string method, string abi, string address, object[]? parameters = null,
             CancellationToken cancellationToken = default) =>
             throw Errors.NotImplemented("CallContractMethodAsync", "Bitcoin", NoContracts);
-
-        public Task<TransactionResult> MintAsync(string abi, string contractAddress, NotarizationDocument document, TransactionResult? onChainEvent = null,
-            TransactionOptions? options = null, CancellationToken cancellationToken = default) =>
-            throw Errors.NotImplemented("MintAsync", "Bitcoin", NoContracts);
 
         public Task<TransactionResult> DeployAsync(string abi, string bytecode, object[]? constructorArguments = null, TransactionResult? onChainEvent = null,
             TransactionOptions? options = null, CancellationToken cancellationToken = default) =>

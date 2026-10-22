@@ -36,7 +36,7 @@
       </div>
       <p class="lead">Applicazioni ARC-4, Algorand Standard Asset e notarizzazione tramite un nodo algod.</p>
 
-<p>Con un <code>IAvmProvider</code> lo stesso <code>Web3Service</code> lavora su Algorand: distribuisce applicazioni, notarizza con <code>mint</code>, chiama i metodi ARC-4 per nome, crea token (ASA) e legge transazioni. Parla con un nodo algod via REST, per esempio i nodi pubblici di <a href="https://nodely.io">Nodely</a> o AlgoKit LocalNet, e restituisce lo stesso JSON delle reti EVM. In .NET l’implementazione è nativa e non richiede altri SDK.</p>
+<p>Con un <code>IAvmProvider</code> lo stesso <code>Web3Service</code> lavora su Algorand: distribuisce applicazioni, chiama i metodi ARC-4 per nome (anche <code>mint</code> per notarizzare), crea token (ASA) e legge transazioni. Parla con un nodo algod via REST, per esempio i nodi pubblici di <a href="https://nodely.io">Nodely</a> o AlgoKit LocalNet, e restituisce lo stesso JSON delle reti EVM. In .NET l’implementazione è nativa e non richiede altri SDK.</p>
 <h2 id="configurazione">Configurazione</h2>
 <div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import { Web3Service, type IAvmProvider } from '@certifie/web3-service';
 
@@ -99,18 +99,24 @@ await algorand.DeployAsync(notarizer, new AvmPrograms { Approval = approvalBase6
 <p>Il metodo di creazione è quello che ARC-56 indica con l’azione <code>NoOp</code> in <code>actions.create</code>, oppure, nelle descrizioni senza azioni, quello chiamato <code>create</code> o <code>createApplication</code>. Lo schema dello stato e le pagine extra si ricavano dalla descrizione e dalla dimensione dei programmi.</p>
 <div class="callout callout-note"><strong>Nota</strong><div><p>La compilazione della sorgente TEAL richiede un nodo con <code>EnableDeveloperAPI</code> (attivo su LocalNet). Con i nodi pubblici usa una descrizione ARC-56 con <code>byteCode</code> o passa i programmi già compilati.</p></div></div>
 <h2 id="mint">Notarizzazione</h2>
-<p>Come sulle reti EVM, <code>mint</code> chiama <code>mint(address,string,string,string)void</code> con hash, algoritmo e metadati. L’indirizzo del contratto è l’ID dell’applicazione; il primo argomento è il conto dell’applicazione, come l’indirizzo del contratto su EVM.</p>
-<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const result = await algorand.mint(notarizer, appId, {
-  hash: { data: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', algorithm: 'sha2' },
-  metadata: 'ipfs://bafy...',
+<p>Come sulle reti EVM, si notarizza chiamando il metodo <code>mint</code> dell’applicazione con <code>getContract</code>: qui <code>mint(address,string,string,string)void</code> con destinatario, hash, algoritmo e metadati. L’indirizzo del contratto è l’ID dell’applicazione; <code>AlgorandWallets.getApplicationAddress</code> restituisce il conto dell’applicazione, che l’applicazione di esempio si aspetta come destinatario.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import { AlgorandWallets } from '@certifie/web3-service';
+
+const result = await algorand.getContract(notarizer, appId).send('mint', {
+  recipient: AlgorandWallets.getApplicationAddress(appId),
+  hash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+  algorithm: 'sha2',
+  uri: 'ipfs://bafy...',
 });
 
 result.tx?.transactionHash; // ID della transazione Algorand
 result.tx?.blockNumber;     // round di conferma
-result.nativeFee;           // { amount: '1000', symbol: 'ALGO', decimals: '6' }: commissione in microAlgo</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var result = await algorand.MintAsync(notarizer, appId, new NotarizationDocument
+result.nativeFee;           // { amount: '1000', symbol: 'ALGO', decimals: '6' }: commissione in microAlgo</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var result = await algorand.GetContract(notarizer, appId).SendAsync("mint", new
 {
-    Hash = new NotarizationHash { Data = hash, Algorithm = "sha2" },
-    Metadata = "ipfs://bafy...",
+    recipient = AlgorandWallets.GetApplicationAddress(appId),
+    hash,
+    algorithm = "sha2",
+    uri = "ipfs://bafy...",
 });
 
 Console.WriteLine(result.Tx!.TransactionHash); // ID della transazione Algorand

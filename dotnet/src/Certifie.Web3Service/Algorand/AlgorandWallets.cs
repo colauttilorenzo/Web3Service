@@ -21,5 +21,8 @@ namespace Certifie.Web3.Algorand
             var publicKey = AvmCrypto.PublicKey(seed);
             return new WalletInfo { Address = AlgorandAddress.Encode(publicKey), PublicKey = publicKey.ToHex(true), PrivateKey = seed.ToHex(true), Path = null, Index = "0" };
         }
+
+        /// <summary>The account of an application, which holds its Algos and assets: e.g. the recipient that a notarization contract expects.</summary>
+        public static string GetApplicationAddress(string appId) => AlgorandAddress.OfApplication(AlgorandContract.ApplicationId(appId));
     }
 }

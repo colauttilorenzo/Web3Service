@@ -58,7 +58,8 @@ test('the self-contained ESM bundle deploys and notarizes over HTTP with an EIP-
   const service = new bundle.Web3Service({ rpcURI, chainId: 1337 }, { signer: { wallet } });
   const deployed = await service.deploy(abi, bytecode, ['Browser bundle']);
   assert.equal(deployed.tx.status, '1');
-  const minted = await service.mint(abi, deployed.tx.contractAddress, { hash: { data: 'e'.repeat(64), algorithm: 'sha2' } });
+  const notarization = { recipient: deployed.tx.contractAddress, hash: 'e'.repeat(64), algorithm: 'sha2', uri: '' };
+  const minted = await service.getContract(abi, deployed.tx.contractAddress).send('mint', notarization);
   assert.equal(minted.tx.status, '1');
   assert.equal(await service.callContractMethod('label', abi, deployed.tx.contractAddress), 'Browser bundle');
 });

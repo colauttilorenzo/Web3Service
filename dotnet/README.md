@@ -1,6 +1,6 @@
 # Certifie.Web3Service
 
-Native .NET client for `@certifie/web3-service`: contract deployment, document hash notarization through `mint`, contract reads, tokens and receipts with one API for EVM networks, Algorand and Bitcoin. The provider passed to `Web3Service` selects the blockchain. It does not start Node.js: EVM networks go through [Nethereum](https://nethereum.com/), Algorand through a native algod REST client (Ed25519 and SHA-512/256 from BouncyCastle, no Algorand SDK), Bitcoin through an Esplora REST API.
+Native .NET client for `@certifie/web3-service`: contract deployment, document hash notarization through any contract's `mint` method, contract reads, tokens and receipts with one API for EVM networks, Algorand and Bitcoin. The provider passed to `Web3Service` selects the blockchain. It does not start Node.js: EVM networks go through [Nethereum](https://nethereum.com/), Algorand through a native algod REST client (Ed25519 and SHA-512/256 from BouncyCastle, no Algorand SDK), Bitcoin through an Esplora REST API.
 
 Same defaults, same error codes and same JSON as the JavaScript library: every numeric value is an integer string (e.g. `"21000000000000"` wei) and the fee is in the native token's smallest unit (wei, microAlgo, satoshi).
 
@@ -46,11 +46,9 @@ var amoy = new Web3Service(new EvmProvider
 var deployed = await amoy.DeployAsync(abiJson, bytecode, new object[] { "CERTIFIE" });
 var contract = deployed.Tx!.ContractAddress!;
 
-var minted = await amoy.MintAsync(abiJson, contract, new NotarizationDocument
-{
-    Hash = new NotarizationHash { Data = sha256Hex, Algorithm = "sha2" },
-    Metadata = "ipfs://...",
-});
+// Notarization is a call to the contract's mint method, with the parameter names of its ABI.
+var minted = await amoy.GetContract(abiJson, contract).SendAsync("mint",
+    new { recipient = contract, hash = sha256Hex, algorithm = "sha2", metadataURI = "ipfs://..." });
 
 Console.WriteLine(minted.Tx!.TransactionHash);
 Console.WriteLine($"{minted.NativeFee!.Amount} (smallest unit of {minted.NativeFee.Symbol})");
@@ -97,6 +95,8 @@ The members match the TypeScript `Web3Contract` (`CallAsync`, `ReadAsync`, `Send
 The class of the provider selects the implementation: `EvmProvider` (or a URI) for EVM networks, `AvmProvider` for Algorand, `BitcoinProvider` for Bitcoin. Your own classes that implement `IEvmProvider`, `IAvmProvider` or `IBitcoinProvider` work too. The methods and the JSON are the same; an operation the blockchain does not have throws `System.NotImplementedException` before any request.
 
 ```csharp
+using Certifie.Web3.Algorand;
+
 var algorand = new Web3Service(new AvmProvider
 {
     RpcURI = "https://testnet-api.algonode.cloud",     // algod
@@ -107,8 +107,9 @@ var algorand = new Web3Service(new AvmProvider
 var notarizer = await File.ReadAllTextAsync("Notarizer.arc56.json"); // ARC-56, ARC-32 or ARC-4 description
 var deployed = await algorand.DeployAsync(notarizer, "", new object[] { "CERTIFIE" }, options: new TransactionOptions { Value = 200_000 });
 var appId = deployed.Tx!.ContractAddress!; // the application ID
-await algorand.MintAsync(notarizer, appId, document);
-var label = await algorand.GetContract(notarizer, appId).CallAsync("label"); // ARC-4 methods by name, reads are free simulations
+var app = algorand.GetContract(notarizer, appId); // ARC-4 methods by name
+await app.SendAsync("mint", new { recipient = AlgorandWallets.GetApplicationAddress(appId), hash, algorithm = "sha2", uri = "ipfs://…" });
+var label = await app.CallAsync("label");         // reads are free simulations
 var coin = await algorand.CreateTokenAsync(new TokenDefinition { Name = "Certifie Coin", Symbol = "CERT", TotalSupply = 1_000_000, Decimals = 2 });
 TokenInfo asset = await algorand.GetTokenInfoAsync(coin.TokenId); // Standard "ASA"
 
@@ -121,7 +122,7 @@ await bitcoin.DeployAsync(abi, bytecode);                              // NotImp
 | Method | EVM | Algorand | Bitcoin |
 | --- | --- | --- | --- |
 | `CheckAsync`, `GetTransactionAsync`, `GetTransactionReceiptAsync` | Yes | Yes | Yes |
-| `GetContract`, `CallContractMethodAsync`, `MintAsync` | Yes | Yes, ARC-4 applications | `NotImplementedException` |
+| `GetContract`, `CallContractMethodAsync` | Yes | Yes, ARC-4 applications | `NotImplementedException` |
 | `DeployAsync` | Yes, from bytecode | Yes, from an ARC-56 description or `AvmPrograms` | `NotImplementedException` |
 | `CreateTokenAsync`, `GetTokenInfoAsync` | `NotImplementedException`: EVM tokens are contracts | Yes, Algorand Standard Assets | `NotImplementedException` |
 
@@ -137,6 +138,7 @@ string privateKey = Web3Service.GetPrivateKey(phrase);
 // Algorand accounts are not derived from a path
 string algorandPhrase = Certifie.Web3.Algorand.AlgorandWallets.CreateMnemonic();      // 25 words
 WalletInfo account = Certifie.Web3.Algorand.AlgorandWallets.GetWallet(algorandPhrase); // Address, PrivateKey (32-byte seed as 0x hex)
+string appAccount = Certifie.Web3.Algorand.AlgorandWallets.GetApplicationAddress("1002"); // the account of application 1002
 ```
 
 ## Errors
@@ -153,7 +155,10 @@ builder.Services.AddSingleton<IWeb3Service>(_ => new Web3Service(
     new Web3ServiceOptions { PrivateKey = builder.Configuration["Web3:PrivateKey"] }));
 
 app.MapPost("/notarize", async (IWeb3Service web3, NotarizeRequest body) =>
-    Results.Ok(await web3.MintAsync(abiJson, body.Contract, body.Document)));
+    Results.Ok(await web3.GetContract(abiJson, body.Contract).SendAsync("mint",
+        new { recipient = body.Contract, hash = body.Hash, algorithm = "sha2", metadataURI = body.Metadata ?? "" })));
+
+record NotarizeRequest(string Contract, string Hash, string? Metadata);
 ```
 
 Register it as a singleton: writes on the same instance are serialized, so nonces stay distinct. Depending on `IWeb3Service` keeps the rest of the application independent of the blockchain, which is chosen by the provider in the registration, and lets tests replace the service.

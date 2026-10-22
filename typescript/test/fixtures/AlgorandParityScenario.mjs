@@ -1,5 +1,5 @@
 // The same calls as dotnet/test/Certifie.Web3Service.Tests/Fixtures/AlgorandParityScenario.cs; the .NET AlgorandParityTests compare the outputs.
-import { Web3Service } from '@certifie/web3-service';
+import { AlgorandWallets, Web3Service } from '@certifie/web3-service';
 import { contracts } from './AlgorandNode.mjs';
 import { vectors } from './TestVectors.mjs';
 
@@ -15,13 +15,13 @@ export async function run(node) {
 async function notarization(service) {
   const deployed = await service.deploy(Notarizer, '', ['Parity'], { name: 'parity', requestedAt: '123' }, FUNDING);
   const address = deployed.tx.contractAddress;
-  const document = { hash: { data: 'f'.repeat(64), algorithm: 'sha2' }, metadata: 'ipfs://parity' };
-  const minted = await service.mint(Notarizer, address, document, { requestedAt: '456' });
+  const document = { recipient: AlgorandWallets.getApplicationAddress(address), hash: 'f'.repeat(64), algorithm: 'sha2', uri: 'ipfs://parity' };
+  const minted = { ...await service.getContract(Notarizer, address).send('mint', document), requestedAt: 'now' };
   const receipt = await service.getTransactionReceipt(minted.tx.transactionHash, { name: 'lookup', requestedAt: '789' });
   return {
     deployed, minted, receipt,
     label: await service.callContractMethod('label', Notarizer, address),
-    metadata: await service.callContractMethod('metadata', Notarizer, address, [document.hash.data]),
+    metadata: await service.callContractMethod('metadata', Notarizer, address, [document.hash]),
     numbers: await service.callContractMethod('numbers', Notarizer, address),
   };
 }

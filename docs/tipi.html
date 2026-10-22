@@ -153,24 +153,9 @@ interface IAvmWallet { // wallet Algorand, es. da @txnlab/use-wallet
     public TimeSpan PollingInterval { get; set; }        // 1 secondo
     public BigInteger GasBuffer { get; set; } = 10_000;
 }</code></pre></div></div></div>
-<h2 id="notarizationdocument">NotarizationDocument</h2>
-<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface NotarizationDocument {
-  hash: { data: string; algorithm: string }; // es. { data: 'e3b0…', algorithm: 'sha2' }
-  metadata?: string;                         // es. 'ipfs://…'
-}</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class NotarizationDocument
-{
-    public NotarizationHash Hash { get; set; } = new NotarizationHash();
-    public string? Metadata { get; set; }  // es. "ipfs://…"
-}
-
-public sealed class NotarizationHash
-{
-    public string Data { get; set; } = "";      // es. "e3b0…"
-    public string Algorithm { get; set; } = ""; // es. "sha2"
-}</code></pre></div></div></div>
 <h2 id="itransaction">ITransaction</h2>
 <div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Models.ts</div><pre><code class="language-ts">interface ITransaction {
-  name?: 'mint' | 'deploy' | string;
+  name?: string;          // 'deploy', 'createToken' o il metodo chiamato, es. 'mint'
   requestedAt?: string;   // millisecondi
   completedAt?: string;   // timestamp del blocco, se riuscita
   rejectedAt?: string;    // timestamp del blocco, se revertita
@@ -179,7 +164,7 @@ public sealed class NotarizationHash
   nativeFee?: { amount: string; symbol: string; decimals: string };
 }</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Models.cs</div><pre><code class="language-csharp">public sealed class TransactionResult
 {
-    public string? Name { get; set; }           // "mint", "deploy"
+    public string? Name { get; set; }           // "deploy", "createToken" o il metodo chiamato, es. "mint"
     public string? RequestedAt { get; set; }    // millisecondi
     public string? CompletedAt { get; set; }    // timestamp del blocco, se riuscita
     public string? RejectedAt { get; set; }     // timestamp del blocco, se revertita

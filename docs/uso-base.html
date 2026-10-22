@@ -201,7 +201,7 @@ import { notarizerAbi } from '@/lib/notarizer-abi';
 
 export async function notarize(hash: string, metadata?: string) {
   if (!/^[0-9a-f]{64}$/.test(hash)) throw new Error('hash deve essere uno SHA-256 esadecimale.');
-  return web3.mint(notarizerAbi, contractAddress, { hash: { data: hash, algorithm: 'sha2' }, metadata });
+  return web3.getContract(notarizerAbi, contractAddress).send('mint', { recipient: contractAddress, hash, algorithm: 'sha2', metadataURI: metadata ?? '' });
 }</code></pre></div><div class="code"><div class="code-title">app/notarize/notarize-form.tsx</div><pre><code class="language-tsx">'use client';
 
 import { useState } from 'react';
@@ -230,9 +230,8 @@ export function NotarizeForm() {
 
 document.getElementById('file').addEventListener('change', async event =&gt; {
   const file = event.target.files[0];
-  const result = await service.mint(notarizerAbi, contractAddress, { // il wallet chiede la firma
-    hash: { data: await sha256(file), algorithm: 'sha2' },
-    metadata: file.name,
+  const result = await service.getContract(notarizerAbi, contractAddress).send('mint', { // il wallet chiede la firma
+    recipient: contractAddress, hash: await sha256(file), algorithm: 'sha2', metadataURI: file.name,
   });
   console.log(result.tx.transactionHash);
 });</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">app.post&lt;{ Body: { hash: string; metadata?: string } }&gt;('/notarize', {
@@ -243,9 +242,8 @@ document.getElementById('file').addEventListener('change', async event =&gt; {
       properties: { hash: { type: 'string', pattern: '^[0-9a-f]{64}$' }, metadata: { type: 'string' } },
     },
   },
-}, async request =&gt; app.web3.mint(notarizerAbi, app.contractAddress, {
-  hash: { data: request.body.hash, algorithm: 'sha2' },
-  metadata: request.body.metadata,
+}, async request =&gt; app.web3.getContract(notarizerAbi, app.contractAddress).send('mint', {
+  recipient: app.contractAddress, hash: request.body.hash, algorithm: 'sha2', metadataURI: request.body.metadata ?? '',
 }));</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import multer from 'multer';
 import { createHash } from 'node:crypto';
 
@@ -255,9 +253,8 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 
 notarization.post('/notarize', upload.single('file'), async (req, res) =&gt; {
   if (!req.file) return void res.status(400).json({ message: 'Campo file mancante.' });
   const hash = createHash('sha256').update(req.file.buffer).digest('hex');
-  res.json(await web3.mint(notarizerAbi, contractAddress, {
-    hash: { data: hash, algorithm: 'sha2' },
-    metadata: req.file.originalname,
+  res.json(await web3.getContract(notarizerAbi, contractAddress).send('mint', {
+    recipient: contractAddress, hash, algorithm: 'sha2', metadataURI: req.file.originalname,
   }));
 });</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">using System.Security.Cryptography;
 
@@ -265,10 +262,9 @@ app.MapPost("/api/notarize", async (IFormFile file, Web3Service web3) =&gt;
 {
     await using var stream = file.OpenReadStream();
     var hash = Convert.ToHexString(await SHA256.HashDataAsync(stream)).ToLowerInvariant();
-    var result = await web3.MintAsync(abi, contractAddress, new NotarizationDocument
+    var result = await web3.GetContract(abi, contractAddress).SendAsync("mint", new
     {
-        Hash = new NotarizationHash { Data = hash, Algorithm = "sha2" },
-        Metadata = file.FileName,
+        recipient = contractAddress, hash, algorithm = "sha2", metadataURI = file.FileName,
     });
     return Results.Ok(result);
 }).DisableAntiforgery();</code></pre></div></div></div></li><li><h3>Verifica in seguito</h3><div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">app/documents/[hash]/page.tsx</div><pre><code class="language-tsx">import { contractAddress, web3 } from '@/lib/web3';

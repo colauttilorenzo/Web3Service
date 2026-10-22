@@ -10,7 +10,7 @@ using Certifie.Web3.Evm;
 namespace Certifie.Web3
 {
     /// <summary>
-    /// Deploys contracts, notarizes document hashes with <c>mint</c>, creates tokens, and reads contracts and transactions on any supported blockchain.
+    /// Deploys and calls contracts, creates tokens, and reads transactions on any supported blockchain.
     /// The provider selects the blockchain: an <see cref="IEvmProvider"/> (or a node URI) for EVM networks, an <see cref="IAvmProvider"/> for Algorand,
     /// an <see cref="IBitcoinProvider"/> for Bitcoin. The API and the JSON output are the same everywhere; an operation the blockchain does not have
     /// throws <see cref="System.NotImplementedException"/>. Native port of the <c>@certifie/web3-service</c> JavaScript class,
@@ -65,10 +65,6 @@ namespace Certifie.Web3
         public Task<JsonNode?> CallContractMethodAsync(string method, string abi, string address, object[]? parameters = null,
             CancellationToken cancellationToken = default) =>
             _chain.CallContractMethodAsync(method, abi, address, parameters, cancellationToken);
-
-        public Task<TransactionResult> MintAsync(string abi, string contractAddress, NotarizationDocument document, TransactionResult? onChainEvent = null,
-            TransactionOptions? options = null, CancellationToken cancellationToken = default) =>
-            _chain.MintAsync(abi, contractAddress, document, onChainEvent, options, cancellationToken);
 
         public Task<TransactionResult> DeployAsync(string abi, string bytecode, object[]? constructorArguments = null, TransactionResult? onChainEvent = null,
             TransactionOptions? options = null, CancellationToken cancellationToken = default) =>

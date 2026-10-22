@@ -58,7 +58,8 @@ On the frontend the private key must never reach the page: pass the user's walle
   );
   document.querySelector('#notarize').onclick = async () => {
     try {
-      const result = await service.mint(abi, contractAddress, { hash: { data: documentHash, algorithm: 'sha2' } });
+      const notarizer = service.getContract(abi, contractAddress);
+      const result = await notarizer.send('mint', { recipient: contractAddress, hash: documentHash, algorithm: 'sha2', metadataURI: '' });
       console.log(result.tx.transactionHash, result.nativeFee);
     } catch (error) {
       if (error instanceof Web3Error && error.code === 'USER_REJECTED') console.log('Signature cancelled');
@@ -141,9 +142,13 @@ const service = new Web3Service(
   { signer: { privateKey: process.env.PRIVATE_KEY! } },
 );
 
-const result = await service.mint(abi, process.env.CONTRACT_ADDRESS!, {
-  hash: { data: 'hash-computed-by-the-application', algorithm: 'sha2' },
-  metadata: 'ipfs://document-metadata',
+// Notarization is a call to the contract's mint method, with the parameter names of its ABI.
+const contractAddress = process.env.CONTRACT_ADDRESS!;
+const result = await service.getContract(abi, contractAddress).send('mint', {
+  recipient: contractAddress,
+  hash: 'hash-computed-by-the-application',
+  algorithm: 'sha2',
+  metadataURI: 'ipfs://document-metadata',
 });
 
 console.log(result.tx?.transactionHash);
@@ -151,7 +156,7 @@ console.log(result.nativeFee);
 // { amount: '21000000000000', symbol: 'ETH', decimals: '18' }
 ```
 
-The contract must expose `mint(address,string,string,string)`. As in the original class, the first `mint` argument is the contract's own address. Computing the document hash is up to the application; `algorithm` is passed to the contract unchanged. Without a `signer`, only read operations are available.
+There is no dedicated notarization method: any contract works, and `send` waits for the block and returns the transaction with its receipt and gas cost, named after the method (`'mint'`). In this example the recipient is the contract's own address, as in the original class. Computing the document hash is up to the application; `algorithm` is passed to the contract unchanged. Without a `signer`, only read operations are available.
 
 A runnable example that loads the ABI from a file is in [`examples/notarize.mjs`](examples/notarize.mjs).
 
@@ -160,7 +165,7 @@ A runnable example that loads the ABI from a file is in [`examples/notarize.mjs`
 The same `Web3Service` works on Algorand and Bitcoin: the `kind` field of the provider selects the implementation, and a provider without `kind` is EVM.
 
 ```ts
-import { NotImplementedError, Web3Service, type IAvmProvider } from '@certifie/web3-service';
+import { AlgorandWallets, NotImplementedError, Web3Service, type IAvmProvider } from '@certifie/web3-service';
 import notarizer from './Notarizer.arc56.json' with { type: 'json' };
 
 const testnet: IAvmProvider = {
@@ -173,8 +178,9 @@ const algorand = new Web3Service(testnet, { signer: { mnemonic: process.env.ALGO
 
 const deployed = await algorand.deploy(notarizer, '', ['CERTIFIE'], undefined, { value: '200000' });
 const appId = deployed.tx!.contractAddress!; // the application ID
-await algorand.mint(notarizer, appId, { hash: { data: documentHash, algorithm: 'sha2' }, metadata: 'ipfs://…' });
-await algorand.getContract(notarizer, appId).call('label'); // ARC-4 methods by name, reads are free simulations
+const app = algorand.getContract(notarizer, appId);      // ARC-4 methods by name
+await app.send('mint', { recipient: AlgorandWallets.getApplicationAddress(appId), hash: documentHash, algorithm: 'sha2', uri: 'ipfs://…' });
+await app.call('label');                                  // reads are free simulations
 const { tokenId } = await algorand.createToken({ name: 'Certifie Coin', symbol: 'CERT', totalSupply: '1000000', decimals: 2 });
 
 const bitcoin = new Web3Service({ kind: 'bitcoin', rpcURI: 'https://mempool.space/api' }); // an Esplora API
@@ -186,7 +192,7 @@ await bitcoin.deploy(abi, bytecode);  // throws NotImplementedError: Bitcoin has
 | Method | EVM | Algorand | Bitcoin |
 | --- | --- | --- | --- |
 | `check`, `getTransaction`, `getTransactionReceipt` | Yes | Yes | Yes |
-| `getContract`, `callContractMethod`, `mint` | Yes | Yes, ARC-4 applications | `NotImplementedError` |
+| `getContract`, `callContractMethod` | Yes | Yes, ARC-4 applications | `NotImplementedError` |
 | `deploy` | Yes, from bytecode | Yes, from an ARC-56 description or `{ approval, clear }` programs | `NotImplementedError` |
 | `createToken`, `getTokenInfo` | `NotImplementedError`: EVM tokens are contracts | Yes, Algorand Standard Assets | `NotImplementedError` |
 
@@ -216,14 +222,13 @@ Numeric inputs accept `string`, `bigint` or safe-integer `number`. Use strings f
 | --- | --- |
 | `check()` | `{ blockNumber, gasPrice }`, both integer strings; gas price in the smallest unit |
 | `callContractMethod<T>(method, abi, address, parameters?)` | The call result, with numbers recursively converted to integer strings |
-| `mint(abi, address, document, event?, options?)` | Confirmed transaction with receipt and gas cost |
 | `deploy(abi, bytecode, constructorArguments?, event?, options?)` | Confirmed transaction with the address in `tx.contractAddress` (the application ID on Algorand) |
 | `createToken(token, event?, options?)` | `{ standard: 'ASA', tokenId, transaction }`: a token without a contract (Algorand Standard Asset) |
 | `getTokenInfo(tokenId)` | Data of a token created with `createToken` |
 | `getTransaction(hash, abi?)` | Any transaction, pending or confirmed, with the called function decoded |
 | `getTransactionReceipt(hash, event?)` | Receipt enriched with timestamp and gas cost |
 
-Write methods wait for inclusion in a block, without waiting for further confirmations. `bytecode` must be a non-empty hex string prefixed with `0x`.
+`getContract(abi, address)` returns a [`Web3Contract`](#any-contract-tokens-and-nfts) to call any method, `mint` included. Write methods wait for inclusion in a block, without waiting for further confirmations. `bytecode` must be a non-empty hex string prefixed with `0x`.
 
 ```ts
 const deployment = await service.deploy(abi, bytecode, ['constructor argument']);
@@ -235,7 +240,7 @@ const metadata = await service.callContractMethod(
 
 `event` keeps `name` and `requestedAt` (a millisecond string). The object you pass is not modified. A failed receipt has `error` and `rejectedAt`; a successful one has `completedAt`. Stale error fields are removed when a successful receipt is retrieved.
 
-The fifth argument of `mint` and `deploy` accepts `gas`, `gasPrice`, `nonce` and `value`, all integers. With a key or mnemonic, the library signs `gasPrice` (legacy type) transactions. By default it estimates gas, adds a buffer of `10000` and uses the `pending` nonce. Writes on the same instance are serialized; applications that share a wallet across processes or instances must coordinate nonces.
+The last argument of `deploy` and `createToken`, and of `Web3Contract` writes, accepts `gas`, `gasPrice`, `nonce` and `value`, all integers. With a key or mnemonic, the library signs `gasPrice` (legacy type) transactions. By default it estimates gas, adds a buffer of `10000` and uses the `pending` nonce. Writes on the same instance are serialized; applications that share a wallet across processes or instances must coordinate nonces.
 
 ## Any contract, tokens and NFTs
 
@@ -293,13 +298,14 @@ Instead of a private key, the signer accepts:
 
 `mnemonic` can also be `{ phrase, password }` or an ethers `Mnemonic` object. Decrypting and storing credentials is up to the application.
 
-Algorand accounts are not derived from a path. `AlgorandWallets` creates and reads their 25-word mnemonics:
+Algorand accounts are not derived from a path. `AlgorandWallets` creates and reads their 25-word mnemonics, and gives the account of an application:
 
 ```ts
 import { AlgorandWallets } from '@certifie/web3-service';
 
 const phrase = AlgorandWallets.createMnemonic();
 const account = AlgorandWallets.getWallet(phrase); // { address, publicKey, privateKey (32-byte seed as 0x hex), path: null, index: '0' }
+AlgorandWallets.getApplicationAddress('1002');     // the account of application 1002
 ```
 
 ## Providers and errors
@@ -331,13 +337,13 @@ Errors are `Web3Error` instances with `code`, `message`, an optional `transactio
 | `USER_REJECTED` | The user rejected the request in the browser wallet |
 | `WALLET_ERROR` | The browser wallet returned an error; details in `cause` |
 
-`mint` and `deploy` reject the promise on error. `getTransactionReceipt` also returns reverted receipts, with the error state and the gas actually spent. After a submission error the library tries to recover a receipt that is already available, without signing or broadcasting a second transaction.
+Writes reject the promise on error. `getTransactionReceipt` also returns reverted receipts, with the error state and the gas actually spent. After a submission error the library tries to recover a receipt that is already available, without signing or broadcasting a second transaction.
 
 ## Migrating from the class in the CERTIFIE API
 
 Imports come from the package entry point. The constructor's second argument is now `Web3ServiceOptions`: the `Company` model is not part of the library. The application must pass an already decrypted private key or mnemonic. Database models, API configuration and market prices are not dependencies of the package.
 
-`IDocument` is replaced by the minimal `NotarizationDocument` type; an existing document that has `hash` and `metadata` still works. Events and receipts must use integer strings for numeric fields. `nativeFee` contains only the cost in the native token.
+`mint(abi, address, document)` is replaced by a call to the contract: `getContract(abi, address).send('mint', { recipient: address, hash: document.hash.data, algorithm: document.hash.algorithm, metadataURI: document.metadata })`. Events and receipts must use integer strings for numeric fields. `nativeFee` contains only the cost in the native token.
 
 ## Development
 

@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 namespace Certifie.Web3.Algorand
 {
     /// <summary>
-    /// Algorand through algod: deploys ARC-4 applications, notarizes with mint, creates Algorand Standard Assets and reads transactions.
+    /// Algorand through algod: deploys and calls ARC-4 applications, creates Algorand Standard Assets and reads transactions.
     /// Every write is simulated first, so the resources the application reads and the fees of its inner transactions are filled in,
     /// and a call the application would reject is never sent. Mirrors AlgorandChain in the JavaScript package with the same JSON output.
     /// </summary>
     internal sealed class AlgorandChain : IWeb3Service, IAppRunner
     {
-        private const string MintSignature = "mint(address,string,string,string)void";
         private static readonly NetworkDefaults Defaults = new NetworkDefaults("mainnet-v1.0", "Algorand", ("Algo", "ALGO", 6));
         private readonly AlgorandNetwork _network;
         private readonly Web3ServiceOptions _options;
@@ -55,18 +54,6 @@ namespace Certifie.Web3.Algorand
             return ReadAsync(AlgorandContract.ApplicationId(address), fn, args, cancellationToken);
         }
 
-        /// <summary>Calls mint(address,string,string,string) on the application; the address is the application's own account.</summary>
-        public async Task<TransactionResult> MintAsync(string abi, string contractAddress, NotarizationDocument document, TransactionResult? onChainEvent = null,
-            TransactionOptions? options = null, CancellationToken cancellationToken = default)
-        {
-            var appId = AlgorandContract.ApplicationId(contractAddress);
-            var values = Notarization.MintArguments(AlgorandAddress.OfApplication(appId), document);
-            var fn = Arc4Methods.Describe(abi).FirstOrDefault(candidate => candidate.Method.Signature == MintSignature) ?? throw Errors.MethodNotFound(MintSignature);
-            var args = Arc4Methods.ToArguments(fn, ContractMethods.FromPositional(fn, values));
-            var request = AppCalls.Request(new AppCall(appId, fn, args), options);
-            return (await WriteAsync(Notarization.Named(onChainEvent, "mint"), _ => Task.FromResult(request), cancellationToken).ConfigureAwait(false)).Result;
-        }
-
         /// <summary>On Algorand the bytecode must be empty: the programs come from the ARC-56 description. Pass AvmPrograms to deploy other programs.</summary>
         public Task<TransactionResult> DeployAsync(string abi, string bytecode, object[]? constructorArguments = null, TransactionResult? onChainEvent = null,
             TransactionOptions? options = null, CancellationToken cancellationToken = default)
@@ -85,7 +72,7 @@ namespace Certifie.Web3.Algorand
             CancellationToken cancellationToken = default)
         {
             var request = Assets.Creation(token, options);
-            var sent = await WriteAsync(Notarization.Named(onChainEvent, "createToken"), _ => Task.FromResult(request), cancellationToken).ConfigureAwait(false);
+            var sent = await WriteAsync(ChainEvents.Named(onChainEvent, "createToken"), _ => Task.FromResult(request), cancellationToken).ConfigureAwait(false);
             return new TokenCreation { Standard = "ASA", TokenId = sent.Transaction.CreatedAssetId?.ToString() ?? "", Transaction = sent.Result };
         }
 
@@ -137,7 +124,7 @@ namespace Certifie.Web3.Algorand
             TransactionOptions? options, CancellationToken cancellationToken)
         {
             var callOptions = new TransactionOptions { GasPrice = options?.GasPrice };
-            var deployed = await WriteAsync(Notarization.Named(onChainEvent, "deploy"), async session => AppCalls.Request(
+            var deployed = await WriteAsync(ChainEvents.Named(onChainEvent, "deploy"), async session => AppCalls.Request(
                 await AppPrograms.CreationCallAsync(session, abi, programs, constructorArguments ?? Array.Empty<object>()).ConfigureAwait(false), callOptions),
                 cancellationToken).ConfigureAwait(false);
             if (options?.Value > 0) await FundAsync(deployed.Transaction.CreatedAppId!.Value, options.Value.Value, cancellationToken).ConfigureAwait(false);

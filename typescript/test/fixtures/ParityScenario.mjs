@@ -12,13 +12,13 @@ export async function run(chain) {
 async function notarization(service, chain) {
   const deployed = await service.deploy(chain.abi, chain.bytecode, ['Parity'], { name: 'parity', requestedAt: '123' });
   const address = deployed.tx.contractAddress;
-  const document = { hash: { data: 'f'.repeat(64), algorithm: 'sha2' }, metadata: 'ipfs://parity' };
-  const minted = await service.mint(chain.abi, address, document, { requestedAt: '456' });
+  const document = { recipient: address, hash: 'f'.repeat(64), algorithm: 'sha2', uri: 'ipfs://parity' };
+  const minted = { ...await service.getContract(chain.abi, address).send('mint', document), requestedAt: 'now' };
   const receipt = await service.getTransactionReceipt(minted.tx.transactionHash, { name: 'lookup', requestedAt: '789' });
   return {
     deployed, minted, receipt,
     label: await service.callContractMethod('label', chain.abi, address),
-    metadata: await service.callContractMethod('metadata', chain.abi, address, [document.hash.data]),
+    metadata: await service.callContractMethod('metadata', chain.abi, address, [document.hash]),
     numbers: await service.callContractMethod('numbers', chain.abi, address),
   };
 }

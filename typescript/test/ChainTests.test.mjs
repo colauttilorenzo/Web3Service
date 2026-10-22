@@ -11,7 +11,8 @@ let chain;
 before(async () => { chain = await Chain.start(); });
 after(() => chain.close());
 
-const document = letter => ({ hash: { data: letter.repeat(64), algorithm: 'sha2' } });
+// Notarization is a call to mint(address,string,string,string) on the test contract, whose own address is the recipient.
+const notarization = (address, letter, uri = '') => ({ recipient: address, hash: letter.repeat(64), algorithm: 'sha2', uri });
 
 function assertIntegerStrings(value) {
   assert.notEqual(typeof value, 'number');
@@ -21,22 +22,22 @@ function assertIntegerStrings(value) {
 
 test('DeploysNotarizesReadsAndReturnsJsonSafeReceipts', async () => {
   const service = new Web3Service(chain.provider(), chain.signer());
-  const deployed = await service.deploy(chain.abi, chain.bytecode, [vectors.contract.label]);
-  assert.deepEqual([deployed.name, deployed.tx.status, deployed.tx.type], ['deploy', '1', '0']);
+  const deployed = await service.deploy(chain.abi, chain.bytecode, [vectors.contract.label], { requestedAt: '123', rejectedAt: '999' });
+  assert.deepEqual([deployed.name, deployed.tx.status, deployed.tx.type, deployed.requestedAt], ['deploy', '1', '0', '123']);
+  assert.equal(deployed.rejectedAt, undefined);
   assert.match(deployed.completedAt, /^\d+$/);
   const address = deployed.tx.contractAddress;
   assert.equal(await service.callContractMethod('label', chain.abi, address), vectors.contract.label);
 
-  const notarized = { ...document('a'), metadata: 'ipfs://example' };
-  const minted = await service.mint(chain.abi, address, notarized, { requestedAt: '123', rejectedAt: '999' });
-  assert.deepEqual([minted.name, minted.tx.status, minted.requestedAt], ['mint', '1', '123']);
-  assert.equal(minted.rejectedAt, undefined);
+  const notarized = notarization(address, 'a', 'ipfs://example');
+  const minted = await service.getContract(chain.abi, address).send('mint', notarized);
+  assert.deepEqual([minted.name, minted.tx.status], ['mint', '1']);
   assert.equal(minted.tx.logs[0].logIndex, '0');
   assert.equal(minted.nativeFee.amount, new Big(minted.tx.gasUsed).times(minted.tx.effectiveGasPrice).toFixed(0));
   assert.deepEqual([minted.nativeFee.symbol, minted.nativeFee.decimals], ['ETH', '18']);
 
-  const metadata = await service.callContractMethod('metadata', chain.abi, address, [notarized.hash.data]);
-  assert.deepEqual(metadata, [notarized.hash.data, 'sha2', 'ipfs://example']);
+  const metadata = await service.callContractMethod('metadata', chain.abi, address, [notarized.hash]);
+  assert.deepEqual(metadata, [notarized.hash, 'sha2', 'ipfs://example']);
   assert.deepEqual(await service.callContractMethod('numbers', chain.abi, address), vectors.contract.numbers);
 
   const confirmed = await service.getTransactionReceipt(minted.tx.transactionHash, { rejectedAt: '1' });
@@ -46,17 +47,18 @@ test('DeploysNotarizesReadsAndReturnsJsonSafeReceipts', async () => {
 
   await assert.rejects(service.getTransactionReceipt(`0x${'0'.repeat(64)}`), error => error.code === 'TRANSACTION_NOT_FOUND');
   await assert.rejects(service.callContractMethod('missing', chain.abi, address), error => error.code === 'METHOD_NOT_FOUND');
-  await assert.rejects(new Web3Service(chain.provider()).mint(chain.abi, address, notarized), error => error.code === 'SIGNER_REQUIRED');
+  await assert.rejects(new Web3Service(chain.provider()).getContract(chain.abi, address).send('mint', notarized), error => error.code === 'SIGNER_REQUIRED');
 });
 
 test('ConcurrentWritesUseDistinctNoncesAndRevertsAreReported', async () => {
   const service = new Web3Service(chain.provider(), chain.signer());
   const address = (await service.deploy(chain.abi, chain.bytecode, ['Nonces'])).tx.contractAddress;
-  const results = await Promise.all(['b', 'c'].map(letter => service.mint(chain.abi, address, document(letter))));
+  const contract = service.getContract(chain.abi, address);
+  const results = await Promise.all(['b', 'c'].map(letter => contract.send('mint', notarization(address, letter))));
   for (const result of results) assert.equal(result.tx.status, '1');
 
   let failure;
-  await assert.rejects(service.mint(chain.abi, address, document('b'), undefined, { gas: 300000 }), error => (failure = error).code === 'TRANSACTION_REVERTED');
+  await assert.rejects(contract.send('mint', notarization(address, 'b'), { gas: 300000 }), error => (failure = error).code === 'TRANSACTION_REVERTED');
   assert.match(failure.transactionHash, /^0x[0-9a-f]{64}$/);
   const reverted = await service.getTransactionReceipt(failure.transactionHash, { completedAt: '1' });
   assert.equal(reverted.tx.status, '0');

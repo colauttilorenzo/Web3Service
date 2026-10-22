@@ -22,14 +22,15 @@ public static class ParityScenario
     {
         var deployed = await service.DeployAsync(chain.Abi, chain.Bytecode, new object[] { "Parity" }, new TransactionResult { Name = "parity", RequestedAt = "123" });
         var address = deployed.Tx!.ContractAddress!;
-        var document = new NotarizationDocument { Hash = new NotarizationHash { Data = new string('f', 64), Algorithm = "sha2" }, Metadata = "ipfs://parity" };
-        var minted = await service.MintAsync(chain.Abi, address, document, new TransactionResult { RequestedAt = "456" });
+        var hash = new string('f', 64);
+        var minted = await service.GetContract(chain.Abi, address).SendAsync("mint", new { recipient = address, hash, algorithm = "sha2", uri = "ipfs://parity" });
+        minted.RequestedAt = "now";
         var receipt = await service.GetTransactionReceiptAsync(minted.Tx!.TransactionHash, new TransactionResult { Name = "lookup", RequestedAt = "789" });
         return new JsonObject
         {
             ["deployed"] = JsonSerializer.SerializeToNode(deployed), ["minted"] = JsonSerializer.SerializeToNode(minted), ["receipt"] = JsonSerializer.SerializeToNode(receipt),
             ["label"] = await service.CallContractMethodAsync("label", chain.Abi, address),
-            ["metadata"] = await service.CallContractMethodAsync("metadata", chain.Abi, address, new object[] { document.Hash.Data }),
+            ["metadata"] = await service.CallContractMethodAsync("metadata", chain.Abi, address, new object[] { hash }),
             ["numbers"] = await service.CallContractMethodAsync("numbers", chain.Abi, address),
         };
     }

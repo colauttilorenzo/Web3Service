@@ -10,12 +10,11 @@ using RpcReceipt = Nethereum.RPC.Eth.DTOs.TransactionReceipt;
 namespace Certifie.Web3.Evm
 {
     /// <summary>
-    /// Deploys contracts, notarizes document hashes with <c>mint</c>, and reads contracts and receipts on EVM networks.
+    /// Deploys and calls contracts, and reads transactions and receipts on EVM networks.
     /// Mirrors EvmChain in the JavaScript package: same defaults, error codes and JSON output.
     /// </summary>
     internal sealed class EvmChain : IWeb3Service, IContractRunner
     {
-        private const string MintSignature = "mint(address,string,string,string)";
         private const string TokenHint = "EVM tokens are contracts: deploy one with DeployAsync and use GetContract(...).MintNftAsync and GetTokenInfoAsync.";
         private static readonly Regex BytecodePattern = new Regex("^0x(?:[0-9a-f]{2})+$", RegexOptions.IgnoreCase);
         private readonly EthereumProvider _provider;
@@ -58,26 +57,13 @@ namespace Certifie.Web3.Evm
                 return ContractCalls.OutputsToJson(outputs);
             }, cancellationToken);
 
-        public Task<TransactionResult> MintAsync(string abi, string contractAddress, NotarizationDocument document, TransactionResult? onChainEvent = null,
-            TransactionOptions? options = null, CancellationToken cancellationToken = default)
-        {
-            object[] arguments = Notarization.MintArguments(contractAddress, document);
-            AbiMethods.RequireEvmAbi(abi);
-            return WriteAsync(Notarization.Named(onChainEvent, "mint"), session =>
-            {
-                var function = ContractCalls.GetFunction(session.Eth, abi, contractAddress, "mint", $"The ABI must contain {MintSignature}.");
-                return new TransactionRequest(function.GetData(arguments), contractAddress,
-                    (from, value) => function.EstimateGasAsync(from, null, value, arguments), options);
-            }, cancellationToken);
-        }
-
         public Task<TransactionResult> DeployAsync(string abi, string bytecode, object[]? constructorArguments = null, TransactionResult? onChainEvent = null,
             TransactionOptions? options = null, CancellationToken cancellationToken = default)
         {
             ValidateBytecode(bytecode);
             AbiMethods.RequireEvmAbi(abi);
             var arguments = constructorArguments ?? Array.Empty<object>();
-            return WriteAsync(Notarization.Named(onChainEvent, "deploy"), session =>
+            return WriteAsync(ChainEvents.Named(onChainEvent, "deploy"), session =>
             {
                 var data = session.Eth.DeployContract.GetData(bytecode, abi, arguments);
                 return new TransactionRequest(data, null,

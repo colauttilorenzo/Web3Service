@@ -36,7 +36,7 @@
       </div>
       <p class="lead">Chiave privata, mnemonic o wallet del browser.</p>
 
-<p>Le letture non richiedono credenziali. Per <code>mint</code> e <code>deploy</code> scegli uno dei tre signer: sul server una chiave privata o un mnemonic, nel browser il wallet dell’utente.</p>
+<p>Le letture non richiedono credenziali. Per le scritture (<code>deploy</code>, <code>createToken</code> e i metodi dei contratti, come <code>mint</code>) scegli uno dei tre signer: sul server una chiave privata o un mnemonic, nel browser il wallet dell’utente.</p>
 <div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">lib/web3.ts</div><pre><code class="language-ts">import 'server-only';
 import { Web3Service } from '@certifie/web3-service';
 
@@ -105,16 +105,19 @@ var fromMnemonic = new Web3Service(provider, new Web3ServiceOptions
 <div class="tabs" data-group="fw"><div class="tab-pane" data-label="Next.js"><div class="code"><div class="code-title">app/notarize/sign-button.tsx</div><pre><code class="language-tsx">'use client';
 
 import { useState } from 'react';
-import { Web3Error, type NotarizationDocument } from '@certifie/web3-service';
+import { Web3Error } from '@certifie/web3-service';
 import { browserWeb3 } from '@/lib/browser-web3';
 import { notarizerAbi } from '@/lib/notarizer-abi';
 
-export function SignButton({ document }: { document: NotarizationDocument }) {
+const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
+
+export function SignButton({ hash, metadata = '' }: { hash: string; metadata?: string }) {
   const [message, setMessage] = useState&lt;string&gt;();
 
   async function sign() {
     try {
-      await browserWeb3()?.mint(notarizerAbi, process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!, document);
+      await browserWeb3()?.getContract(notarizerAbi, contractAddress)
+        .send('mint', { recipient: contractAddress, hash, algorithm: 'sha2', metadataURI: metadata });
     } catch (error) {
       if (error instanceof Web3Error &amp;&amp; error.code === 'USER_REJECTED') setMessage('Firma annullata');
       else throw error;
@@ -122,9 +125,10 @@ export function SignButton({ document }: { document: NotarizationDocument }) {
   }
 
   return &lt;&gt;&lt;button onClick={sign}&gt;Firma con il wallet&lt;/button&gt;{message &amp;&amp; &lt;p role="status"&gt;{message}&lt;/p&gt;}&lt;/&gt;;
-}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">app.js</div><pre><code class="language-js">async function sign(notarization) {
+}</code></pre></div></div><div class="tab-pane" data-label="Vanilla"><div class="code"><div class="code-title">app.js</div><pre><code class="language-js">async function sign(hash, metadata = '') {
   try {
-    await service.mint(notarizerAbi, contractAddress, notarization);
+    await service.getContract(notarizerAbi, contractAddress)
+      .send('mint', { recipient: contractAddress, hash, algorithm: 'sha2', metadataURI: metadata });
   } catch (error) {
     if (error instanceof Web3Error &amp;&amp; error.code === 'USER_REJECTED') {
       document.getElementById('status').textContent = 'Firma annullata';
@@ -132,12 +136,14 @@ export function SignButton({ document }: { document: NotarizationDocument }) {
       throw error;
     }
   }
-}</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import { Web3Error, type NotarizationDocument } from '@certifie/web3-service';
+}</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import { Web3Error } from '@certifie/web3-service';
 
 // Sul server nessun utente firma: l'errore da gestire è l'invio non confermato.
-app.post&lt;{ Body: NotarizationDocument }&gt;('/notarize', async (request, reply) =&gt; {
+app.post&lt;{ Body: { hash: string; metadata?: string } }&gt;('/notarize', async (request, reply) =&gt; {
+  const { hash, metadata = '' } = request.body;
   try {
-    return await app.web3.mint(notarizerAbi, app.contractAddress, request.body);
+    return await app.web3.getContract(notarizerAbi, app.contractAddress)
+      .send('mint', { recipient: app.contractAddress, hash, algorithm: 'sha2', metadataURI: metadata });
   } catch (error) {
     if (error instanceof Web3Error &amp;&amp; error.code === 'TRANSACTION_SUBMISSION_FAILED') {
       return reply.status(202).send({ pending: error.transactionHash }); // controlla la ricevuta prima di riprovare
@@ -148,24 +154,29 @@ app.post&lt;{ Body: NotarizationDocument }&gt;('/notarize', async (request, repl
 
 // Sul server nessun utente firma: l'errore da gestire è l'invio non confermato.
 notarization.post('/notarize', async (req, res) =&gt; {
+  const { hash, metadata = '' } = req.body;
   try {
-    res.json(await web3.mint(notarizerAbi, contractAddress, req.body));
+    res.json(await web3.getContract(notarizerAbi, contractAddress)
+      .send('mint', { recipient: contractAddress, hash, algorithm: 'sha2', metadataURI: metadata }));
   } catch (error) {
     if (!(error instanceof Web3Error &amp;&amp; error.code === 'TRANSACTION_SUBMISSION_FAILED')) throw error;
     res.status(202).json({ pending: error.transactionHash }); // controlla la ricevuta prima di riprovare
   }
 });</code></pre></div></div><div class="tab-pane" data-label=".NET"><div class="code"><div class="code-title">Program.cs</div><pre><code class="language-csharp">// Il wallet del browser esiste solo in JavaScript: in .NET gestisci l'invio non confermato.
-app.MapPost("/api/notarize", async (NotarizationDocument document, Web3Service web3) =&gt;
+app.MapPost("/api/notarize", async (NotarizeRequest body, Web3Service web3) =&gt;
 {
     try
     {
-        return Results.Ok(await web3.MintAsync(abi, contractAddress, document));
+        var notarization = new { recipient = contractAddress, hash = body.Hash, algorithm = "sha2", metadataURI = body.Metadata ?? "" };
+        return Results.Ok(await web3.GetContract(abi, contractAddress).SendAsync("mint", notarization));
     }
     catch (Web3Exception error) when (error.Code == "TRANSACTION_SUBMISSION_FAILED")
     {
         return Results.Accepted(value: new { pending = error.TransactionHash }); // controlla la ricevuta prima di riprovare
     }
-});</code></pre></div></div></div>
+});
+
+record NotarizeRequest(string Hash, string? Metadata);</code></pre></div></div></div>
 <h2 id="nonce">Nonce e scritture concorrenti</h2>
 <p>Le scritture della stessa istanza vengono eseguite una alla volta, così ricevono nonce distinti. Nel backend crea quindi un’unica istanza condivisa. Se più processi usano lo stesso account devi coordinare i nonce, per esempio passando <code>nonce</code> nelle opzioni o usando un account per processo.</p>
 

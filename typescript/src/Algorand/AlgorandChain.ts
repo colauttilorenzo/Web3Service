@@ -1,15 +1,15 @@
 import { getApplicationAddress } from 'algosdk';
 import type {
   Abi, Bytecode, ChainId, ContractResult, IAlgorandNetwork, IAvmProvider, ICheckResult, ITokenCreation, ITokenDefinition, ITokenInfo, ITransaction,
-  ITransactionDetails, NotarizationDocument, TransactionOptions, Web3ServiceOptions,
+  ITransactionDetails, TransactionOptions, Web3ServiceOptions,
 } from '../Models.js';
 import type { IWeb3Service } from '../IWeb3Service.js';
 import * as Configuration from '../Internal/Configuration.js';
 import type { NetworkDefaults, ResolvedOptions } from '../Internal/Configuration.js';
 import * as ContractMethods from '../Internal/ContractMethods.js';
-import { methodNotFound, receiptDetailsFailed, transactionNotFound } from '../Internal/Errors.js';
+import { receiptDetailsFailed, transactionNotFound } from '../Internal/Errors.js';
 import * as Integers from '../Internal/Integers.js';
-import * as Notarization from '../Internal/Notarization.js';
+import * as ChainEvents from '../Internal/ChainEvents.js';
 import * as SharedResults from '../Internal/SharedResults.js';
 import { WriteQueue } from '../Internal/WriteQueue.js';
 import { AlgodConnector } from './AlgodConnector.js';
@@ -30,10 +30,9 @@ import * as Submission from './Submission.js';
 import * as Transactions from './Transactions.js';
 
 const DEFAULTS: NetworkDefaults = { chainId: 'mainnet-v1.0', chainName: 'Algorand', currency: { name: 'Algo', symbol: 'ALGO', decimals: 6 } };
-const MINT_SIGNATURE = 'mint(address,string,string,string)void';
 
 /**
- * Algorand through algod: deploys ARC-4 applications, notarizes with mint, creates Algorand Standard Assets and reads transactions.
+ * Algorand through algod: deploys and calls ARC-4 applications, creates Algorand Standard Assets and reads transactions.
  * Every write is simulated first, so the resources the application reads and the fees of its inner transactions are filled in,
  * and a call the application would reject is never sent. Mirrors AlgorandChain in .NET with the same JSON output.
  */
@@ -71,30 +70,20 @@ export class AlgorandChain implements IWeb3Service {
     return this.#read(applicationId(address), fn, Arc4Methods.toArguments(fn, Arc4Methods.toParameters(fn, parameters))) as Promise<T>;
   }
 
-  /** Calls mint(address,string,string,string) on the application; the address is the application's own account. */
-  async mint(abi: Abi, contractAddress: string, document: NotarizationDocument, onChainEvent?: ITransaction, options?: TransactionOptions): Promise<ITransaction> {
-    const appId = applicationId(contractAddress);
-    const values = Notarization.mintArguments(getApplicationAddress(appId).toString(), document);
-    const fn = Arc4Methods.describe(abi).find(candidate => candidate.method.signature === MINT_SIGNATURE);
-    if (!fn) throw methodNotFound(MINT_SIGNATURE);
-    const args = Arc4Methods.toArguments(fn, Arc4Methods.toParameters(fn, values));
-    return (await this.#write(Notarization.named(onChainEvent, 'mint'), () => AppCalls.request({ appId, fn, args }, options))).result;
-  }
-
   /** Creates the application; options.value then funds its account, e.g. for the boxes it stores. */
   async deploy(
     abi: Abi, bytecode: Bytecode, constructorArguments: readonly unknown[] = [], onChainEvent?: ITransaction, options: TransactionOptions = {},
   ): Promise<ITransaction> {
     const { value, ...callOptions } = options;
     const prepare = async (session: AlgodSession) => AppCalls.request(await AppPrograms.creationCall(session, abi, bytecode, constructorArguments), callOptions);
-    const deployed = await this.#write(Notarization.named(onChainEvent, 'deploy'), prepare);
+    const deployed = await this.#write(ChainEvents.named(onChainEvent, 'deploy'), prepare);
     if (value !== undefined && Integers.parse(value, 'value').gt(0)) await this.#fund(deployed.transaction.createdAppId!, value);
     return deployed.result;
   }
 
   /** Creates an Algorand Standard Asset; an NFT has totalSupply 1 and decimals 0. */
   async createToken(token: ITokenDefinition, onChainEvent?: ITransaction, options?: TransactionOptions): Promise<ITokenCreation> {
-    const { result, transaction } = await this.#write(Notarization.named(onChainEvent, 'createToken'), () => Assets.creation(token, options));
+    const { result, transaction } = await this.#write(ChainEvents.named(onChainEvent, 'createToken'), () => Assets.creation(token, options));
     return { standard: 'ASA', tokenId: String(transaction.createdAssetId), transaction: result };
   }
 

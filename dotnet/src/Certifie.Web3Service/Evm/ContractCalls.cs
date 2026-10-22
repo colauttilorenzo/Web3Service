@@ -18,11 +18,11 @@ namespace Certifie.Web3.Evm
     internal static class ContractCalls
     {
         /// <summary>Looks a function up in the ABI by name or signature, and fails with <c>METHOD_NOT_FOUND</c> when it is missing.</summary>
-        public static Function GetFunction(IEthApiContractService eth, string abi, string address, string method, string? missingMessage = null)
+        public static Function GetFunction(IEthApiContractService eth, string abi, string address, string method)
         {
             var contract = eth.GetContract(abi, address);
             var function = contract.ContractBuilder.ContractABI.Functions.FirstOrDefault(candidate => candidate.Name == method || candidate.Signature == method)
-                ?? throw (missingMessage == null ? Errors.MethodNotFound(method) : new Web3Exception("METHOD_NOT_FOUND", missingMessage));
+                ?? throw Errors.MethodNotFound(method);
             return contract.GetFunctionBySignature(function.Sha3Signature);
         }
 

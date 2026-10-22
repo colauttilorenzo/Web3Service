@@ -9,12 +9,12 @@ import * as HdWallets from './Evm/HdWallets.js';
 import type { IWeb3Service } from './IWeb3Service.js';
 import type {
   Abi, Bytecode, ChainId, ChainKind, ContractResult, ICheckResult, IEvmProvider, ITokenCreation, ITokenDefinition, ITokenInfo, ITransaction,
-  ITransactionDetails, IWallet, NetworkOf, NotarizationDocument, ProviderInput, TransactionOptions, Web3ServiceOptions,
+  ITransactionDetails, IWallet, NetworkOf, ProviderInput, TransactionOptions, Web3ServiceOptions,
 } from './Models.js';
 import type { Web3Contract } from './Web3Contract.js';
 
 /**
- * Deploys contracts, notarizes document hashes with `mint`, creates tokens, and reads contracts and transactions on any supported blockchain.
+ * Deploys and calls contracts, creates tokens, and reads transactions on any supported blockchain.
  * The provider selects the blockchain: an IEvmProvider (or a node URL) for EVM networks, an IAvmProvider for Algorand,
  * an IBitcoinProvider for Bitcoin. The API and the JSON output are the same everywhere; an operation the blockchain does not have
  * fails with NotImplementedError. Mirrors Certifie.Web3.Web3Service in .NET, with numeric values returned as decimal integer strings.
@@ -87,11 +87,6 @@ export class Web3Service<P extends ProviderInput = IEvmProvider> implements IWeb
   /** Calls a read-only method. A single output is returned as its value, several outputs as an array. Integers become decimal strings. */
   callContractMethod<T = ContractResult>(method: string, abi: Abi, address: string, parameters: readonly unknown[] = []): Promise<T> {
     return this.#chain.callContractMethod<T>(method, abi, address, parameters);
-  }
-
-  /** Notarizes a document hash by calling mint(address,string,string,string) on the contract. */
-  mint(abi: Abi, contractAddress: string, document: NotarizationDocument, onChainEvent?: ITransaction, options?: TransactionOptions): Promise<ITransaction> {
-    return this.#chain.mint(abi, contractAddress, document, onChainEvent, options);
   }
 
   /** Deploys a contract; tx.contractAddress is its address (its application ID on Algorand). */

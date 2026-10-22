@@ -61,9 +61,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'hash deve essere uno SHA-256 esadecimale.' }, { status: 400 });
   }
   try {
-    const result = await web3.mint(notarizerAbi, process.env.CONTRACT_ADDRESS!, {
-      hash: { data: hash, algorithm: 'sha2' },
-      metadata,
+    const result = await web3.getContract(notarizerAbi, process.env.CONTRACT_ADDRESS!).send('mint', {
+      recipient: process.env.CONTRACT_ADDRESS!, hash, algorithm: 'sha2', metadataURI: metadata ?? '',
     });
     return NextResponse.json(result);
   } catch (error) {

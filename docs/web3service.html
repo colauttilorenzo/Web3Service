@@ -50,27 +50,15 @@ Console.WriteLine(web3.Provider.Symbol); // "ETH": i default di Ethereum, salvo 
 Console.WriteLine(web3.ChainId);         // "0x1", esadecimale minuscolo</code></pre></div></div></div>
 <div class="table-wrap"><table><thead><tr><th>Proprietà</th><th>Tipo</th><th>Descrizione</th></tr></thead><tbody><tr><td><code>kind</code></td><td><code>'evm' | 'avm' | 'bitcoin'</code></td><td>La blockchain scelta dal provider (<code>Kind</code> in .NET)</td></tr><tr><td><code>provider</code></td><td><code>Readonly&lt;IEthereumProvider | IAlgorandNetwork | IBitcoinNetwork&gt;</code></td><td>Configurazione con i default applicati e il chain ID normalizzato (<code>Provider</code> in .NET)</td></tr><tr><td><code>chainId</code></td><td><code>string</code></td><td>Chain ID normalizzato, es. <code>0x13882</code>; genesis ID su Algorand, nome della rete su Bitcoin (<code>ChainId</code> in .NET)</td></tr></tbody></table></div>
 <p>I metodi seguenti esistono per ogni provider; quelli che la blockchain non offre restituiscono <code>NotImplementedError</code>. Vedi <a href="blockchain.html#operazioni">Operazioni per blockchain</a>.</p>
-<h2 id="mint">mint</h2>
-<p>Notarizza un documento chiamando <code>mint(contractAddress, hash, algorithm, metadata)</code>. Come nella classe originale, il primo argomento è l’indirizzo del contratto stesso. Attende l’inclusione in un blocco. Su Algorand <code>contractAddress</code> è l’ID dell’applicazione: vedi <a href="algorand.html#mint">Algorand</a>.</p>
-<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Firma</div><pre><code class="language-ts">mint(
-  abi: Abi,
-  contractAddress: string,
-  document: NotarizationDocument,
-  onChainEvent?: ITransaction,     // name e requestedAt da conservare
-  options?: TransactionOptions,    // gas, gasPrice, nonce, value
-): Promise&lt;ITransaction&gt;</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const result = await web3.mint(notarizerAbi, contractAddress,
-  { hash: { data: hash, algorithm: 'sha2' }, metadata: 'ipfs://bafy...' },
-  { name: 'contratto-42' },     // conservato nel risultato
+<h2 id="notarizzazione">Notarizzazione</h2>
+<p>Non c’è un metodo dedicato: la notarizzazione è una chiamata al metodo <code>mint</code> del contratto tramite <a href="web3contract.html">getContract</a>, con i nomi dei parametri dell’ABI. Con il contratto di esempio <code>mint(recipient, hash, algorithm, metadataURI)</code> il destinatario è l’indirizzo del contratto stesso. La chiamata attende l’inclusione in un blocco e restituisce la transazione con <code>name: 'mint'</code>. Su Algorand l’indirizzo è l’ID dell’applicazione: vedi <a href="algorand.html#mint">Algorand</a>.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const notarizer = web3.getContract(notarizerAbi, contractAddress);
+const result = await notarizer.send('mint',
+  { recipient: contractAddress, hash, algorithm: 'sha2', metadataURI: 'ipfs://bafy...' },
   { gasPrice: '30000000000' },  // 30 gwei, opzionale
-);</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Firma</div><pre><code class="language-csharp">Task&lt;TransactionResult&gt; MintAsync(
-    string abi,                              // ABI in JSON
-    string contractAddress,
-    NotarizationDocument document,
-    TransactionResult? onChainEvent = null,  // Name e RequestedAt da conservare
-    TransactionOptions? options = null,      // Gas, GasPrice, Nonce, Value
-    CancellationToken cancellationToken = default)</code></pre></div><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var result = await web3.MintAsync(abi, contractAddress,
-    new NotarizationDocument { Hash = new NotarizationHash { Data = hash, Algorithm = "sha2" }, Metadata = "ipfs://bafy..." },
-    new TransactionResult { Name = "contratto-42" },     // conservato nel risultato
+);</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var notarizer = web3.GetContract(abi, contractAddress);
+var result = await notarizer.SendAsync("mint",
+    new { recipient = contractAddress, hash, algorithm = "sha2", metadataURI = "ipfs://bafy..." },
     new TransactionOptions { GasPrice = 30_000_000_000 }, // 30 gwei, opzionale
     cancellationToken);</code></pre></div></div></div>
 <h2 id="deploy">deploy</h2>

@@ -24,8 +24,9 @@ public class AlgorandTests
 
     public AlgorandTests(AlgorandNode node) => _node = node;
 
-    private static NotarizationDocument Document(char letter, string? metadata = null) =>
-        new() { Hash = new NotarizationHash { Data = new string(letter, 64), Algorithm = "sha2" }, Metadata = metadata };
+    /// <summary>Notarization is a call to mint(address,string,string,string) on the test application, whose own account is the recipient.</summary>
+    private static object Notarization(string address, char letter, string uri = "") =>
+        new { recipient = AlgorandWallets.GetApplicationAddress(address), hash = new string(letter, 64), algorithm = "sha2", uri };
 
     private static async Task<Web3Contract> DeployContractAsync(Service service, string name, params object[] constructorArguments)
     {
@@ -37,21 +38,23 @@ public class AlgorandTests
     public async Task AlgorandDeploysNotarizesReadsAndReturnsJsonSafeReceipts()
     {
         var service = new Service(_node.Provider(), _node.Signer());
-        var deployed = await service.DeployAsync(Notarizer, "", new object[] { Text(Root["contract"]!["label"]) }, null, Funding);
-        Assert.Equal(("deploy", "1", "appl"), (deployed.Name, deployed.Tx!.Status, deployed.Tx.Type));
+        var deployed = await service.DeployAsync(Notarizer, "", new object[] { Text(Root["contract"]!["label"]) },
+            new TransactionResult { RequestedAt = "123", RejectedAt = "999" }, Funding);
+        Assert.Equal(("deploy", "1", "appl", "123", null), (deployed.Name, deployed.Tx!.Status, deployed.Tx.Type, deployed.RequestedAt, deployed.RejectedAt));
         Assert.Matches("^[0-9]+$", deployed.CompletedAt);
         var address = deployed.Tx.ContractAddress!;
         Assert.Matches("^[0-9]+$", address);
         Assert.Equal(Text(Root["contract"]!["label"]), (await service.CallContractMethodAsync("label", Notarizer, address))!.GetValue<string>());
 
-        var notarized = Document('a', "ipfs://example");
-        var minted = await service.MintAsync(Notarizer, address, notarized, new TransactionResult { RequestedAt = "123", RejectedAt = "999" });
-        Assert.Equal(("mint", "1", "123", null), (minted.Name, minted.Tx!.Status, minted.RequestedAt, minted.RejectedAt));
+        var hash = new string('a', 64);
+        var notarized = Notarization(address, 'a', "ipfs://example");
+        var minted = await service.GetContract(Notarizer, address).SendAsync("mint", notarized);
+        Assert.Equal(("mint", "1"), (minted.Name, minted.Tx!.Status));
         Assert.Equal((1, "0", "0"), (minted.Tx.Logs.Count, minted.Tx.Logs[0].LogIndex, minted.Tx.GasUsed));
         Assert.Equal(("1000", "ALGO", "6"), (minted.NativeFee!.Amount, minted.NativeFee.Symbol, minted.NativeFee.Decimals));
 
-        var metadata = await service.CallContractMethodAsync("metadata", Notarizer, address, new object[] { notarized.Hash.Data });
-        Assert.Equal(new JsonArray(notarized.Hash.Data, "sha2", "ipfs://example").ToJsonString(), metadata!.ToJsonString());
+        var metadata = await service.CallContractMethodAsync("metadata", Notarizer, address, new object[] { hash });
+        Assert.Equal(new JsonArray(hash, "sha2", "ipfs://example").ToJsonString(), metadata!.ToJsonString());
         Assert.Equal(Root["algorand"]!["numbers"]!.ToJsonString(), (await service.CallContractMethodAsync("numbers", Notarizer, address))!.ToJsonString());
 
         var confirmed = await service.GetTransactionReceiptAsync(minted.Tx.TransactionHash, new TransactionResult { RejectedAt = "1" });
@@ -59,7 +62,7 @@ public class AlgorandTests
 
         Assert.Equal("TRANSACTION_NOT_FOUND", (await Assert.ThrowsAsync<Web3Exception>(() => service.GetTransactionReceiptAsync(NotATransaction))).Code);
         Assert.Equal("METHOD_NOT_FOUND", (await Assert.ThrowsAsync<Web3Exception>(() => service.CallContractMethodAsync("missing", Notarizer, address))).Code);
-        Assert.Equal("SIGNER_REQUIRED", (await Assert.ThrowsAsync<Web3Exception>(() => new Service(_node.Provider()).MintAsync(Notarizer, address, notarized))).Code);
+        Assert.Equal("SIGNER_REQUIRED", (await Assert.ThrowsAsync<Web3Exception>(() => new Service(_node.Provider()).GetContract(Notarizer, address).SendAsync("mint", notarized))).Code);
     }
 
     [AlgorandFact]
@@ -67,10 +70,11 @@ public class AlgorandTests
     {
         var service = new Service(_node.Provider(), _node.Signer());
         var address = (await service.DeployAsync(Notarizer, "", new object[] { "Queue" }, null, Funding)).Tx!.ContractAddress!;
-        var results = await Task.WhenAll(new[] { 'b', 'c' }.Select(letter => service.MintAsync(Notarizer, address, Document(letter))));
+        var contract = service.GetContract(Notarizer, address);
+        var results = await Task.WhenAll(new[] { 'b', 'c' }.Select(letter => contract.SendAsync("mint", Notarization(address, letter))));
         Assert.Equal(new[] { "1", "1" }, results.Select(result => result.Tx!.Status));
 
-        var failure = await Assert.ThrowsAsync<Web3Exception>(() => service.MintAsync(Notarizer, address, Document('b')));
+        var failure = await Assert.ThrowsAsync<Web3Exception>(() => contract.SendAsync("mint", Notarization(address, 'b')));
         Assert.Equal("TRANSACTION_REVERTED", failure.Code);
         Assert.Matches("^[A-Z2-7]{52}$", failure.TransactionHash);
         Assert.Contains("already notarized", failure.Message);

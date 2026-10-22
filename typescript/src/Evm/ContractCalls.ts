@@ -17,10 +17,10 @@ export type ContractFunction = (...args: unknown[]) => {
 type DecodedTuple = { __length__: number; [index: number]: unknown };
 
 /** Looks a function up in the ABI by name or signature, and fails with METHOD_NOT_FOUND when it is missing. */
-export function getFunction(web3: Web3, abi: ContractAbi, address: string, method: string, missingMessage?: string): ContractFunction {
+export function getFunction(web3: Web3, abi: ContractAbi, address: string, method: string): ContractFunction {
   const contract = new web3.eth.Contract(abi, address);
   const fn = contract.methods[method] as ContractFunction | undefined;
-  if (!fn) throw new Web3Error('METHOD_NOT_FOUND', missingMessage ?? `Contract method ${method} is missing from the ABI.`);
+  if (!fn) throw new Web3Error('METHOD_NOT_FOUND', `Contract method ${method} is missing from the ABI.`);
   return fn;
 }
 

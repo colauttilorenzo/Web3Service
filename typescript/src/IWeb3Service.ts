@@ -1,6 +1,6 @@
 import type {
   Abi, Bytecode, ChainId, ChainKind, ContractResult, ICheckResult, ITokenCreation, ITokenDefinition, ITokenInfo, ITransaction, ITransactionDetails,
-  NotarizationDocument, ResolvedProvider, TransactionOptions,
+  ResolvedProvider, TransactionOptions,
 } from './Models.js';
 import type { Web3Contract } from './Web3Contract.js';
 
@@ -24,9 +24,6 @@ export interface IWeb3Service {
 
   /** Calls a read-only method. A single output is returned as its value, several outputs as an array. Integers become decimal strings. */
   callContractMethod<T = ContractResult>(method: string, abi: Abi, address: string, parameters?: readonly unknown[]): Promise<T>;
-
-  /** Notarizes a document hash by calling mint(address,string,string,string) on the contract. */
-  mint(abi: Abi, contractAddress: string, document: NotarizationDocument, onChainEvent?: ITransaction, options?: TransactionOptions): Promise<ITransaction>;
 
   /** Deploys a contract; tx.contractAddress is its address (its application ID on Algorand). */
   deploy(

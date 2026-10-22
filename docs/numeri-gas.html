@@ -70,8 +70,9 @@ function formatUnits(amount, decimals) {
 
 formatUnits(result.nativeFee.amount, result.nativeFee.decimals); // '0.000048295'</code></pre></div></div><div class="tab-pane" data-label="Fastify"><div class="code"><div class="code-title">src/routes/notarization.ts</div><pre><code class="language-ts">import Big from 'big.js';
 
-app.post&lt;{ Body: NotarizationDocument }&gt;('/notarize', async request =&gt; {
-  const result = await app.web3.mint(notarizerAbi, app.contractAddress, request.body);
+app.post&lt;{ Body: { hash: string } }&gt;('/notarize', async request =&gt; {
+  const notarization = { recipient: app.contractAddress, hash: request.body.hash, algorithm: 'sha2', metadataURI: '' };
+  const result = await app.web3.getContract(notarizerAbi, app.contractAddress).send('mint', notarization);
   const fee = result.nativeFee!;
   return { ...result, feeDisplay: new Big(fee.amount).div(new Big(10).pow(Number(fee.decimals))).toFixed() }; // '0.000048295'
 });</code></pre></div></div><div class="tab-pane" data-label="Express"><div class="code"><div class="code-title">src/fee.ts</div><pre><code class="language-ts">import Big from 'big.js';

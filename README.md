@@ -27,7 +27,7 @@ Release notes are in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Architecture
 
-`Web3Service` is a facade over the `IWeb3Service` interface: `Internal/Blockchains` creates the implementation that matches the provider type, and each blockchain has its own folder. Code that is the same on every blockchain (endpoint fallback, configuration, errors, notarization arguments, token reads, results, the write queue) lives in `Internal/`.
+`Web3Service` is a facade over the `IWeb3Service` interface: `Internal/Blockchains` creates the implementation that matches the provider type, and each blockchain has its own folder. Code that is the same on every blockchain (endpoint fallback, configuration, errors, token reads, results, the write queue) lives in `Internal/`.
 
 | Folder | Implementation | Talks to |
 | --- | --- | --- |
@@ -54,7 +54,7 @@ Each implementation has a `src` and a `test` folder, and every source file has a
 | `Internal/Endpoints.ts` | `Internal/Endpoints.cs` | Endpoint fallback and network check, for every blockchain |
 | `Internal/Errors.ts` | `Internal/Errors.cs` | Shared error factories |
 | `Internal/Integers.ts` | `Internal/Integers.cs` | Integer parsing and formatting |
-| `Internal/Notarization.ts` | `Internal/Notarization.cs` | Arguments of `mint` |
+| `Internal/ChainEvents.ts` | `Internal/ChainEvents.cs` | The caller's event passed to every write |
 | `Internal/RestClient.ts` | `Internal/RestClient.cs` | JSON REST client for algod, the indexer and Esplora |
 | `Internal/SharedResults.ts` | `Internal/SharedResults.cs` | Request time, block times and native fee of results |
 | `Internal/Standards.ts` | `Internal/Standards.cs` | Token standards recognized from method names |
@@ -79,7 +79,7 @@ Each implementation has a `src` and a `test` folder, and every source file has a
 | `Algorand/AlgodConnector.ts` | `Algorand/AlgodConnector.cs` | algod endpoints and genesis ID check |
 | `Algorand/AlgodSession.ts` | `Algorand/AlgodSession.cs` | One algod (and indexer) session with its suggested parameters |
 | `Algorand/AlgorandSigner.ts` | `Algorand/AlgorandSigner.cs` | Signing with a 25-word mnemonic, a private key or a wallet |
-| `Algorand/AlgorandWallets.ts` | `Algorand/AlgorandWallets.cs` | Algorand accounts and mnemonics (public) |
+| `Algorand/AlgorandWallets.ts` | `Algorand/AlgorandWallets.cs` | Algorand accounts, mnemonics and application accounts (public) |
 | `Algorand/AppCalls.ts` | `Algorand/AppCalls.cs` | Application calls and creations as transaction groups |
 | `Algorand/AppPrograms.ts` | `Algorand/AppPrograms.cs` | Programs, state schema and create method for `deploy` |
 | `Algorand/Arc4Methods.ts` | `Algorand/Arc4Methods.cs` | ARC-4 methods: selectors, arguments, return values, decoded calls |
@@ -97,7 +97,7 @@ Each implementation has a `src` and a `test` folder, and every source file has a
 | `Bitcoin/EsploraSession.ts` | `Bitcoin/EsploraSession.cs` | Esplora endpoints and genesis block check |
 | `Bitcoin/Transactions.ts` | `Bitcoin/Transactions.cs` | Transactions and receipts in the shared JSON shape |
 
-Method names match too: the TypeScript name is the C# name with a lowercase first letter and without `Async` (`MintAsync` → `mint`, `Receipts.WaitAsync` → `Receipts.wait`). C# static classes are TypeScript modules imported as namespaces (`import * as Receipts from './Receipts.js'`), so the call sites read the same. A fix or change goes in the file with the same name on both sides.
+Method names match too: the TypeScript name is the C# name with a lowercase first letter and without `Async` (`DeployAsync` → `deploy`, `Receipts.WaitAsync` → `Receipts.wait`). C# static classes are TypeScript modules imported as namespaces (`import * as Receipts from './Receipts.js'`), so the call sites read the same. A fix or change goes in the file with the same name on both sides.
 
 A few files exist on one side only, because the other language gets the same thing from a library:
 

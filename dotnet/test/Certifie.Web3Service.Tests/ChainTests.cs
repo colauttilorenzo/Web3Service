@@ -16,7 +16,9 @@ public class ChainTests
 
     public ChainTests(Chain chain) => _chain = chain;
 
-    private static NotarizationDocument Document(char letter) => new() { Hash = new NotarizationHash { Data = new string(letter, 64), Algorithm = "sha2" } };
+    /// <summary>Notarization is a call to mint(address,string,string,string) on the test contract, whose own address is the recipient.</summary>
+    private static object Notarization(string address, char letter, string uri = "") =>
+        new { recipient = address, hash = new string(letter, 64), algorithm = "sha2", uri };
 
     private static void AssertIntegerStrings(JsonNode? node)
     {
@@ -32,23 +34,24 @@ public class ChainTests
     public async Task DeploysNotarizesReadsAndReturnsJsonSafeReceipts()
     {
         var service = new Service(_chain.Provider(), _chain.Signer());
-        var deployed = await service.DeployAsync(_chain.Abi, _chain.Bytecode, new object[] { Text(Root["contract"]!["label"]) });
-        Assert.Equal(("deploy", "1", "0"), (deployed.Name, deployed.Tx!.Status, deployed.Tx.Type));
+        var deployed = await service.DeployAsync(_chain.Abi, _chain.Bytecode, new object[] { Text(Root["contract"]!["label"]) },
+            new TransactionResult { RequestedAt = "123", RejectedAt = "999" });
+        Assert.Equal(("deploy", "1", "0", "123"), (deployed.Name, deployed.Tx!.Status, deployed.Tx.Type, deployed.RequestedAt));
+        Assert.Null(deployed.RejectedAt);
         Assert.Matches("^\\d+$", deployed.CompletedAt);
         var address = deployed.Tx.ContractAddress!;
         Assert.Equal(Text(Root["contract"]!["label"]), (await service.CallContractMethodAsync("label", _chain.Abi, address))!.GetValue<string>());
 
-        var notarized = Document('a');
-        notarized.Metadata = "ipfs://example";
-        var minted = await service.MintAsync(_chain.Abi, address, notarized, new TransactionResult { RequestedAt = "123", RejectedAt = "999" });
-        Assert.Equal(("mint", "1", "123"), (minted.Name, minted.Tx!.Status, minted.RequestedAt));
-        Assert.Null(minted.RejectedAt);
+        var hash = new string('a', 64);
+        var notarized = Notarization(address, 'a', "ipfs://example");
+        var minted = await service.GetContract(_chain.Abi, address).SendAsync("mint", notarized);
+        Assert.Equal(("mint", "1"), (minted.Name, minted.Tx!.Status));
         Assert.Equal("0", minted.Tx.Logs[0].LogIndex);
         Assert.Equal((BigInteger.Parse(minted.Tx.GasUsed) * BigInteger.Parse(minted.Tx.EffectiveGasPrice!)).ToString(), minted.NativeFee!.Amount);
         Assert.Equal(("ETH", "18"), (minted.NativeFee.Symbol, minted.NativeFee.Decimals));
 
-        var metadata = await service.CallContractMethodAsync("metadata", _chain.Abi, address, new object[] { notarized.Hash.Data });
-        Assert.Equal(new JsonArray(notarized.Hash.Data, "sha2", "ipfs://example").ToJsonString(), metadata!.ToJsonString());
+        var metadata = await service.CallContractMethodAsync("metadata", _chain.Abi, address, new object[] { hash });
+        Assert.Equal(new JsonArray(hash, "sha2", "ipfs://example").ToJsonString(), metadata!.ToJsonString());
         Assert.Equal(Root["contract"]!["numbers"]!.ToJsonString(), (await service.CallContractMethodAsync("numbers", _chain.Abi, address))!.ToJsonString());
 
         var confirmed = await service.GetTransactionReceiptAsync(minted.Tx.TransactionHash, new TransactionResult { RejectedAt = "1" });
@@ -58,7 +61,7 @@ public class ChainTests
 
         Assert.Equal("TRANSACTION_NOT_FOUND", (await Assert.ThrowsAsync<Web3Exception>(() => service.GetTransactionReceiptAsync("0x" + new string('0', 64)))).Code);
         Assert.Equal("METHOD_NOT_FOUND", (await Assert.ThrowsAsync<Web3Exception>(() => service.CallContractMethodAsync("missing", _chain.Abi, address))).Code);
-        Assert.Equal("SIGNER_REQUIRED", (await Assert.ThrowsAsync<Web3Exception>(() => new Service(_chain.Provider()).MintAsync(_chain.Abi, address, notarized))).Code);
+        Assert.Equal("SIGNER_REQUIRED", (await Assert.ThrowsAsync<Web3Exception>(() => new Service(_chain.Provider()).GetContract(_chain.Abi, address).SendAsync("mint", notarized))).Code);
     }
 
     [Fact]
@@ -66,10 +69,11 @@ public class ChainTests
     {
         var service = new Service(_chain.Provider(), _chain.Signer());
         var address = (await service.DeployAsync(_chain.Abi, _chain.Bytecode, new object[] { "Nonces" })).Tx!.ContractAddress!;
-        var results = await Task.WhenAll(new[] { 'b', 'c' }.Select(letter => service.MintAsync(_chain.Abi, address, Document(letter))));
+        var contract = service.GetContract(_chain.Abi, address);
+        var results = await Task.WhenAll(new[] { 'b', 'c' }.Select(letter => contract.SendAsync("mint", Notarization(address, letter))));
         Assert.All(results, result => Assert.Equal("1", result.Tx!.Status));
 
-        var failure = await Assert.ThrowsAsync<Web3Exception>(() => service.MintAsync(_chain.Abi, address, Document('b'), options: new TransactionOptions { Gas = 300_000 }));
+        var failure = await Assert.ThrowsAsync<Web3Exception>(() => contract.SendAsync("mint", Notarization(address, 'b'), new TransactionOptions { Gas = 300_000 }));
         Assert.Equal("TRANSACTION_REVERTED", failure.Code);
         Assert.Matches("^0x[0-9a-f]{64}$", failure.TransactionHash);
         var reverted = await service.GetTransactionReceiptAsync(failure.TransactionHash!, new TransactionResult { CompletedAt = "1" });

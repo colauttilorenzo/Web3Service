@@ -716,6 +716,6 @@
       },
       "nativeFee": { "amount": "1410", "symbol": "BTC", "decimals": "8" }
     },
-    "notImplemented": ["getContract", "callContractMethod", "mint", "deploy", "createToken", "getTokenInfo"]
+    "notImplemented": ["getContract", "callContractMethod", "deploy", "createToken", "getTokenInfo"]
   }
 }

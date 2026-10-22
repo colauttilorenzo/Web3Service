@@ -73,7 +73,9 @@ import { httpStatus } from '@/lib/http-status';
 
 export async function POST(request: Request) {
   try {
-    return Response.json(await web3.mint(notarizerAbi, contractAddress, await request.json()));
+    const { hash, metadata = '' } = await request.json();
+    const notarizer = web3.getContract(notarizerAbi, contractAddress);
+    return Response.json(await notarizer.send('mint', { recipient: contractAddress, hash, algorithm: 'sha2', metadataURI: metadata }));
   } catch (error) {
     if (error instanceof Web3Error) return Response.json(error.toJSON(), { status: httpStatus(error) });
     throw error;

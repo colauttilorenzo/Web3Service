@@ -58,9 +58,8 @@ app.post&lt;{ Body: { hash: string; metadata?: string } }&gt;('/notarize', {
       properties: { hash: { type: 'string', pattern: '^[0-9a-f]{64}$' }, metadata: { type: 'string' } },
     },
   },
-}, async request =&gt; web3.mint(notarizerAbi, contract, {
-  hash: { data: request.body.hash, algorithm: 'sha2' },
-  metadata: request.body.metadata,
+}, async request =&gt; web3.getContract(notarizerAbi, contract).send('mint', {
+  recipient: contract, hash: request.body.hash, algorithm: 'sha2', metadataURI: request.body.metadata ?? '',
 }));
 
 app.get&lt;{ Params: { hash: string } }&gt;('/transactions/:hash', async request =&gt;

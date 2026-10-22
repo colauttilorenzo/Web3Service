@@ -76,9 +76,8 @@ export function NotarizeFile() {
       setState({ step: 'hashing' });
       const hash = await sha256(file);
       setState({ step: 'signing' });
-      const result = await service.mint(notarizerAbi, import.meta.env.VITE_CONTRACT_ADDRESS, {
-        hash: { data: hash, algorithm: 'sha2' },
-        metadata: file.name,
+      const result = await service.getContract(notarizerAbi, import.meta.env.VITE_CONTRACT_ADDRESS).send('mint', {
+        recipient: import.meta.env.VITE_CONTRACT_ADDRESS, hash, algorithm: 'sha2', metadataURI: file.name,
       });
       setState({ step: 'done', result });
     } catch (error) {

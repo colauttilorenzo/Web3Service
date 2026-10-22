@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Certifie.Web3;
+using Certifie.Web3.Algorand;
 using Service = Certifie.Web3.Web3Service;
 
 namespace Certifie.Web3Service.Tests;
@@ -24,14 +25,15 @@ public static class AlgorandParityScenario
     {
         var deployed = await service.DeployAsync(Notarizer, "", new object[] { "Parity" }, new TransactionResult { Name = "parity", RequestedAt = "123" }, Funding);
         var address = deployed.Tx!.ContractAddress!;
-        var document = new NotarizationDocument { Hash = new NotarizationHash { Data = new string('f', 64), Algorithm = "sha2" }, Metadata = "ipfs://parity" };
-        var minted = await service.MintAsync(Notarizer, address, document, new TransactionResult { RequestedAt = "456" });
+        var hash = new string('f', 64);
+        var minted = await service.GetContract(Notarizer, address).SendAsync("mint", new { recipient = AlgorandWallets.GetApplicationAddress(address), hash, algorithm = "sha2", uri = "ipfs://parity" });
+        minted.RequestedAt = "now";
         var receipt = await service.GetTransactionReceiptAsync(minted.Tx!.TransactionHash, new TransactionResult { Name = "lookup", RequestedAt = "789" });
         return new JsonObject
         {
             ["deployed"] = JsonSerializer.SerializeToNode(deployed), ["minted"] = JsonSerializer.SerializeToNode(minted), ["receipt"] = JsonSerializer.SerializeToNode(receipt),
             ["label"] = await service.CallContractMethodAsync("label", Notarizer, address),
-            ["metadata"] = await service.CallContractMethodAsync("metadata", Notarizer, address, new object[] { document.Hash.Data }),
+            ["metadata"] = await service.CallContractMethodAsync("metadata", Notarizer, address, new object[] { hash }),
             ["numbers"] = await service.CallContractMethodAsync("numbers", Notarizer, address),
         };
     }

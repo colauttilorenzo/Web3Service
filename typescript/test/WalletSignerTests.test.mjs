@@ -9,7 +9,7 @@ import { vectors } from './fixtures/TestVectors.mjs';
 
 const { abi, bytecode } = contracts.Notarizer;
 
-const document = { hash: { data: 'd'.repeat(64), algorithm: 'sha2' }, metadata: 'ipfs://wallet' };
+const hash = 'd'.repeat(64);
 
 /** An EIP-1193 wallet like MetaMask: it holds the key, signs and broadcasts; the page never sees the key. */
 function browserWallet(chain, { chainId = '0x539', knownChains = ['0x539'], reject = false } = {}) {
@@ -58,10 +58,10 @@ test('a browser wallet signs deploy and mint while reads and receipts use the RP
   assert.equal(wallet.sent.gasPrice, undefined, 'fees are left to the wallet');
   assert.match(wallet.sent.gas, /^0x[0-9a-f]+$/);
   const address = deployed.tx.contractAddress;
-  const minted = await service.mint(abi, address, document);
+  const minted = await service.getContract(abi, address).send('mint', { recipient: address, hash, algorithm: 'sha2', uri: 'ipfs://wallet' });
   assert.equal(minted.name, 'mint');
   assert.equal(minted.tx.from.toLowerCase(), wallet.sent.from.toLowerCase());
-  const metadata = await service.callContractMethod('metadata', abi, address, [document.hash.data]);
+  const metadata = await service.callContractMethod('metadata', abi, address, [hash]);
   assert.equal(metadata[2], 'ipfs://wallet');
   assert.equal(wallet.calls.filter(method => method === 'eth_sendTransaction').length, 2);
   assert.equal(wallet.calls.includes('wallet_switchEthereumChain'), false);

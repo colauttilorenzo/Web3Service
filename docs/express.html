@@ -57,14 +57,14 @@ app.use(express.json());
 // Solo l'hash, calcolato dal client
 app.post('/notarize', async (req, res) =&gt; {
   const { hash, metadata } = req.body;
-  res.json(await web3.mint(notarizerAbi, contract, { hash: { data: hash, algorithm: 'sha2' }, metadata }));
+  res.json(await web3.getContract(notarizerAbi, contract).send('mint', { recipient: contract, hash, algorithm: 'sha2', metadataURI: metadata ?? '' }));
 });
 
 // Il file intero: l'hash viene calcolato qui e il file non viene conservato
 app.post('/notarize/file', upload.single('file'), async (req, res) =&gt; {
   if (!req.file) return void res.status(400).json({ message: 'Campo file mancante.' });
   const hash = createHash('sha256').update(req.file.buffer).digest('hex');
-  res.json(await web3.mint(notarizerAbi, contract, { hash: { data: hash, algorithm: 'sha2' }, metadata: req.file.originalname }));
+  res.json(await web3.getContract(notarizerAbi, contract).send('mint', { recipient: contract, hash, algorithm: 'sha2', metadataURI: req.file.originalname }));
 });
 
 app.get('/transactions/:hash', async (req, res) =&gt; {

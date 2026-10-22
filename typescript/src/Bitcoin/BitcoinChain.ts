@@ -16,7 +16,7 @@ const MIN_RELAY_FEE = 1;
 
 /**
  * Bitcoin through an Esplora REST API: reads blocks, fees and transactions. Bitcoin has no smart contracts or tokens,
- * so contract, deploy, mint and token operations fail with NotImplementedError.
+ * so contract, deploy and token operations fail with NotImplementedError.
  */
 export class BitcoinChain implements IWeb3Service {
   readonly kind = 'bitcoin';
@@ -48,10 +48,6 @@ export class BitcoinChain implements IWeb3Service {
 
   async callContractMethod<T = ContractResult>(): Promise<T> {
     throw notImplemented('callContractMethod', 'Bitcoin', NO_CONTRACTS);
-  }
-
-  async mint(): Promise<ITransaction> {
-    throw notImplemented('mint', 'Bitcoin', NO_CONTRACTS);
   }
 
   async deploy(): Promise<ITransaction> {

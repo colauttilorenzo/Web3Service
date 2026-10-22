@@ -131,11 +131,6 @@ export interface IWallet {
   index: string;
 }
 
-export interface NotarizationDocument {
-  hash: { data: string; algorithm: string };
-  metadata?: string;
-}
-
 export interface ITransactionLog {
   address?: string;
   data?: string;
