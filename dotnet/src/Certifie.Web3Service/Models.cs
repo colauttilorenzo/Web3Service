@@ -14,8 +14,41 @@ namespace Certifie.Web3
         [JsonPropertyName("decimals")] public int? Decimals { get; set; }
     }
 
-    /// <summary>Initialization input. Only <see cref="RpcURI"/> is required; omitted fields use Ethereum defaults.</summary>
-    public sealed class EvmProvider
+    /// <summary>
+    /// The fields every provider shares. Only <see cref="RpcURI"/> is required; omitted fields use the defaults of the blockchain.
+    /// The type of the provider selects the blockchain: <see cref="IEvmProvider"/>, <see cref="IAvmProvider"/> or <see cref="IBitcoinProvider"/>.
+    /// </summary>
+    public interface IBlockchainProvider
+    {
+        /// <summary>Node or API URI.</summary>
+        string RpcURI { get; }
+        /// <summary>Fallback endpoint, used when the primary is unavailable or on another network.</summary>
+        string? RpcPublicURI { get; }
+        /// <summary>EVM chain ID (decimal or hex), Algorand genesis ID or Bitcoin network name.</summary>
+        string? ChainId { get; }
+        string? ChainName { get; }
+        NativeCurrency? NativeCurrency { get; }
+        string? BlockExplorerURI { get; }
+    }
+
+    /// <summary>An EVM network (Ethereum, Polygon, …) through a JSON-RPC node. Defaults: chain 0x1, Ethereum, Ether, ETH, 18 decimals.</summary>
+    public interface IEvmProvider : IBlockchainProvider { }
+
+    /// <summary>Algorand (the AVM) through an algod node. Defaults: mainnet-v1.0, Algorand, Algo, ALGO, 6 decimals.</summary>
+    public interface IAvmProvider : IBlockchainProvider
+    {
+        /// <summary>algod API token, sent as X-Algo-API-Token; public nodes need none.</summary>
+        string? Token { get; }
+        /// <summary>Indexer URI, used to read transactions that algod no longer keeps.</summary>
+        string? IndexerURI { get; }
+        string? IndexerToken { get; }
+    }
+
+    /// <summary>Bitcoin through an Esplora REST API, such as https://mempool.space/api. Defaults: mainnet, Bitcoin, BTC, 8 decimals.</summary>
+    public interface IBitcoinProvider : IBlockchainProvider { }
+
+    /// <summary>Initialization input for EVM networks. Only <see cref="RpcURI"/> is required; omitted fields use Ethereum defaults.</summary>
+    public sealed class EvmProvider : IEvmProvider
     {
         /// <summary>Decimal (<c>"1337"</c>) or hex (<c>"0x539"</c>) chain ID. Default: <c>0x1</c>.</summary>
         [JsonPropertyName("chainId")] public string? ChainId { get; set; }
@@ -28,15 +61,47 @@ namespace Certifie.Web3
         [JsonPropertyName("blockExplorerURI")] public string? BlockExplorerURI { get; set; }
     }
 
-    /// <summary>Configuration with defaults applied, as exposed by <see cref="Web3Service.Provider"/>.</summary>
-    public sealed class EthereumProvider
+    /// <summary>Initialization input for Algorand. Only <see cref="RpcURI"/> is required; omitted fields use Algorand MainNet defaults.</summary>
+    public sealed class AvmProvider : IAvmProvider
     {
-        internal EthereumProvider(string chainId, string rpcURI, string? rpcPublicURI, string chainName, string currencyName, string symbol, int decimals, string? blockExplorerURI)
+        /// <summary>Genesis ID of the network, e.g. <c>mainnet-v1.0</c> or <c>testnet-v1.0</c>. Default: <c>mainnet-v1.0</c>.</summary>
+        [JsonPropertyName("chainId")] public string? ChainId { get; set; }
+        /// <summary>HTTP(S) algod URI, e.g. https://mainnet-api.algonode.cloud.</summary>
+        [JsonPropertyName("rpcURI")] public string RpcURI { get; set; } = "";
+        [JsonPropertyName("rpcPublicURI")] public string? RpcPublicURI { get; set; }
+        [JsonPropertyName("token")] public string? Token { get; set; }
+        [JsonPropertyName("indexerURI")] public string? IndexerURI { get; set; }
+        [JsonPropertyName("indexerToken")] public string? IndexerToken { get; set; }
+        [JsonPropertyName("nativeCurrency")] public NativeCurrency? NativeCurrency { get; set; }
+        [JsonPropertyName("chainName")] public string? ChainName { get; set; }
+        [JsonPropertyName("blockExplorerURI")] public string? BlockExplorerURI { get; set; }
+    }
+
+    /// <summary>Initialization input for Bitcoin. Only <see cref="RpcURI"/> is required; omitted fields use Bitcoin mainnet defaults.</summary>
+    public sealed class BitcoinProvider : IBitcoinProvider
+    {
+        /// <summary><c>mainnet</c>, <c>testnet</c>, <c>testnet4</c>, <c>signet</c> or <c>regtest</c>. Default: <c>mainnet</c>.</summary>
+        [JsonPropertyName("chainId")] public string? ChainId { get; set; }
+        /// <summary>HTTP(S) Esplora API URI.</summary>
+        [JsonPropertyName("rpcURI")] public string RpcURI { get; set; } = "";
+        [JsonPropertyName("rpcPublicURI")] public string? RpcPublicURI { get; set; }
+        [JsonPropertyName("nativeCurrency")] public NativeCurrency? NativeCurrency { get; set; }
+        [JsonPropertyName("chainName")] public string? ChainName { get; set; }
+        [JsonPropertyName("blockExplorerURI")] public string? BlockExplorerURI { get; set; }
+    }
+
+    /// <summary>Configuration with the defaults applied, as exposed by <see cref="Web3Service.Provider"/>.</summary>
+    public abstract class ResolvedProvider
+    {
+        private protected ResolvedProvider(string kind, IBlockchainProvider input, string chainId, string chainName, (string Name, string Symbol, int Decimals) currency)
         {
-            ChainId = chainId; RpcURI = rpcURI; RpcPublicURI = rpcPublicURI; ChainName = chainName;
-            CurrencyName = currencyName; Symbol = symbol; Decimals = decimals; BlockExplorerURI = blockExplorerURI;
+            Kind = kind; ChainId = chainId; RpcURI = input.RpcURI; RpcPublicURI = input.RpcPublicURI; ChainName = chainName;
+            CurrencyName = currency.Name; Symbol = currency.Symbol; Decimals = currency.Decimals; BlockExplorerURI = input.BlockExplorerURI;
         }
 
+        /// <summary><c>evm</c>, <c>avm</c> or <c>bitcoin</c>.</summary>
+        public string Kind { get; }
+        /// <summary>Normalized hex chain ID on EVM networks (e.g. <c>0x539</c>), genesis ID on Algorand, network name on Bitcoin.</summary>
         public string ChainId { get; }
         public string RpcURI { get; }
         public string? RpcPublicURI { get; }
@@ -47,15 +112,47 @@ namespace Certifie.Web3
         public string? BlockExplorerURI { get; }
     }
 
+    /// <summary>An EVM network with the defaults applied.</summary>
+    public sealed class EthereumProvider : ResolvedProvider
+    {
+        internal EthereumProvider(IEvmProvider input, string chainId, string chainName, (string Name, string Symbol, int Decimals) currency)
+            : base("evm", input, chainId, chainName, currency) { }
+    }
+
+    /// <summary>An Algorand network with the defaults applied.</summary>
+    public sealed class AlgorandNetwork : ResolvedProvider
+    {
+        internal AlgorandNetwork(IAvmProvider input, string chainId, string chainName, (string Name, string Symbol, int Decimals) currency)
+            : base("avm", input, chainId, chainName, currency)
+        {
+            Token = input.Token; IndexerURI = input.IndexerURI; IndexerToken = input.IndexerToken;
+        }
+
+        public string? Token { get; }
+        public string? IndexerURI { get; }
+        public string? IndexerToken { get; }
+    }
+
+    /// <summary>A Bitcoin network with the defaults applied.</summary>
+    public sealed class BitcoinNetwork : ResolvedProvider
+    {
+        internal BitcoinNetwork(IBitcoinProvider input, string chainId, string chainName, (string Name, string Symbol, int Decimals) currency)
+            : base("bitcoin", input, chainId, chainName, currency) { }
+    }
+
     /// <summary>Signing credentials and timeouts. Decrypting and storing secrets belongs to the application.</summary>
     public sealed class Web3ServiceOptions
     {
-        /// <summary>Hex private key. Use either this or <see cref="Mnemonic"/>.</summary>
+        /// <summary>
+        /// Hex private key. On Algorand: the 32-byte Ed25519 seed as 0x hex, or the 64-byte secret key as base64.
+        /// Use either this or <see cref="Mnemonic"/>.
+        /// </summary>
         public string? PrivateKey { get; set; }
-        /// <summary>BIP-39 phrase; the key is derived at <c>m/44'/60'/0'/0/{WalletIndex}</c>.</summary>
+        /// <summary>BIP-39 phrase; the key is derived at <c>m/44'/60'/0'/0/{WalletIndex}</c>. On Algorand: the account's 25-word mnemonic.</summary>
         public string? Mnemonic { get; set; }
+        /// <summary>EVM networks only.</summary>
         public string MnemonicPassword { get; set; } = "";
-        /// <summary>Default: 1, as in the original CERTIFIE service.</summary>
+        /// <summary>EVM networks only. Default: 1, as in the original CERTIFIE service.</summary>
         public int WalletIndex { get; set; } = 1;
         /// <summary>Timeout for each RPC request, including provider selection. Default: 30 seconds.</summary>
         public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
@@ -63,12 +160,13 @@ namespace Certifie.Web3
         public TimeSpan TransactionTimeout { get; set; } = TimeSpan.FromSeconds(120);
         /// <summary>Receipt polling interval. Default: 1 second.</summary>
         public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(1);
-        /// <summary>Added to the estimated gas limit. Default: 10000.</summary>
+        /// <summary>EVM networks only: added to the estimated gas limit. Default: 10000.</summary>
         public BigInteger GasBuffer { get; set; } = 10_000;
 
         internal Web3ServiceOptions Copy() => (Web3ServiceOptions)MemberwiseClone();
     }
 
+    /// <summary>On Algorand <see cref="GasPrice"/> is the flat fee in microAlgos and <see cref="Value"/> the microAlgos paid to the application; gas and nonce do not apply.</summary>
     public sealed class TransactionOptions
     {
         public BigInteger? Gas { get; set; }
@@ -98,6 +196,7 @@ namespace Certifie.Web3
         [JsonPropertyName("index")] public string Index { get; set; } = "";
     }
 
+    /// <summary>Latest block and current fee: the gas price in wei on EVM networks, the minimum fee in microAlgos on Algorand, sat/vB on Bitcoin.</summary>
     public sealed class CheckResult
     {
         [JsonPropertyName("blockNumber")] public string BlockNumber { get; set; } = "";
@@ -177,10 +276,10 @@ namespace Certifie.Web3
         [JsonPropertyName("outputs")] public Dictionary<string, string> Outputs { get; set; } = new Dictionary<string, string>();
     }
 
-    /// <summary>Token data read from the contract. Only the fields whose functions exist in the ABI are set.</summary>
+    /// <summary>Token data read from the contract or the blockchain. Only the fields the token offers are set.</summary>
     public sealed class TokenInfo
     {
-        /// <summary><c>ERC-20</c>, <c>ERC-721</c> or <c>ERC-1155</c>.</summary>
+        /// <summary><c>ERC-20</c>, <c>ERC-721</c>, <c>ERC-1155</c>, <c>ARC-200</c>, <c>ARC-72</c> or <c>ASA</c>.</summary>
         [JsonPropertyName("standard")] public string Standard { get; set; } = "";
         [JsonPropertyName("address")] public string Address { get; set; } = "";
         [JsonPropertyName("name")] public string? Name { get; set; }
@@ -191,14 +290,53 @@ namespace Certifie.Web3
         [JsonPropertyName("tokenId")] public string? TokenId { get; set; }
         [JsonPropertyName("owner")] public string? Owner { get; set; }
         [JsonPropertyName("tokenURI")] public string? TokenURI { get; set; }
+        /// <summary>The account that created an Algorand Standard Asset.</summary>
+        [JsonPropertyName("creator")] public string? Creator { get; set; }
     }
 
     public sealed class NftMint
     {
-        /// <summary><c>ERC-721</c> or <c>ERC-1155</c>.</summary>
+        /// <summary><c>ERC-721</c>, <c>ERC-1155</c>, <c>ARC-72</c> or <c>ASA</c>.</summary>
         [JsonPropertyName("standard")] public string Standard { get; set; } = "";
-        /// <summary>IDs of the created tokens, read from the Transfer, TransferSingle and TransferBatch events of the contract.</summary>
+        /// <summary>
+        /// IDs of the created tokens: from the Transfer, TransferSingle and TransferBatch events on EVM networks,
+        /// from arc72_Transfer events or the created assets on Algorand.
+        /// </summary>
         [JsonPropertyName("tokenIds")] public List<string> TokenIds { get; set; } = new List<string>();
+        [JsonPropertyName("transaction")] public TransactionResult Transaction { get; set; } = new TransactionResult();
+    }
+
+    /// <summary>Compiled Algorand programs as base64 or 0x hex, or TEAL source that the node compiles.</summary>
+    public sealed class AvmPrograms
+    {
+        [JsonPropertyName("approval")] public string Approval { get; set; } = "";
+        [JsonPropertyName("clear")] public string Clear { get; set; } = "";
+    }
+
+    /// <summary>A token without a contract, such as an Algorand Standard Asset.</summary>
+    public sealed class TokenDefinition
+    {
+        /// <summary>At most 32 bytes on Algorand.</summary>
+        [JsonPropertyName("name")] public string Name { get; set; } = "";
+        /// <summary>The unit name; at most 8 bytes on Algorand.</summary>
+        [JsonPropertyName("symbol")] public string Symbol { get; set; } = "";
+        /// <summary>Number of base units, between 1 and 2^64 - 1 on Algorand.</summary>
+        [JsonPropertyName("totalSupply")] public BigInteger TotalSupply { get; set; }
+        /// <summary>0 to 19. Default: 0.</summary>
+        [JsonPropertyName("decimals")] public int? Decimals { get; set; }
+        /// <summary>At most 96 bytes on Algorand.</summary>
+        [JsonPropertyName("uri")] public string? Uri { get; set; }
+        /// <summary>32 bytes as 0x hex, e.g. the SHA-256 of the metadata the URI points to.</summary>
+        [JsonPropertyName("metadataHash")] public string? MetadataHash { get; set; }
+    }
+
+    /// <summary>A token created with <see cref="Web3Service.CreateTokenAsync"/>, and the transaction that created it.</summary>
+    public sealed class TokenCreation
+    {
+        /// <summary><c>ASA</c>.</summary>
+        [JsonPropertyName("standard")] public string Standard { get; set; } = "";
+        /// <summary>The asset ID on Algorand.</summary>
+        [JsonPropertyName("tokenId")] public string TokenId { get; set; } = "";
         [JsonPropertyName("transaction")] public TransactionResult Transaction { get; set; } = new TransactionResult();
     }
 

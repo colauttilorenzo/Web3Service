@@ -1,8 +1,8 @@
 # @certifie/web3-service
 
-TypeScript library for notarizing document hashes on EVM networks, extracted from CERTIFIE's `Web3Service`. It covers contract deployment, minting, transaction receipts and wallet derivation, and works with any contract: it lists the functions of an ABI, calls them by name with JSON parameters, recognizes ERC standards, mints NFTs and reads tokens and transactions. It runs both on the backend (Node.js 20+) and in the browser (ES2022), signing with a private key or mnemonic, or with the user's own wallet (MetaMask or any EIP-1193 wallet).
+TypeScript library for notarizing document hashes on EVM networks and Algorand, extracted from CERTIFIE's `Web3Service`. It covers contract deployment, minting, transaction receipts and wallet derivation, and works with any contract: it lists the functions of an ABI (or of an ARC-4/ARC-56 application on Algorand), calls them by name with JSON parameters, recognizes ERC and ARC standards, mints NFTs and reads tokens and transactions. The provider passed to `Web3Service` selects the blockchain: EVM networks, Algorand, or Bitcoin for reads, with the same methods and the same JSON. It runs both on the backend (Node.js 20+) and in the browser (ES2022), signing with a private key or mnemonic, or with the user's own wallet (MetaMask or any EIP-1193 wallet).
 
-Runtime dependencies: `web3`, `ethers` and `big.js`.
+Runtime dependencies: `web3`, `ethers`, `big.js` and `algosdk`.
 
 The full documentation (installation, types, API and examples for React, Next.js, Angular, Fastify, Express, vanilla JavaScript and .NET) is in [`docs/`](../docs/index.html) at the repository root, written in Italian: open `docs/index.html` in a browser. The repository layout is described in the [root README](../README.md).
 
@@ -15,7 +15,7 @@ The full documentation (installation, types, API and examples for React, Next.js
 | Script tag build | `dist/browser/web3-service.min.js` | `<script src="…">`, exposes the global namespace `CertifieWeb3` |
 | NuGet package `Certifie.Web3Service` | `../artifacts/nuget/*.nupkg` | .NET 6+/.NET Core and .NET Standard 2.0, native C# client: see [`dotnet/README.md`](../dotnet/README.md) |
 
-The two files in `dist/browser` bundle every dependency (~610 KB minified, ~200 KB gzipped). Once the package is published to npm they are also available from a CDN, for example `https://cdn.jsdelivr.net/npm/@certifie/web3-service@0.1.0/dist/browser/web3-service.min.js` (the `unpkg` and `jsdelivr` fields are already set).
+The two files in `dist/browser` bundle every dependency (~940 KB minified, ~300 KB gzipped). Once the package is published to npm they are also available from a CDN, for example `https://cdn.jsdelivr.net/npm/@certifie/web3-service@0.2.0/dist/browser/web3-service.min.js` (the `unpkg` and `jsdelivr` fields are already set).
 
 ## Local installation
 
@@ -31,7 +31,7 @@ npm pack
 In the project that uses it:
 
 ```sh
-npm install ~/Desktop/workspace/web3-service/typescript/certifie-web3-service-0.1.0.tgz
+npm install ~/Desktop/workspace/web3-service/typescript/certifie-web3-service-0.2.0.tgz
 ```
 
 The npm name is `@certifie/web3-service`. `npm pack` builds the package without publishing it to the registry.
@@ -39,7 +39,7 @@ The npm name is `@certifie/web3-service`. `npm pack` builds the package without 
 NuGet package:
 
 ```sh
-npm run pack:nuget     # creates ../artifacts/nuget/Certifie.Web3Service.0.1.0.nupkg
+npm run pack:nuget     # creates ../artifacts/nuget/Certifie.Web3Service.0.2.0.nupkg
 dotnet add package Certifie.Web3Service --source ~/Desktop/workspace/web3-service/artifacts/nuget
 ```
 
@@ -72,7 +72,7 @@ With a bundler (React, a Next.js client component, Angular) the same code works 
 
 ```html
 <script type="module">
-  import { Web3Service } from 'https://cdn.jsdelivr.net/npm/@certifie/web3-service@0.1.0/dist/browser/web3-service.esm.min.js';
+  import { Web3Service } from 'https://cdn.jsdelivr.net/npm/@certifie/web3-service@0.2.0/dist/browser/web3-service.esm.min.js';
 </script>
 ```
 
@@ -155,6 +155,45 @@ The contract must expose `mint(address,string,string,string)`. As in the origina
 
 A runnable example that loads the ABI from a file is in [`examples/notarize.mjs`](examples/notarize.mjs).
 
+## Algorand and Bitcoin
+
+The same `Web3Service` works on Algorand and Bitcoin: the `kind` field of the provider selects the implementation, and a provider without `kind` is EVM.
+
+```ts
+import { NotImplementedError, Web3Service, type IAvmProvider } from '@certifie/web3-service';
+import notarizer from './Notarizer.arc56.json' with { type: 'json' };
+
+const testnet: IAvmProvider = {
+  kind: 'avm',
+  rpcURI: 'https://testnet-api.algonode.cloud',     // algod
+  indexerURI: 'https://testnet-idx.algonode.cloud', // optional, for old transactions
+  chainId: 'testnet-v1.0',                          // genesis ID, checked before every operation
+};
+const algorand = new Web3Service(testnet, { signer: { mnemonic: process.env.ALGORAND_MNEMONIC! } });
+
+const deployed = await algorand.deploy(notarizer, '', ['CERTIFIE'], undefined, { value: '200000' });
+const appId = deployed.tx!.contractAddress!; // the application ID
+await algorand.mint(notarizer, appId, { hash: { data: documentHash, algorithm: 'sha2' }, metadata: 'ipfs://…' });
+await algorand.getContract(notarizer, appId).call('label'); // ARC-4 methods by name, reads are free simulations
+const { tokenId } = await algorand.createToken({ name: 'Certifie Coin', symbol: 'CERT', totalSupply: '1000000', decimals: 2 });
+
+const bitcoin = new Web3Service({ kind: 'bitcoin', rpcURI: 'https://mempool.space/api' }); // an Esplora API
+await bitcoin.check();                // { blockNumber, gasPrice }: height and fee in sat/vB
+await bitcoin.getTransaction(txid);   // the same ITransactionDetails as on EVM networks
+await bitcoin.deploy(abi, bytecode);  // throws NotImplementedError: Bitcoin has no smart contracts
+```
+
+| Method | EVM | Algorand | Bitcoin |
+| --- | --- | --- | --- |
+| `check`, `getTransaction`, `getTransactionReceipt` | Yes | Yes | Yes |
+| `getContract`, `callContractMethod`, `mint` | Yes | Yes, ARC-4 applications | `NotImplementedError` |
+| `deploy` | Yes, from bytecode | Yes, from an ARC-56 description or `{ approval, clear }` programs | `NotImplementedError` |
+| `createToken`, `getTokenInfo` | `NotImplementedError`: EVM tokens are contracts | Yes, Algorand Standard Assets | `NotImplementedError` |
+
+On Algorand the library talks to algod over REST and simulates every write before signing it: it finds the accounts, applications, assets and boxes the application reads, adds the fee of inner transactions, and returns `TRANSACTION_REVERTED` without paying when the application would reject the call. `getContract` recognizes ARC-200, ARC-72 and ARC-73 tokens. The signer is a 25-word mnemonic, a private key, or in the browser an `IAvmWallet` (`{ address, signTransactions }`, for example from `@txnlab/use-wallet`). Fees are in microAlgo; `gasUsed` and `nonce` are `'0'`. Bitcoin is read-only and returns amounts and fees in satoshi.
+
+`NotImplementedError` extends `Web3Error` with the code `NOT_IMPLEMENTED`, and is thrown before any request. Code that should work with any blockchain can depend on the `IWeb3Service` interface. The details are in the documentation pages *Più blockchain*, *Algorand* and *Bitcoin*.
+
 ## Numbers and gas cost
 
 Calculations use `big.js`. Every numeric value returned is an **integer string**, including millisecond timestamps, wallet indexes, RPC quantities and numbers returned by contract calls. Booleans stay booleans. Normalized network identifiers keep their hex encoding, for example `"0x539"`.
@@ -178,7 +217,10 @@ Numeric inputs accept `string`, `bigint` or safe-integer `number`. Use strings f
 | `check()` | `{ blockNumber, gasPrice }`, both integer strings; gas price in the smallest unit |
 | `callContractMethod<T>(method, abi, address, parameters?)` | The call result, with numbers recursively converted to integer strings |
 | `mint(abi, address, document, event?, options?)` | Confirmed transaction with receipt and gas cost |
-| `deploy(abi, bytecode, constructorArguments?, event?, options?)` | Confirmed transaction with the address in `tx.contractAddress` |
+| `deploy(abi, bytecode, constructorArguments?, event?, options?)` | Confirmed transaction with the address in `tx.contractAddress` (the application ID on Algorand) |
+| `createToken(token, event?, options?)` | `{ standard: 'ASA', tokenId, transaction }`: a token without a contract (Algorand Standard Asset) |
+| `getTokenInfo(tokenId)` | Data of a token created with `createToken` |
+| `getTransaction(hash, abi?)` | Any transaction, pending or confirmed, with the called function decoded |
 | `getTransactionReceipt(hash, event?)` | Receipt enriched with timestamp and gas cost |
 
 Write methods wait for inclusion in a block, without waiting for further confirmations. `bytecode` must be a non-empty hex string prefixed with `0x`.
@@ -251,9 +293,18 @@ Instead of a private key, the signer accepts:
 
 `mnemonic` can also be `{ phrase, password }` or an ethers `Mnemonic` object. Decrypting and storing credentials is up to the application.
 
+Algorand accounts are not derived from a path. `AlgorandWallets` creates and reads their 25-word mnemonics:
+
+```ts
+import { AlgorandWallets } from '@certifie/web3-service';
+
+const phrase = AlgorandWallets.createMnemonic();
+const account = AlgorandWallets.getWallet(phrase); // { address, publicKey, privateKey (32-byte seed as 0x hex), path: null, index: '0' }
+```
+
 ## Providers and errors
 
-Every operation checks `eth_chainId` before proceeding. If the primary provider is unreachable or on another network, `rpcPublicURI` is tried, and it may use a different protocol. Fallback happens during the initial selection: an operation already in progress is not retried automatically.
+Every operation checks the network before proceeding: `eth_chainId` on EVM networks, the genesis ID on Algorand, the genesis block hash on Bitcoin. If the primary provider is unreachable or on another network, `rpcPublicURI` is tried, and it may use a different protocol. Fallback happens during the initial selection: an operation already in progress is not retried automatically.
 
 Constructor options include `timeoutMs` (default `30000` per HTTP or WebSocket request), `transactionTimeoutMs` (default `120000` to wait for the receipt), `gasBuffer` (default `10000`) and `web3Factory(rpcURI)` for custom providers. With `web3Factory`, timeouts and closing connections are up to the application that supplies the provider.
 
@@ -268,9 +319,12 @@ Errors are `Web3Error` instances with `code`, `message`, an optional `transactio
 | `PROVIDER_UNAVAILABLE` | No endpoint available |
 | `CHAIN_ID_MISMATCH` | The reachable endpoints (or the browser wallet) are on a different network |
 | `METHOD_NOT_FOUND` | Method missing from the ABI |
+| `NOT_SUPPORTED` | The contract does not offer the requested function, e.g. `mintNft` on a contract that is not an NFT |
+| `NOT_IMPLEMENTED` | The blockchain of the provider does not offer the operation, e.g. `deploy` on Bitcoin (`NotImplementedError`) |
 | `RPC_ERROR` | RPC call, estimation or signing failed; the cause is in `cause` |
 | `TRANSACTION_NOT_FOUND` | Unknown transaction, or not yet included in a block |
-| `TRANSACTION_REVERTED` | Included in a block with `status: "0"` |
+| `TOKEN_NOT_FOUND` | The token passed to `getTokenInfo` does not exist |
+| `TRANSACTION_REVERTED` | Included in a block with `status: "0"`, or on Algorand rejected by the simulation before sending |
 | `TRANSACTION_SUBMISSION_FAILED` | Submission failed or confirmation not received; check `transactionHash` before retrying |
 | `RECEIPT_DETAILS_FAILED` | Transaction confirmed but receipt enrichment failed; retrieve it by hash |
 | `UNSAFE_INTEGER` | A custom provider returned an unsafe JavaScript number |
@@ -301,10 +355,12 @@ Tests run against a local Ganache chain and compile a test Solidity contract:
 
 - `test/UnitTests.test.mjs` and `test/ChainTests.test.mjs` mirror `UnitTests.cs` and `ChainTests.cs`: same test names, same expected values from `../shared/test-vectors.json`.
 - `npm run test:dotnet` runs `test/fixtures/ParityScenario.mjs` on the chain, then the .NET tests; `ParityTests.cs` runs the same calls and checks that both versions return the same JSON.
+- `test/MultiChainTests.test.mjs` mirrors `MultiChainTests.cs`: provider selection, `NotImplementedError`, Algorand accounts and encoding, and Bitcoin against a local Esplora stub.
+- `test/AlgorandTests.test.mjs` mirrors `AlgorandTests.cs` and runs on a real Algorand node, such as AlgoKit LocalNet: set `WEB3_TEST_ALGOD_URI` (for example `http://localhost:4001`), otherwise these tests are skipped. `WEB3_TEST_ALGOD_TOKEN` and `WEB3_TEST_ALGOD_MNEMONIC` default to the LocalNet token and dispenser. With the variable set, `npm run test:dotnet` also runs the Algorand parity test. The test applications are in `../shared/algorand`.
 - `WalletSignerTests`, `TransportTests` and `PackageTests` cover what exists only in TypeScript: browser wallets, the web3.js transports, the ESM/CommonJS entry points and the browser bundles. `test/types` checks the TypeScript declarations.
 
 Transport tests open HTTP, WS and WSS servers on `127.0.0.1` only. The certificate and key in `test/fixtures/` are only for the local WSS test and are not included in the npm package.
 
 The package stays `UNLICENSED`; the license and access to the npm scope must be decided before distributing it publicly.
 
-API references: [Web3.js providers](https://docs.web3js.org/guides/web3_providers_guide/), [ethers wallet](https://docs.ethers.org/v6/api/wallet/), [big.js](https://mikemcl.github.io/big.js/), [Nethereum](https://docs.nethereum.com/).
+API references: [Web3.js providers](https://docs.web3js.org/guides/web3_providers_guide/), [ethers wallet](https://docs.ethers.org/v6/api/wallet/), [big.js](https://mikemcl.github.io/big.js/), [Nethereum](https://docs.nethereum.com/), [algosdk](https://www.npmjs.com/package/algosdk), [ARC-4](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0004.md), [ARC-56](https://github.com/algorandfoundation/ARCs/blob/main/ARCs/arc-0056.md), [Esplora API](https://github.com/Blockstream/esplora/blob/master/API.md).

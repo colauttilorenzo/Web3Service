@@ -1,0 +1,426 @@
+{
+ "added": [
+  "docs/algorand.html",
+  "docs/bitcoin.html",
+  "docs/blockchain.html",
+  "dotnet/src/Certifie.Web3Service/Algorand/AlgodConnector.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AlgodSession.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AlgorandAddress.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AlgorandChain.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AlgorandContract.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AlgorandSigner.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AlgorandWallets.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AppCalls.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AppPrograms.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Arc4Methods.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Arc4Tuple.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Arc4Types.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Arc4Values.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/ArcStandards.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Assets.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AvmCrypto.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/AvmRequest.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Base32.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Mnemonics.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Msgpack.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/ProgramErrors.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Results.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Simulation.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Submission.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/SuggestedParams.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Tokens.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/TransactionFields.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/Transactions.cs",
+  "dotnet/src/Certifie.Web3Service/Algorand/UnsignedTransaction.cs",
+  "dotnet/src/Certifie.Web3Service/Bitcoin/BitcoinChain.cs",
+  "dotnet/src/Certifie.Web3Service/Bitcoin/EsploraSession.cs",
+  "dotnet/src/Certifie.Web3Service/Bitcoin/Transactions.cs",
+  "dotnet/src/Certifie.Web3Service/Evm/EvmChain.cs",
+  "dotnet/src/Certifie.Web3Service/Evm/EvmContract.cs",
+  "dotnet/src/Certifie.Web3Service/Evm/RpcConnector.cs",
+  "dotnet/src/Certifie.Web3Service/IWeb3Service.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/Blockchains.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/ContractMethods.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/JsonValues.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/Notarization.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/RestClient.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/SharedResults.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/Standards.cs",
+  "dotnet/src/Certifie.Web3Service/Internal/TokenMethods.cs",
+  "dotnet/test/Certifie.Web3Service.Tests/AlgorandParityTests.cs",
+  "dotnet/test/Certifie.Web3Service.Tests/AlgorandTests.cs",
+  "dotnet/test/Certifie.Web3Service.Tests/Fixtures/AlgorandNode.cs",
+  "dotnet/test/Certifie.Web3Service.Tests/Fixtures/AlgorandParityScenario.cs",
+  "dotnet/test/Certifie.Web3Service.Tests/Fixtures/AlgorandTransactionVectors.cs",
+  "dotnet/test/Certifie.Web3Service.Tests/Fixtures/EsploraServer.cs",
+  "dotnet/test/Certifie.Web3Service.Tests/MultiChainTests.cs",
+  "shared/algorand/Notarizer.arc56.json",
+  "shared/algorand/TestAssetMinter.arc56.json",
+  "shared/algorand/TestNft.arc56.json",
+  "shared/algorand/TestToken.arc56.json",
+  "shared/algorand/test_contracts.py",
+  "typescript/src/Algorand/AlgodConnector.ts",
+  "typescript/src/Algorand/AlgodSession.ts",
+  "typescript/src/Algorand/AlgorandChain.ts",
+  "typescript/src/Algorand/AlgorandContract.ts",
+  "typescript/src/Algorand/AlgorandSigner.ts",
+  "typescript/src/Algorand/AlgorandWallets.ts",
+  "typescript/src/Algorand/AppCalls.ts",
+  "typescript/src/Algorand/AppPrograms.ts",
+  "typescript/src/Algorand/Arc4Methods.ts",
+  "typescript/src/Algorand/Arc4Values.ts",
+  "typescript/src/Algorand/ArcStandards.ts",
+  "typescript/src/Algorand/Assets.ts",
+  "typescript/src/Algorand/AvmRequest.ts",
+  "typescript/src/Algorand/ProgramErrors.ts",
+  "typescript/src/Algorand/Results.ts",
+  "typescript/src/Algorand/Simulation.ts",
+  "typescript/src/Algorand/Submission.ts",
+  "typescript/src/Algorand/Tokens.ts",
+  "typescript/src/Algorand/Transactions.ts",
+  "typescript/src/Bitcoin/BitcoinChain.ts",
+  "typescript/src/Bitcoin/EsploraSession.ts",
+  "typescript/src/Bitcoin/Transactions.ts",
+  "typescript/src/Evm/EvmChain.ts",
+  "typescript/src/Evm/EvmContract.ts",
+  "typescript/src/Evm/RpcConnector.ts",
+  "typescript/src/IWeb3Service.ts",
+  "typescript/src/Internal/Blockchains.ts",
+  "typescript/src/Internal/ContractMethods.ts",
+  "typescript/src/Internal/Endpoints.ts",
+  "typescript/src/Internal/Notarization.ts",
+  "typescript/src/Internal/RestClient.ts",
+  "typescript/src/Internal/SharedResults.ts",
+  "typescript/src/Internal/Standards.ts",
+  "typescript/src/Internal/TokenMethods.ts",
+  "typescript/test/AlgorandTests.test.mjs",
+  "typescript/test/MultiChainTests.test.mjs",
+  "typescript/test/fixtures/AlgorandNode.mjs",
+  "typescript/test/fixtures/AlgorandParityScenario.mjs",
+  "typescript/test/fixtures/EsploraServer.mjs"
+ ],
+ "modified": [
+  {
+   "path": "CHANGELOG.md",
+   "base": "49ba8cba2e9813ccd7329facdaa8bfe0a794bc8f"
+  },
+  {
+   "path": "README.md",
+   "base": "ae629a09484d62042d54cc0c41c2725a48197b95"
+  },
+  {
+   "path": "docs/angular.html",
+   "base": "99c322442a5b3cb2195071a1b03acf82f97607b0"
+  },
+  {
+   "path": "docs/assets/docs.css",
+   "base": "fa5581256b0a046fe336b95fd00d6405ae8e1394"
+  },
+  {
+   "path": "docs/assets/search-index.js",
+   "base": "114cb1ab0f85f8b1940d79a4ed8f219a7824f622"
+  },
+  {
+   "path": "docs/changelog.html",
+   "base": "75d451e569288e8f77254edc19599aaf59f433c1"
+  },
+  {
+   "path": "docs/configurazione.html",
+   "base": "27a3b2d6e0c283662c4ed185cb8a0be36eeccb95"
+  },
+  {
+   "path": "docs/contratti.html",
+   "base": "fde3c00e3e8527110364886afaa7c8e6a1cc5c74"
+  },
+  {
+   "path": "docs/dotnet.html",
+   "base": "fcb273ddc8da54843f5a53a64524632535bad39d"
+  },
+  {
+   "path": "docs/errori.html",
+   "base": "22a36dae729345bd1d7e7e9627cad8122ef0b7b6"
+  },
+  {
+   "path": "docs/express.html",
+   "base": "b322d4f658452cfe62d2f0efda87f9eee65deb94"
+  },
+  {
+   "path": "docs/fastify.html",
+   "base": "4603bf5cc594cfdfcc36c0a85ae856d12ca63e85"
+  },
+  {
+   "path": "docs/firma.html",
+   "base": "63dc0f4e55b3fa6d22c8f7cceefd5df54c43c102"
+  },
+  {
+   "path": "docs/index.html",
+   "base": "59b85de67dbab1f812915225d831db9fecbf2e62"
+  },
+  {
+   "path": "docs/installazione.html",
+   "base": "2f3c57b1355b56cb2238d8d02b5c1cfcba03662a"
+  },
+  {
+   "path": "docs/nextjs.html",
+   "base": "7f6fb06d738bfb9e6758149cc51b519641fd7908"
+  },
+  {
+   "path": "docs/numeri-gas.html",
+   "base": "f6c527dcf61960fe10e2a4f179af74c2912d3358"
+  },
+  {
+   "path": "docs/react.html",
+   "base": "e2eea549d69fd8c2a60c2e2cdf90a9ee35e44b43"
+  },
+  {
+   "path": "docs/tipi.html",
+   "base": "160b658903a005396b205cff4694a746f95051af"
+  },
+  {
+   "path": "docs/uso-base.html",
+   "base": "3447b86f345a0b9868b1aa05454d45c05b1d637e"
+  },
+  {
+   "path": "docs/vanilla.html",
+   "base": "65977a9ae15ddb64d2f43c39d5fcadf4c5a5f1ca"
+  },
+  {
+   "path": "docs/wallet-hd.html",
+   "base": "ee265023b7287158c05d43e12863f890836e9dcd"
+  },
+  {
+   "path": "docs/web3contract.html",
+   "base": "5f86f18cca597943c159339ec50a2e6f4e0c463d"
+  },
+  {
+   "path": "docs/web3service.html",
+   "base": "c50e2acdf1e48e6f87a44b2658e2b1ffae491bc6"
+  },
+  {
+   "path": "dotnet/README.md",
+   "base": "cc5eeaefdf8822b0745ef49c15989ac420ee5fd3"
+  },
+  {
+   "path": "dotnet/src/Certifie.Web3Service/Certifie.Web3Service.csproj",
+   "base": "51489f6bd21e7ffca11795a01571d68a78ec40ad"
+  },
+  {
+   "path": "dotnet/src/Certifie.Web3Service/Internal/Configuration.cs",
+   "base": "369dbaa64003c0982ae6edc7bbdcea803039e958"
+  },
+  {
+   "path": "dotnet/src/Certifie.Web3Service/Internal/Errors.cs",
+   "base": "c593b38854fbb09fa574b6389e254d9e40dc1e87"
+  },
+  {
+   "path": "dotnet/src/Certifie.Web3Service/Models.cs",
+   "base": "11e89d29bf994630346124ff51ecbf3280c19938"
+  },
+  {
+   "path": "dotnet/src/Certifie.Web3Service/Web3Contract.cs",
+   "base": "e4de05d6d2939c44f6d5a3479a81342acd57c347"
+  },
+  {
+   "path": "dotnet/src/Certifie.Web3Service/Web3Service.cs",
+   "base": "c45eb47632be22c9b9e679c849db416bf57ac4f6"
+  },
+  {
+   "path": "dotnet/test/Certifie.Web3Service.Tests/Certifie.Web3Service.Tests.csproj",
+   "base": "4a3cefd6b16330302e29419c44916f613e59fc87"
+  },
+  {
+   "path": "shared/test-vectors.json",
+   "base": "4eeb2446e81cdd0b43484e6a6bc980e6ae80ff1f"
+  },
+  {
+   "path": "typescript/README.md",
+   "base": "d4d40fb5a014523aae1dbb6ffd245e8460fb0654"
+  },
+  {
+   "path": "typescript/package-lock.json",
+   "base": "68c95e3ef0421f1e5f6689105ae631caf53578b7"
+  },
+  {
+   "path": "typescript/package.json",
+   "base": "096c09726d0eaa571ec38e63569bf29cc3138ab2"
+  },
+  {
+   "path": "typescript/scripts/test-dotnet.mjs",
+   "base": "161f9b6f1603cd92581d1659521925d3073efbc5"
+  },
+  {
+   "path": "typescript/src/Internal/Configuration.ts",
+   "base": "d8daa5b611d7236dc4f005c89660a4d3f51945ec"
+  },
+  {
+   "path": "typescript/src/Internal/Errors.ts",
+   "base": "76cbea9fbddee77f2bc85d12f8819c53651d0102"
+  },
+  {
+   "path": "typescript/src/Models.ts",
+   "base": "3e28836ef7a0acfb687d191de39d60462bb69334"
+  },
+  {
+   "path": "typescript/src/Web3Contract.ts",
+   "base": "c60bcdd96ebd5a43ef90c17e14c678ab95bd5e2b"
+  },
+  {
+   "path": "typescript/src/Web3Exception.ts",
+   "base": "9bbca788c1bc290b9673f6a27ab15978579dbfa7"
+  },
+  {
+   "path": "typescript/src/Web3Service.ts",
+   "base": "64e7db0c3e59a891347c6f19cf3ba1a2e8521f6d"
+  },
+  {
+   "path": "typescript/src/index.ts",
+   "base": "0c72daa737fc8cf64590f50b404f4bd69ff3976f"
+  },
+  {
+   "path": "typescript/test/WalletSignerTests.test.mjs",
+   "base": "3722cf4aa9af4452d073d81aa39c21a74f879388"
+  },
+  {
+   "path": "typescript/test/types/consumer.mts",
+   "base": "de1b3a2f8acc51084aa1e7d930048ade2c34d9cf"
+  }
+ ],
+ "renamed": [
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/AbiMethods.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/AbiMethods.cs",
+   "base": "98e6033b9b93e8cfd11197fa1ee1d44c9966c282"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/ContractCalls.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/ContractCalls.cs",
+   "base": "a017ecef0ba07eda9b5a60af6adc2ecc0af8f679"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/ErcStandards.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/ErcStandards.cs",
+   "base": "4835a9dac2d6e80fae4099f1c821bed526a628cd"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/HdWallets.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/HdWallets.cs",
+   "base": "8fcc8cecc168758017cd1b2f07f0078938582feb"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/KeySigner.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/KeySigner.cs",
+   "base": "6f5d8e84b5b456c8476e6d7e78e55a915c22453c"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/Receipts.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/Receipts.cs",
+   "base": "ae545c7be46911b60fb91b2fac06e58422fc3a83"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/RpcSession.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/RpcSession.cs",
+   "base": "11c3779f6ae836bd724273e1dd8b27934fad340d"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/Tokens.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/Tokens.cs",
+   "base": "5b41529c1b9143422a160458b84085e829dbc61b"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/TransactionRequest.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/TransactionRequest.cs",
+   "base": "bd342cbe45b73d4c6739da9b8e6660cb273bcf79"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/TransactionResults.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/TransactionResults.cs",
+   "base": "b0c42105190d336a7c3996740981f031e4c94c51"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/Transactions.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Evm/Transactions.cs",
+   "base": "a192e0a470fcf60a65531ae3ae72ebefe1f041a7"
+  },
+  {
+   "from": "dotnet/src/Certifie.Web3Service/Internal/RpcConnector.cs",
+   "to": "dotnet/src/Certifie.Web3Service/Internal/Endpoints.cs",
+   "base": "d4474bcd380456dee783d234316d6a372b6aa758"
+  },
+  {
+   "from": "typescript/src/Internal/AbiMethods.ts",
+   "to": "typescript/src/Evm/AbiMethods.ts",
+   "base": "e305439988935f02e75f54d83a65253f20a7a0cb"
+  },
+  {
+   "from": "typescript/src/Internal/ContractCalls.ts",
+   "to": "typescript/src/Evm/ContractCalls.ts",
+   "base": "39662fdf4576c465c9af0823ad957a6768a889fb"
+  },
+  {
+   "from": "typescript/src/Internal/ErcStandards.ts",
+   "to": "typescript/src/Evm/ErcStandards.ts",
+   "base": "97a0b176f3a57b6ab18cfe319c6b12321dc5568b"
+  },
+  {
+   "from": "typescript/src/Internal/HdWallets.ts",
+   "to": "typescript/src/Evm/HdWallets.ts",
+   "base": "bc46ebb5534ca0296bdad6455e53f61966b82496"
+  },
+  {
+   "from": "typescript/src/Internal/KeySigner.ts",
+   "to": "typescript/src/Evm/KeySigner.ts",
+   "base": "119513a691221ba0165a1a2d43c31349bb7f78c1"
+  },
+  {
+   "from": "typescript/src/Internal/Receipts.ts",
+   "to": "typescript/src/Evm/Receipts.ts",
+   "base": "2b8482cec73a45b3470caca20078da50d4d516e3"
+  },
+  {
+   "from": "typescript/src/Internal/RpcSession.ts",
+   "to": "typescript/src/Evm/RpcSession.ts",
+   "base": "e3b0be747c731b816166c7901258985e3df6d0f8"
+  },
+  {
+   "from": "typescript/src/Internal/TimeoutHttpProvider.ts",
+   "to": "typescript/src/Evm/TimeoutHttpProvider.ts",
+   "base": "7480e07f12fa9c23e17e013355a1302f836f1812"
+  },
+  {
+   "from": "typescript/src/Internal/TimeoutWebSocketProvider.ts",
+   "to": "typescript/src/Evm/TimeoutWebSocketProvider.ts",
+   "base": "330fb6440e052914a14d7889a147293c631c2d6a"
+  },
+  {
+   "from": "typescript/src/Internal/Tokens.ts",
+   "to": "typescript/src/Evm/Tokens.ts",
+   "base": "73415edab948040cb9b5bca295b7654f4801b004"
+  },
+  {
+   "from": "typescript/src/Internal/TransactionRequest.ts",
+   "to": "typescript/src/Evm/TransactionRequest.ts",
+   "base": "3b92f4d6167125e090760d43715ce495b8076358"
+  },
+  {
+   "from": "typescript/src/Internal/TransactionResults.ts",
+   "to": "typescript/src/Evm/TransactionResults.ts",
+   "base": "e9fe37353be5b2e861e60fe51cf1cfbb643d3948"
+  },
+  {
+   "from": "typescript/src/Internal/Transactions.ts",
+   "to": "typescript/src/Evm/Transactions.ts",
+   "base": "78e320901d3beaf67106384bdf70b566fb01de10"
+  },
+  {
+   "from": "typescript/src/Internal/WalletSigner.ts",
+   "to": "typescript/src/Evm/WalletSigner.ts",
+   "base": "0e7341ab6fbca8857fa384749e9fac7266011081"
+  }
+ ],
+ "deleted": [
+  {
+   "path": "typescript/src/Internal/RpcConnector.ts",
+   "base": "3d31395bd52b1c4b772519bfe389faa28da6c949"
+  }
+ ]
+}

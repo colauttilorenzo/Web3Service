@@ -11,6 +11,10 @@ namespace Certifie.Web3
         /// <summary>The contract does not offer the requested feature, e.g. minting on a contract that is not an NFT.</summary>
         public static Web3Exception NotSupported(string message) => new Web3Exception("NOT_SUPPORTED", message);
 
+        /// <summary>The blockchain does not offer the operation at all, e.g. deploy on Bitcoin.</summary>
+        public static NotImplementedException NotImplemented(string operation, string chainName, string hint = "") =>
+            new NotImplementedException($"{operation} is not available on {chainName}.{(hint.Length > 0 ? " " + hint : "")}");
+
         public static Web3Exception MethodNotFound(string method) =>
             new Web3Exception("METHOD_NOT_FOUND", $"Contract method {method} is missing from the ABI.");
 
@@ -27,6 +31,12 @@ namespace Certifie.Web3
 
         public static Web3Exception TransactionNotFound(string transactionHash) =>
             new Web3Exception("TRANSACTION_NOT_FOUND", "The transaction is unknown or has not been mined.", transactionHash: transactionHash);
+
+        public static Web3Exception TokenNotFound(string tokenId) => new Web3Exception("TOKEN_NOT_FOUND", $"Token {tokenId} does not exist.");
+
+        /// <summary>The endpoint answers for another network than the configured one.</summary>
+        public static Web3Exception ChainMismatch(string expected, string actual) =>
+            new Web3Exception("CHAIN_ID_MISMATCH", $"Expected chain {expected}, received {actual}.");
 
         public static Web3Exception ReceiptDetailsFailed(string transactionHash, Exception cause) =>
             new Web3Exception("RECEIPT_DETAILS_FAILED",

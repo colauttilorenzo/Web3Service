@@ -2,8 +2,12 @@ import type { Mnemonic } from 'ethers';
 import type { ContractAbi, Web3 } from 'web3';
 import type { Web3ErrorJSON } from './Web3Exception.js';
 
-export type Abi = ContractAbi;
+/** An EVM JSON ABI, or an Algorand ARC-4 contract description (ARC-4, ARC-32 or ARC-56 JSON). */
+export type Abi = ContractAbi | IArc4Contract;
 export type ChainId = string | number | bigint;
+
+/** The virtual machine family of a network: EVM (Ethereum, Polygon, …), AVM (Algorand) or Bitcoin. */
+export type ChainKind = 'evm' | 'avm' | 'bitcoin';
 export type ContractResult = string | boolean | null | ContractResult[] | { [key: string]: ContractResult };
 
 /** Gas token of the network. Decimals are informational: fees are always returned in the smallest unit. */
@@ -15,6 +19,7 @@ export interface NativeCurrency {
 
 /** Provider configuration; Web3Service.provider exposes it with the defaults applied and the chain ID normalized to lowercase hex. */
 export interface IEthereumProvider {
+  kind?: 'evm';
   chainId: ChainId;
   rpcURI: string;
   /** Fallback endpoint, used when the primary is unavailable or on the wrong chain. */
@@ -33,20 +38,86 @@ export interface IEvmProvider extends Omit<IEthereumProvider, 'chainId' | 'nativ
 /** Compatibility alias for the initialization configuration. */
 export type EthereumProviderConfig = IEvmProvider;
 
+/** Algorand (AVM) initialization input. Only the algod URL is required; omitted fields use Algorand MainNet defaults. */
+export interface IAvmProvider {
+  kind: 'avm';
+  /** algod node URL, e.g. https://mainnet-api.algonode.cloud. */
+  rpcURI: string;
+  /** Fallback algod node, used when the primary is unavailable or on the wrong network. */
+  rpcPublicURI?: string;
+  /** algod API token, sent as X-Algo-API-Token; public nodes need none. */
+  token?: string;
+  /** Indexer URL, used to read transactions that algod no longer keeps. */
+  indexerURI?: string;
+  indexerToken?: string;
+  /** Genesis ID of the network, e.g. mainnet-v1.0 or testnet-v1.0. Default: mainnet-v1.0. */
+  chainId?: string;
+  chainName?: string;
+  nativeCurrency?: Partial<NativeCurrency>;
+  blockExplorerURI?: string;
+}
+
+/** Algorand configuration with the defaults applied, as Web3Service.provider exposes it. */
+export interface IAlgorandNetwork extends Omit<IAvmProvider, 'chainId' | 'chainName' | 'nativeCurrency'> {
+  chainId: string;
+  chainName: string;
+  nativeCurrency: NativeCurrency;
+}
+
+/** Bitcoin initialization input: an Esplora REST API, such as https://mempool.space/api. Omitted fields use Bitcoin mainnet defaults. */
+export interface IBitcoinProvider {
+  kind: 'bitcoin';
+  rpcURI: string;
+  /** Fallback API, used when the primary is unavailable or on the wrong network. */
+  rpcPublicURI?: string;
+  /** mainnet, testnet, testnet4, signet or regtest. Default: mainnet. */
+  chainId?: string;
+  chainName?: string;
+  nativeCurrency?: Partial<NativeCurrency>;
+  blockExplorerURI?: string;
+}
+
+/** Bitcoin configuration with the defaults applied, as Web3Service.provider exposes it. */
+export interface IBitcoinNetwork extends Omit<IBitcoinProvider, 'chainId' | 'chainName' | 'nativeCurrency'> {
+  chainId: string;
+  chainName: string;
+  nativeCurrency: NativeCurrency;
+}
+
+/** What Web3Service accepts: the provider type selects the blockchain. A string is the URL of an EVM node. */
+export type ProviderInput = IEvmProvider | IAvmProvider | IBitcoinProvider | string;
+
+/** A provider configuration with the defaults applied. */
+export type ResolvedProvider = IEthereumProvider | IAlgorandNetwork | IBitcoinNetwork;
+
+/** The resolved configuration of a provider input. */
+export type NetworkOf<P> = P extends IAvmProvider ? IAlgorandNetwork : P extends IBitcoinProvider ? IBitcoinNetwork : IEthereumProvider;
+
 /** Any EIP-1193 wallet, such as MetaMask's `window.ethereum`. */
 export interface Eip1193Provider {
   request(args: { method: string; params?: readonly unknown[] | object }): Promise<unknown>;
 }
 
 /**
+ * An Algorand wallet, e.g. the active account of @txnlab/use-wallet: { address: activeAddress, signTransactions }.
+ * It receives msgpack-encoded unsigned transactions and returns them signed.
+ */
+export interface IAvmWallet {
+  address: string;
+  signTransactions(transactions: Uint8Array[]): Promise<(Uint8Array | null)[]>;
+}
+
+/**
  * Decryption and secret storage belong to the application using this package.
  * In the browser, pass `wallet` so the user's wallet signs and the private key never reaches the page.
+ * On Algorand the mnemonic is the 25-word account phrase and the private key is the 32-byte seed (0x hex) or the 64-byte secret key (base64).
  */
 export type SignerOptions =
   | { privateKey: string; mnemonic?: never; walletIndex?: never; wallet?: never; switchChain?: never }
   | { mnemonic: string | Pick<Mnemonic, 'phrase' | 'password'>; walletIndex?: number; privateKey?: never; wallet?: never; switchChain?: never }
   | {
-    wallet: Eip1193Provider;
+    /** An EIP-1193 wallet on EVM networks, an IAvmWallet on Algorand. */
+    wallet: Eip1193Provider | IAvmWallet;
     /** Ask the wallet to switch to (or add) the configured chain. Default: true. */
     switchChain?: boolean;
     privateKey?: never; mnemonic?: never; walletIndex?: never;
@@ -106,11 +177,52 @@ export interface ITransaction {
   nativeFee?: { amount: string; symbol: string; decimals: string };
 }
 
+/** On Algorand gasPrice is the flat fee of the transaction in microAlgos, value the microAlgos paid to the application; gas and nonce do not apply. */
 export interface TransactionOptions {
   gas?: ChainId;
   gasPrice?: ChainId;
   nonce?: ChainId;
   value?: ChainId;
+}
+
+/** Latest block and current fee: the gas price in wei on EVM networks, the minimum fee in microAlgos on Algorand, sat/vB on Bitcoin. */
+export interface ICheckResult {
+  blockNumber: string;
+  gasPrice: string;
+}
+
+/** Compiled Algorand programs as base64 or 0x hex, or TEAL source compiled by the node. */
+export interface IAvmPrograms {
+  approval: string;
+  clear: string;
+}
+
+/** EVM creation bytecode (0x hex), or the programs of an Algorand application; on Algorand '' takes them from the ARC-56 description. */
+export type Bytecode = string | IAvmPrograms;
+
+/** An ARC-4 method argument or return value. */
+export interface IArc4Argument {
+  type: string;
+  name?: string;
+  desc?: string;
+}
+
+/** A method of an ARC-4 contract; ARC-56 adds the on-completion actions. */
+export interface IArc4Method {
+  name: string;
+  args: readonly IArc4Argument[];
+  returns: IArc4Argument;
+  desc?: string;
+  readonly?: boolean;
+  actions?: { create?: readonly string[]; call?: readonly string[] };
+}
+
+/** An Algorand contract description: ARC-4 ({ name, methods }), ARC-56, or ARC-32 (methods under contract). */
+export interface IArc4Contract {
+  name?: string;
+  methods?: readonly IArc4Method[];
+  contract?: { name?: string; methods: readonly IArc4Method[] };
+  [key: string]: unknown;
 }
 
 export interface Web3ServiceOptions {
@@ -154,11 +266,13 @@ export interface IContractMethod {
  */
 export type ContractParameters = Record<string, unknown>;
 
-export type TokenStandard = 'ERC-20' | 'ERC-721' | 'ERC-1155';
+/** Fungible: ERC-20, ARC-200. NFT: ERC-721, ERC-1155, ARC-72. ASA: an Algorand Standard Asset, fungible or not. */
+export type TokenStandard = 'ERC-20' | 'ERC-721' | 'ERC-1155' | 'ARC-200' | 'ARC-72' | 'ASA';
 
 /** Token data read from the contract. Only the fields whose functions exist in the ABI are set. */
 export interface ITokenInfo {
   standard: TokenStandard;
+  /** Contract address (EVM), application ID (Algorand contracts) or asset ID (ASA). */
   address: string;
   name?: string;
   symbol?: string;
@@ -168,12 +282,37 @@ export interface ITokenInfo {
   tokenId?: string;
   owner?: string;
   tokenURI?: string;
+  /** ASA only: the account that created the asset. */
+  creator?: string;
 }
 
 export interface INftMint {
-  standard: Exclude<TokenStandard, 'ERC-20'>;
-  /** IDs of the created tokens, read from the Transfer, TransferSingle and TransferBatch events of the contract. */
+  standard: Exclude<TokenStandard, 'ERC-20' | 'ARC-200'>;
+  /**
+   * IDs of the created tokens: from the Transfer, TransferSingle and TransferBatch events on EVM networks,
+   * from the arc72_Transfer events and the assets created by the application on Algorand.
+   */
   tokenIds: string[];
+  transaction: ITransaction;
+}
+
+/** A token created without a contract: an Algorand Standard Asset. An NFT has totalSupply 1 and decimals 0. */
+export interface ITokenDefinition {
+  name: string;
+  /** Unit name, at most 8 bytes. */
+  symbol: string;
+  totalSupply: ChainId;
+  /** Default: 0. */
+  decimals?: number;
+  /** Metadata URL, e.g. ipfs://…#arc3 (ARC-3). */
+  uri?: string;
+  /** SHA-256 of the metadata, 0x hex (32 bytes). */
+  metadataHash?: string;
+}
+
+export interface ITokenCreation {
+  standard: 'ASA';
+  tokenId: string;
   transaction: ITransaction;
 }
 

@@ -272,5 +272,450 @@
       "expected": ["ERC-1155", "ERC-1155 Metadata URI"]
     },
     { "functions": ["name()", "symbol()", "tokenURI(uint256)", "uri(uint256)", "transfer(address,uint256)"], "expected": [] }
-  ]
+  ],
+  "algorand": {
+    "$comment": "Algorand accounts from 25-word mnemonics (privateKey is the 32-byte Ed25519 seed), defaults and expected contract values.",
+    "defaults": { "chainId": "mainnet-v1.0", "chainName": "Algorand", "currencyName": "Algo", "symbol": "ALGO", "decimals": 6 },
+    "wallets": [
+      {
+        "mnemonic": "arrange master fence puppy spray accident coast perfect blur furnace one congress grain flock humor acid arena sound side embark sugar recycle citizen about citizen",
+        "address": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+        "publicKey": "0xc2bf46e9c6cd9bf6166db03fb938c3e040b653a87d97805dbed0a6aee6fe61c2",
+        "privateKey": "0x622822aae07ae9059805a3c3905735f1c23265e1ed015bf0f38f8564eccf2a65"
+      },
+      {
+        "mnemonic": "video ready rescue have great quick find disagree crucial foster allow involve push lawn vendor nurse require where nurse sphere sausage charge humble absent service",
+        "address": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI",
+        "publicKey": "0x1f87a21d84d02019c4edc2b245314d760aeb5bc90d9f682d71985483f4504ccf",
+        "privateKey": "0x9eb76c6e9b16b3bed6ca3ea301570d625757f8459e97b8953e2f17dd5f9adcad"
+      }
+    ],
+    "numbers": ["18446744073709551615", "255", true],
+    "parity": {
+      "$comment": "Fields that differ between two runs on the same node (transaction IDs, rounds, application and asset IDs, times).",
+      "variableFields": ["transactionHash", "blockHash", "blockNumber", "transactionIndex", "contractAddress", "to", "address", "tokenId", "completedAt",
+        "hash", "timestamp"]
+    },
+    "applicationAddress": { "appId": "123", "address": "WRBMNT66ECE2AOYKM76YVWIJMBW6Z3XCQZOKG5BL7NISAQC2LBGEKTZLRM" },
+    "contract": {
+      "$comment": "An ARC-4 contract with every kind of argument: the expected Web3Contract.methods, the application arguments of named-parameter calls (account, asset and application references are indexes into the foreign arrays; account 0 is the sender), and calls rejected with INVALID_ARGUMENT.",
+      "address": "123",
+      "abi": {
+        "name": "Sample",
+        "methods": [
+          {
+            "name": "transfer",
+            "args": [{ "name": "to", "type": "address" }, { "name": "amount", "type": "uint64" }],
+            "returns": { "type": "bool" }
+          },
+          { "name": "balanceOf", "args": [{ "name": "owner", "type": "address" }], "returns": { "type": "uint256" }, "readonly": true },
+          {
+            "name": "deposit",
+            "args": [{ "name": "payment", "type": "pay" }, { "name": "note", "type": "string" }],
+            "returns": { "type": "void" }
+          },
+          {
+            "name": "order",
+            "args": [
+              { "name": "item", "type": "(uint64,string[])" },
+              { "name": "flags", "type": "bool[2]" },
+              { "name": "payload", "type": "byte[]" },
+              { "name": "code", "type": "byte[4]" }
+            ],
+            "returns": { "type": "void" }
+          },
+          {
+            "name": "link",
+            "args": [{ "name": "account", "type": "account" }, { "name": "asset", "type": "asset" }, { "name": "app", "type": "application" }],
+            "returns": { "type": "uint8" }
+          },
+          { "name": "pick", "args": [{ "name": "id", "type": "uint64" }], "returns": { "type": "void" } },
+          {
+            "name": "pick",
+            "args": [{ "name": "id", "type": "uint64" }, { "name": "data", "type": "byte[]" }],
+            "returns": { "type": "void" }
+          },
+          { "name": "legacy", "args": [{ "type": "uint8" }], "returns": { "type": "string" }, "readonly": true }
+        ]
+      },
+      "methods": [
+        {
+          "name": "transfer",
+          "signature": "transfer(address,uint64)bool",
+          "kind": "write",
+          "stateMutability": "nonpayable",
+          "parameters": { "to": "string", "amount": "number" },
+          "inputs": { "to": "address", "amount": "uint64" },
+          "outputs": { "result0": "bool" }
+        },
+        {
+          "name": "balanceOf",
+          "signature": "balanceOf(address)uint256",
+          "kind": "read",
+          "stateMutability": "view",
+          "parameters": { "owner": "string" },
+          "inputs": { "owner": "address" },
+          "outputs": { "result0": "uint256" }
+        },
+        {
+          "name": "deposit",
+          "signature": "deposit(pay,string)void",
+          "kind": "payable",
+          "stateMutability": "payable",
+          "parameters": { "note": "string" },
+          "inputs": { "payment": "pay", "note": "string" },
+          "outputs": {}
+        },
+        {
+          "name": "order",
+          "signature": "order((uint64,string[]),bool[2],byte[],byte[4])void",
+          "kind": "write",
+          "stateMutability": "nonpayable",
+          "parameters": { "item": "array", "flags": "array", "payload": "string", "code": "string" },
+          "inputs": { "item": "(uint64,string[])", "flags": "bool[2]", "payload": "byte[]", "code": "byte[4]" },
+          "outputs": {}
+        },
+        {
+          "name": "link",
+          "signature": "link(account,asset,application)uint8",
+          "kind": "write",
+          "stateMutability": "nonpayable",
+          "parameters": { "account": "string", "asset": "number", "app": "number" },
+          "inputs": { "account": "account", "asset": "asset", "app": "application" },
+          "outputs": { "result0": "uint8" }
+        },
+        {
+          "name": "pick",
+          "signature": "pick(uint64)void",
+          "kind": "write",
+          "stateMutability": "nonpayable",
+          "parameters": { "id": "number" },
+          "inputs": { "id": "uint64" },
+          "outputs": {}
+        },
+        {
+          "name": "pick",
+          "signature": "pick(uint64,byte[])void",
+          "kind": "write",
+          "stateMutability": "nonpayable",
+          "parameters": { "id": "number", "data": "string" },
+          "inputs": { "id": "uint64", "data": "byte[]" },
+          "outputs": {}
+        },
+        {
+          "name": "legacy",
+          "signature": "legacy(uint8)string",
+          "kind": "read",
+          "stateMutability": "view",
+          "parameters": { "arg0": "number" },
+          "inputs": { "arg0": "uint8" },
+          "outputs": { "result0": "string" }
+        }
+      ],
+      "encoded": [
+        {
+          "method": "transfer",
+          "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "amount": "1000" },
+          "data": "0x94c378901f87a21d84d02019c4edc2b245314d760aeb5bc90d9f682d71985483f4504ccf00000000000003e8"
+        },
+        {
+          "method": "transfer",
+          "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "amount": 1000 },
+          "data": "0x94c378901f87a21d84d02019c4edc2b245314d760aeb5bc90d9f682d71985483f4504ccf00000000000003e8"
+        },
+        {
+          "method": "transfer(address,uint64)bool",
+          "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "amount": "0x3e8" },
+          "data": "0x94c378901f87a21d84d02019c4edc2b245314d760aeb5bc90d9f682d71985483f4504ccf00000000000003e8"
+        },
+        {
+          "method": "balanceOf",
+          "parameters": { "owner": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU" },
+          "data": "0x83bad7ccc2bf46e9c6cd9bf6166db03fb938c3e040b653a87d97805dbed0a6aee6fe61c2"
+        },
+        { "method": "deposit", "parameters": { "note": "tip" }, "data": "0x56e4c6c30003746970" },
+        {
+          "method": "order",
+          "parameters": { "item": ["18446744073709551615", ["a", "b"]], "flags": [true, false], "payload": "0xcafe", "code": "0x01020304" },
+          "data": "0xe3b4f99affffffffffffffff000a000200040007000161000162800002cafe01020304"
+        },
+        {
+          "method": "link",
+          "parameters": { "account": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "asset": 7, "app": 123 },
+          "data": "0xe6827d5f010000"
+        },
+        {
+          "method": "link",
+          "parameters": { "account": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU", "asset": "7", "app": 456 },
+          "data": "0xe6827d5f010001"
+        },
+        { "method": "pick", "parameters": { "id": 1 }, "data": "0x7b1870060000000000000001" },
+        { "method": "pick", "parameters": { "id": 1, "data": "0x" }, "data": "0x2352684200000000000000010000" },
+        { "method": "pick(uint64,byte[])void", "parameters": { "id": 1, "data": "0x01" }, "data": "0x235268420000000000000001000101" },
+        { "method": "legacy", "parameters": { "arg0": 255 }, "data": "0x33f328e1ff" }
+      ],
+      "invalid": [
+        { "method": "transfer", "parameters": { "to": "NOT-AN-ADDRESS", "amount": 1 } },
+        { "method": "transfer", "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI" } },
+        { "method": "transfer", "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "amount": -1 } },
+        { "method": "transfer", "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "amount": "1.5" } },
+        {
+          "method": "transfer",
+          "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "amount": "18446744073709551616" }
+        },
+        {
+          "method": "transfer",
+          "parameters": { "to": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI", "amount": 1, "memo": "x" }
+        },
+        { "method": "transfer", "parameters": { "to": 42, "amount": 1 } },
+        { "method": "order", "parameters": { "item": [1], "flags": [true, false], "payload": "0x", "code": "0x01020304" } },
+        { "method": "order", "parameters": { "item": [1, []], "flags": ["yes", false], "payload": "0x", "code": "0x01020304" } },
+        { "method": "order", "parameters": { "item": [1, []], "flags": [true, false], "payload": "cafe", "code": "0x01020304" } },
+        { "method": "order", "parameters": { "item": [1, []], "flags": [true, false], "payload": "0x", "code": "0x0102" } },
+        { "method": "legacy", "parameters": { "arg0": 256 } },
+        { "method": "pick", "parameters": { "other": 1 } }
+      ]
+    },
+    "standards": [
+      {
+        "methods": [
+          "arc200_name",
+          "arc200_symbol",
+          "arc200_decimals",
+          "arc200_totalSupply",
+          "arc200_balanceOf",
+          "arc200_transfer",
+          "arc200_transferFrom",
+          "arc200_approve",
+          "arc200_allowance"
+        ],
+        "expected": ["ARC-200"]
+      },
+      {
+        "methods": [
+          "arc72_ownerOf",
+          "arc72_transferFrom",
+          "arc72_tokenURI",
+          "arc72_balanceOf",
+          "arc72_totalSupply",
+          "arc72_tokenByIndex",
+          "arc72_approve",
+          "arc72_setApprovalForAll",
+          "arc72_getApproved",
+          "arc72_isApprovedForAll",
+          "supportsInterface"
+        ],
+        "expected": ["ARC-72", "ARC-72 Enumeration", "ARC-72 Management", "ARC-73"]
+      },
+      { "methods": ["arc72_ownerOf", "arc72_tokenURI", "arc200_name", "transfer"], "expected": [] }
+    ],
+    "signedTransactions": {
+      "$comment": "Transactions signed by wallets[0], as algosdk encodes them (canonical msgpack); byte values are 0x hex, genesisHash is base64.",
+      "transactions": [
+        {
+          "name": "payment",
+          "fields": {
+            "sender": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+            "fee": 1000,
+            "firstValid": 1000,
+            "lastValid": 2000,
+            "genesisId": "testnet-v1.0",
+            "genesisHash": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "type": "pay",
+            "receiver": "D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI",
+            "amount": 1234567
+          },
+          "txId": "WGOZONPWK454I4WPJGYGSLLXJKIL66BHKN3HZP23TF6JC34HVFDQ",
+          "signed": "0x82a3736967c4405818a3ae4153c310c213f95ca53fbd838dfbc32671d2ca7eb0f8046f9ced60f4c9e65bc18d5363fb896d66648260e1a95c73fc7e3f5527a30510c5cd97679408a374786e89a3616d74ce0012d687a3666565cd03e8a26676cd03e8a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76cd07d0a3726376c4201f87a21d84d02019c4edc2b245314d760aeb5bc90d9f682d71985483f4504ccfa3736e64c420c2bf46e9c6cd9bf6166db03fb938c3e040b653a87d97805dbed0a6aee6fe61c2a474797065a3706179"
+        },
+        {
+          "name": "application call",
+          "fields": {
+            "sender": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+            "fee": 3000,
+            "firstValid": 1000,
+            "lastValid": 2000,
+            "genesisId": "testnet-v1.0",
+            "genesisHash": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "type": "appl",
+            "appId": 123,
+            "appArgs": ["0x94c37890", "0x00000000000003e8"],
+            "accounts": ["D6D2EHME2AQBTRHNYKZEKMKNOYFOWW6JBWPWQLLRTBKIH5CQJTHVZNISPI"],
+            "apps": [456],
+            "assets": [7],
+            "boxes": [{ "appIndex": 0, "name": "0x6201" }]
+          },
+          "txId": "5JSBENQQELSDCVKO55JJR2N66Q6AWJGSZEKTVXYKBJSD4MJGOB6A",
+          "signed": "0x82a3736967c4405502c7478c95d3de60ef83ba267f0e2bb0df350f72e2a4cca8d978e1caa7b8e45a68c9388d7657e240b8fdbced84e5d9bd8194b7b44fc9f9936ab8f3cd8f5b0fa374786e8da46170616192c40494c37890c40800000000000003e8a4617061739107a46170617491c4201f87a21d84d02019c4edc2b245314d760aeb5bc90d9f682d71985483f4504ccfa4617062789181a16ec4026201a46170666191cd01c8a4617069647ba3666565cd0bb8a26676cd03e8a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76cd07d0a3736e64c420c2bf46e9c6cd9bf6166db03fb938c3e040b653a87d97805dbed0a6aee6fe61c2a474797065a46170706c"
+        },
+        {
+          "name": "application creation",
+          "fields": {
+            "sender": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+            "fee": 1000,
+            "firstValid": 1000,
+            "lastValid": 2000,
+            "genesisId": "testnet-v1.0",
+            "genesisHash": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "type": "appl",
+            "appId": 0,
+            "appArgs": ["0xb8447b36"],
+            "approvalProgram": "0x0a810143",
+            "clearProgram": "0x0a810143",
+            "globalInts": 1,
+            "globalBytes": 2,
+            "localInts": 0,
+            "localBytes": 0,
+            "extraPages": 0
+          },
+          "txId": "DQGXNHOX44SQOYZZTADHYUFL5ANMATPLDTTFYSN53ULELTWMMXVA",
+          "signed": "0x82a3736967c440ad726aa997850ed3e39a161d01c491f2c6c03ada7491e2707ca95265deddb9fc77d2eaa69a7493e8bbaabf89ea861245d084d1f40c22ef6f461dafb9da85f704a374786e8ba46170616191c404b8447b36a461706170c4040a810143a46170677382a36e627302a36e756901a461707375c4040a810143a3666565cd03e8a26676cd03e8a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76cd07d0a3736e64c420c2bf46e9c6cd9bf6166db03fb938c3e040b653a87d97805dbed0a6aee6fe61c2a474797065a46170706c"
+        },
+        {
+          "name": "asset creation",
+          "fields": {
+            "sender": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+            "fee": 1000,
+            "firstValid": 1000,
+            "lastValid": 2000,
+            "genesisId": "testnet-v1.0",
+            "genesisHash": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "type": "acfg",
+            "total": 1000000,
+            "decimals": 2,
+            "manager": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+            "unitName": "CRT",
+            "assetName": "Certifie Coin",
+            "url": "https://certifie.example"
+          },
+          "txId": "7WUDZEY7GOOSFIJ5HLDUJSB7G2J4I5T2ARGFTN44JXSUYSIHVGKA",
+          "signed": "0x82a3736967c4403ba46e75a9317a5f6d32e75e5f0e11eb4cb15e9700790a93a1f6c770ffd8f7c2009aa9b3b0f9765eee8a5beddc01132c88ebc6374799337194d344d11ad71f04a374786e88a46170617286a2616ead436572746966696520436f696ea26175b868747470733a2f2f63657274696669652e6578616d706c65a2646302a16dc420c2bf46e9c6cd9bf6166db03fb938c3e040b653a87d97805dbed0a6aee6fe61c2a174ce000f4240a2756ea3435254a3666565cd03e8a26676cd03e8a367656eac746573746e65742d76312e30a26768c4204863b518a4b3c84ec810f22d4f1081cb0f71f059a7ac20dec62f7f70e5093a22a26c76cd07d0a3736e64c420c2bf46e9c6cd9bf6166db03fb938c3e040b653a87d97805dbed0a6aee6fe61c2a474797065a461636667"
+        }
+      ],
+      "group": {
+        "$comment": "A payment to application 123 followed by a call: the group ID is the hash of both transaction IDs.",
+        "transactions": [
+          {
+            "sender": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+            "fee": 1000,
+            "firstValid": 1000,
+            "lastValid": 2000,
+            "genesisId": "testnet-v1.0",
+            "genesisHash": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "type": "pay",
+            "receiver": "WRBMNT66ECE2AOYKM76YVWIJMBW6Z3XCQZOKG5BL7NISAQC2LBGEKTZLRM",
+            "amount": 5
+          },
+          {
+            "sender": "YK7UN2OGZWN7MFTNWA73SOGD4BALMU5IPWLYAXN62CTK5ZX6MHBO2LWXCU",
+            "fee": 1000,
+            "firstValid": 1000,
+            "lastValid": 2000,
+            "genesisId": "testnet-v1.0",
+            "genesisHash": "SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=",
+            "type": "appl",
+            "appId": 123,
+            "appArgs": ["0x56e4c6c3", "0x0003746970"]
+          }
+        ],
+        "groupId": "IrawMqPxJ1w6HBA6df6MV5cV2kan4wq0uZBWgmVhaaQ=",
+        "txIds": ["E6242CF7T4RYZVPYCGSI476KRHC7YC56KAGBH6YCZNOSJYW443NA", "RCJZWPXGDLLDZDN6HORC4YP5QYYPVHEIGJMFPIJ4OXAPTP3L6BQA"]
+      }
+    }
+  },
+  "bitcoin": {
+    "$comment": "Bitcoin through an Esplora API: the responses of the test server, and the expected results of check, getTransaction and getTransactionReceipt.",
+    "defaults": { "chainId": "mainnet", "chainName": "Bitcoin", "currencyName": "Bitcoin", "symbol": "BTC", "decimals": 8 },
+    "esplora": {
+      "chainId": "regtest",
+      "genesis": "0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206",
+      "tipHeight": "150",
+      "feeEstimates": { "1": 12.3, "6": 5.1, "144": 1.0 },
+      "transaction": {
+        "txid": "5f3c9a3c0d9b2f4e8a7c6b5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f",
+        "version": 2,
+        "locktime": 0,
+        "size": 222,
+        "weight": 561,
+        "fee": 1410,
+        "vin": [
+          {
+            "txid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "vout": 1,
+            "prevout": { "scriptpubkey_address": "bcrt1qsender0000000000000000000000000000qqqq", "value": 100000 },
+            "sequence": 4294967293
+          }
+        ],
+        "vout": [
+          { "scriptpubkey_address": "bcrt1qrecipient000000000000000000000000rrrr", "value": 25000 },
+          { "scriptpubkey_address": "bcrt1qsender0000000000000000000000000000qqqq", "value": 73590 }
+        ],
+        "status": {
+          "confirmed": true,
+          "block_height": 150,
+          "block_hash": "3a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f5f3c9a3c0d9b2f4e8a7c6b5d4e3f",
+          "block_time": 1700000000
+        }
+      },
+      "blockTxids": [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "5f3c9a3c0d9b2f4e8a7c6b5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f"
+      ]
+    },
+    "check": { "blockNumber": "150", "gasPrice": "13" },
+    "details": {
+      "hash": "5f3c9a3c0d9b2f4e8a7c6b5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f",
+      "from": "bcrt1qsender0000000000000000000000000000qqqq",
+      "to": "bcrt1qrecipient000000000000000000000000rrrr",
+      "value": "25000",
+      "nonce": "0",
+      "gas": "0",
+      "input": "0x",
+      "type": "2",
+      "blockHash": "3a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f5f3c9a3c0d9b2f4e8a7c6b5d4e3f",
+      "blockNumber": "150",
+      "transactionIndex": "2",
+      "pending": false,
+      "timestamp": "1700000000000",
+      "receipt": {
+        "transactionHash": "5f3c9a3c0d9b2f4e8a7c6b5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f",
+        "blockHash": "3a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f5f3c9a3c0d9b2f4e8a7c6b5d4e3f",
+        "blockNumber": "150",
+        "transactionIndex": "2",
+        "from": "bcrt1qsender0000000000000000000000000000qqqq",
+        "to": "bcrt1qrecipient000000000000000000000000rrrr",
+        "contractAddress": null,
+        "type": "2",
+        "status": "1",
+        "cumulativeGasUsed": "0",
+        "gasUsed": "0",
+        "logsBloom": "",
+        "logs": []
+      },
+      "nativeFee": { "amount": "1410", "symbol": "BTC", "decimals": "8" }
+    },
+    "receipt": {
+      "name": "lookup",
+      "requestedAt": "1",
+      "completedAt": "1700000000000",
+      "tx": {
+        "transactionHash": "5f3c9a3c0d9b2f4e8a7c6b5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f",
+        "blockHash": "3a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f5f3c9a3c0d9b2f4e8a7c6b5d4e3f",
+        "blockNumber": "150",
+        "transactionIndex": "2",
+        "from": "bcrt1qsender0000000000000000000000000000qqqq",
+        "to": "bcrt1qrecipient000000000000000000000000rrrr",
+        "contractAddress": null,
+        "type": "2",
+        "status": "1",
+        "cumulativeGasUsed": "0",
+        "gasUsed": "0",
+        "logsBloom": "",
+        "logs": []
+      },
+      "nativeFee": { "amount": "1410", "symbol": "BTC", "decimals": "8" }
+    },
+    "notImplemented": ["getContract", "callContractMethod", "mint", "deploy", "createToken", "getTokenInfo"]
+  }
 }

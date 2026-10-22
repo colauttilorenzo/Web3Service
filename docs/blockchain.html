@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Più blockchain · Web3 Service Docs</title>
+<meta name="description" content="Una sola API: il provider sceglie la blockchain.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="on">Docs</a><a href="web3service.html" class="">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.2.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.2.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="index.html">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link" href="uso-base.html">Uso di base</a><a class="nav-link" href="contratti.html">Contratti, token e NFT</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link" href="firma.html">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Blockchain</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link on" href="blockchain.html" aria-current="page">Più blockchain</a><a class="nav-link" href="algorand.html">Algorand</a><a class="nav-link" href="bitcoin.html">Bitcoin</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="web3service.html">Web3Service</a><a class="nav-link" href="web3contract.html">Web3Contract</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link" href="tipi.html">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">Blockchain</div>
+      <div class="page-head"><h1>Più blockchain</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Una sola API: il provider sceglie la blockchain.</p>
+
+<p><code>Web3Service</code> offre gli stessi metodi su ogni blockchain, descritti dall’interfaccia <code>IWeb3Service</code>. Il provider passato al costruttore sceglie l’implementazione: <code>IEvmProvider</code> (o un URI) per Ethereum e le reti EVM, <code>IAvmProvider</code> per Algorand, <code>IBitcoinProvider</code> per Bitcoin. Il codice che usa il servizio non cambia e il JSON restituito ha la stessa forma.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import { Web3Service } from '@certifie/web3-service';
+
+// Il campo kind distingue i provider; senza kind il provider è EVM.
+const polygon = new Web3Service({ rpcURI: 'https://rpc-amoy.polygon.technology', chainId: 80002 });
+const algorand = new Web3Service({ kind: 'avm', rpcURI: 'https://testnet-api.algonode.cloud', chainId: 'testnet-v1.0' });
+const bitcoin = new Web3Service({ kind: 'bitcoin', rpcURI: 'https://mempool.space/api' });
+
+polygon.kind;   // 'evm'
+algorand.kind;  // 'avm'
+bitcoin.kind;   // 'bitcoin'
+await bitcoin.check(); // { blockNumber: '…', gasPrice: '…' }: stesso metodo, stessa forma</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">using Certifie.Web3;
+
+// La classe del provider sceglie la blockchain; va bene anche una tua classe che implementa l'interfaccia.
+var polygon = new Web3Service(new EvmProvider { RpcURI = "https://rpc-amoy.polygon.technology", ChainId = "80002" });
+var algorand = new Web3Service(new AvmProvider { RpcURI = "https://testnet-api.algonode.cloud", ChainId = "testnet-v1.0" });
+var bitcoin = new Web3Service(new BitcoinProvider { RpcURI = "https://mempool.space/api" });
+
+Console.WriteLine(algorand.Kind);     // "avm"
+var health = await bitcoin.CheckAsync(); // BlockNumber, GasPrice: stesso metodo, stessa forma</code></pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Provider</th><th>TypeScript</th><th>.NET</th><th>Implementazione</th></tr></thead><tbody><tr><td>EVM</td><td><code>IEvmProvider</code> (senza <code>kind</code> o con <code>kind: 'evm'</code>) o un URI</td><td><code>EvmProvider</code>, <code>IEvmProvider</code> o un URI</td><td>Ethereum, Polygon, reti private e nodi locali</td></tr><tr><td>Algorand</td><td><code>IAvmProvider</code> con <code>kind: 'avm'</code></td><td><code>AvmProvider</code> o <code>IAvmProvider</code></td><td><a href="algorand.html">Algorand</a> tramite algod</td></tr><tr><td>Bitcoin</td><td><code>IBitcoinProvider</code> con <code>kind: 'bitcoin'</code></td><td><code>BitcoinProvider</code> o <code>IBitcoinProvider</code></td><td><a href="bitcoin.html">Bitcoin</a> tramite un’API Esplora</td></tr></tbody></table></div>
+<h2 id="operazioni">Operazioni per blockchain</h2>
+<p>Un’operazione che la blockchain non ha fallisce subito, senza contattare il nodo, con <code>NotImplementedError</code> in TypeScript (codice <code>NOT_IMPLEMENTED</code>) e <code>NotImplementedException</code> in .NET.</p>
+<div class="table-wrap"><table><thead><tr><th>Metodo</th><th>EVM</th><th>Algorand</th><th>Bitcoin</th></tr></thead><tbody><tr><td><code>check</code></td><td>Sì</td><td>Sì</td><td>Sì</td></tr><tr><td><code>getContract</code>, <code>callContractMethod</code></td><td>Sì</td><td>Sì, applicazioni ARC-4</td><td><code>NotImplementedError</code></td></tr><tr><td><code>mint</code></td><td>Sì</td><td>Sì</td><td><code>NotImplementedError</code></td></tr><tr><td><code>deploy</code></td><td>Sì, da bytecode</td><td>Sì, da descrizione ARC-56 o programmi</td><td><code>NotImplementedError</code></td></tr><tr><td><code>createToken</code>, <code>getTokenInfo</code></td><td><code>NotImplementedError</code>: i token EVM sono contratti</td><td>Sì, Algorand Standard Asset</td><td><code>NotImplementedError</code></td></tr><tr><td><code>getTransaction</code>, <code>getTransactionReceipt</code></td><td>Sì</td><td>Sì</td><td>Sì</td></tr></tbody></table></div>
+<h2 id="non-implementate">Operazioni non disponibili</h2>
+<p>Il messaggio dice quale operazione manca e su quale blockchain, con un suggerimento quando esiste un’alternativa. Con un provider scelto a runtime puoi controllare prima <code>kind</code>, oppure intercettare l’errore.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import { NotImplementedError, Web3Error } from '@certifie/web3-service';
+
+try {
+  await bitcoin.deploy(abi, bytecode);
+} catch (error) {
+  if (error instanceof NotImplementedError) {
+    error.code;    // 'NOT_IMPLEMENTED'
+    error.message; // 'deploy is not available on Bitcoin. Bitcoin has no smart contracts.'
+  } else if (error instanceof Web3Error) {
+    // gli altri errori della libreria
+  }
+}</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">try
+{
+    await bitcoin.DeployAsync(abi, bytecode);
+}
+catch (NotImplementedException error)
+{
+    // "DeployAsync is not available on Bitcoin. Bitcoin has no smart contracts."
+    Console.WriteLine(error.Message);
+}</code></pre></div></div></div>
+<div class="callout callout-note"><strong>Nota</strong><div><p><code>NotImplementedError</code> estende <code>Web3Error</code>, quindi anche <code>toJSON()</code> e i gestori di errori esistenti funzionano. In .NET è la <code>System.NotImplementedException</code> standard, non una <code>Web3Exception</code>.</p></div></div>
+<h2 id="differenze">Cosa cambia tra le blockchain</h2>
+<p>Nomi dei metodi, parametri e forma del JSON sono gli stessi; cambia il significato di alcuni valori.</p>
+<div class="table-wrap"><table><thead><tr><th>Valore</th><th>EVM</th><th>Algorand</th><th>Bitcoin</th></tr></thead><tbody><tr><td><code>chainId</code></td><td>Chain ID esadecimale, es. <code>0x13882</code></td><td>Genesis ID, es. <code>testnet-v1.0</code></td><td>Nome della rete, es. <code>mainnet</code></td></tr><tr><td>Verifica dell’endpoint</td><td><code>eth_chainId</code></td><td>Genesis ID del nodo</td><td>Hash del blocco genesi</td></tr><tr><td>ABI</td><td>ABI JSON (array)</td><td>Descrizione ARC-4, ARC-32 o ARC-56 (oggetto)</td><td>—</td></tr><tr><td>Indirizzo del contratto</td><td>Indirizzo <code>0x…</code></td><td>ID dell’applicazione, es. <code>'1002'</code></td><td>—</td></tr><tr><td><code>check().gasPrice</code></td><td>Prezzo del gas in wei</td><td>Commissione minima in microAlgo</td><td>Commissione per il prossimo blocco in sat/vB</td></tr><tr><td><code>nativeFee.amount</code></td><td>Gas usato × prezzo, in wei</td><td>Commissione in microAlgo</td><td>Commissione in satoshi</td></tr><tr><td><code>tx.blockNumber</code></td><td>Numero del blocco</td><td>Round</td><td>Altezza del blocco</td></tr><tr><td><code>gasUsed</code>, <code>nonce</code></td><td>Valori reali</td><td><code>'0'</code></td><td><code>'0'</code></td></tr></tbody></table></div>
+<h2 id="iweb3service">IWeb3Service</h2>
+<p>Per scrivere codice indipendente dalla blockchain, o per sostituire il servizio nei test, dipendi dall’interfaccia invece che dalla classe.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import type { Abi, IWeb3Service, NotarizationDocument } from '@certifie/web3-service';
+
+// Funziona con qualsiasi provider che abbia mint: EVM o Algorand.
+export function notarize(web3: IWeb3Service, abi: Abi, contract: string, document: NotarizationDocument) {
+  return web3.mint(abi, contract, document);
+}</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">// Registrazione: la blockchain si sceglie nella configurazione, il resto dell'applicazione vede solo IWeb3Service.
+builder.Services.AddSingleton&lt;IWeb3Service&gt;(new Web3Service(
+    new AvmProvider { RpcURI = builder.Configuration["Algorand:Algod"]!, ChainId = "testnet-v1.0" },
+    new Web3ServiceOptions { Mnemonic = builder.Configuration["Algorand:Mnemonic"] }));
+
+app.MapPost("/notarize", (IWeb3Service web3, NotarizationDocument document) =&gt; web3.MintAsync(abi, contract, document));</code></pre></div></div></div>
+
+      <nav class="pager" aria-label="Pagine"><a href="numeri-gas.html"><span>Precedente</span>Numeri e gas</a><a class="next" href="algorand.html"><span>Successiva</span>Algorand</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.2.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

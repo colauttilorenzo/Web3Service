@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Algorand · Web3 Service Docs</title>
+<meta name="description" content="Applicazioni ARC-4, Algorand Standard Asset e notarizzazione tramite un nodo algod.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html"><span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.4 12.2l2.4 2.4 4.8-4.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="brand-name">Web3 Service</span><span class="brand-tag">docs</span></a>
+  <nav class="tabs-top" aria-label="Sezioni"><a href="index.html" class="on">Docs</a><a href="web3service.html" class="">API</a><a href="react.html" class="">Esempi</a><a href="dotnet.html" class="">.NET</a><a href="changelog.html" class="">Changelog</a></nav>
+  <span class="top-version">v0.2.0</span>
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Apri menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8"/></svg>
+  </button>
+</header>
+<div class="layout">
+  <aside class="side" id="side">
+    <div class="version"><div><b>Versione 0.2.0</b><span>npm · CDN · NuGet</span></div></div>
+    <button class="search-btn" id="search-btn" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+      Cerca nella guida<kbd>⌘K</kbd>
+    </button>
+    <nav aria-label="Documentazione"><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg><span>Inizia</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="index.html">Introduzione</a><a class="nav-link" href="installazione.html">Installazione</a><a class="nav-link" href="uso-base.html">Uso di base</a><a class="nav-link" href="contratti.html">Contratti, token e NFT</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 1 4 17.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H13z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Concetti</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="configurazione.html">Configurazione</a><a class="nav-link" href="firma.html">Firma delle transazioni</a><a class="nav-link" href="numeri-gas.html">Numeri e gas</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Blockchain</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="blockchain.html">Più blockchain</a><a class="nav-link on" href="algorand.html" aria-current="page">Algorand</a><a class="nav-link" href="bitcoin.html">Bitcoin</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M9 4H6v16h3M15 4h3v16h-3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>API</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="web3service.html">Web3Service</a><a class="nav-link" href="web3contract.html">Web3Contract</a><a class="nav-link" href="wallet-hd.html">Metodi statici</a><a class="nav-link" href="tipi.html">Tipi</a><a class="nav-link" href="errori.html">Errori</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" fill="currentColor"/></svg><span>Integrazioni</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="react.html">React</a><a class="nav-link" href="nextjs.html">Next.js</a><a class="nav-link" href="angular.html">Angular</a><a class="nav-link" href="fastify.html">Fastify</a><a class="nav-link" href="express.html">Express</a><a class="nav-link" href="vanilla.html">JavaScript vanilla</a><a class="nav-link" href="dotnet.html">.NET</a></div></div><div class="nav-group"><button class="nav-group-head" type="button" aria-expanded="true"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg><span>Riferimento</span><svg viewBox="0 0 24 24" class="chev" aria-hidden="true"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></button><div class="nav-items"><a class="nav-link" href="changelog.html">Changelog</a></div></div></nav>
+  </aside>
+  <main class="content">
+    <article id="article">
+      <div class="eyebrow">Blockchain</div>
+      <div class="page-head"><h1>Algorand</h1>
+        <div class="page-tools"><button class="tool-btn" id="copy-page" type="button"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><rect x="8" y="8" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16 4H4v12" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Copia pagina</button></div>
+      </div>
+      <p class="lead">Applicazioni ARC-4, Algorand Standard Asset e notarizzazione tramite un nodo algod.</p>
+
+<p>Con un <code>IAvmProvider</code> lo stesso <code>Web3Service</code> lavora su Algorand: distribuisce applicazioni, notarizza con <code>mint</code>, chiama i metodi ARC-4 per nome, crea token (ASA) e legge transazioni. Parla con un nodo algod via REST, per esempio i nodi pubblici di <a href="https://nodely.io">Nodely</a> o AlgoKit LocalNet, e restituisce lo stesso JSON delle reti EVM. In .NET l’implementazione è nativa e non richiede altri SDK.</p>
+<h2 id="configurazione">Configurazione</h2>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import { Web3Service, type IAvmProvider } from '@certifie/web3-service';
+
+const testnet: IAvmProvider = {
+  kind: 'avm',                                     // sceglie Algorand
+  rpcURI: 'https://testnet-api.algonode.cloud',    // nodo algod
+  rpcPublicURI: 'https://algod-fallback.example',  // fallback, opzionale
+  indexerURI: 'https://testnet-idx.algonode.cloud', // opzionale: transazioni che algod non conserva più
+  chainId: 'testnet-v1.0',                         // genesis ID, verificato a ogni operazione
+  chainName: 'Algorand TestNet',
+  blockExplorerURI: 'https://lora.algokit.io/testnet',
+};
+
+export const algorand = new Web3Service(testnet, { signer: { mnemonic: process.env.ALGORAND_MNEMONIC! } });
+algorand.provider.nativeCurrency; // { name: 'Algo', symbol: 'ALGO', decimals: 6 }</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var algorand = new Web3Service(new AvmProvider
+{
+    RpcURI = "https://testnet-api.algonode.cloud",     // nodo algod
+    RpcPublicURI = "https://algod-fallback.example",   // fallback, opzionale
+    IndexerURI = "https://testnet-idx.algonode.cloud",  // opzionale: transazioni che algod non conserva più
+    ChainId = "testnet-v1.0",                           // genesis ID, verificato a ogni operazione
+    ChainName = "Algorand TestNet",
+}, new Web3ServiceOptions { Mnemonic = builder.Configuration["Algorand:Mnemonic"] });
+
+Console.WriteLine(algorand.Provider.Symbol); // "ALGO"</code></pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Default</th><th>Note</th></tr></thead><tbody><tr><td><code>kind</code></td><td>—</td><td>Solo TypeScript: <code>'avm'</code>. In .NET lo indica la classe <code>AvmProvider</code></td></tr><tr><td><code>rpcURI</code></td><td>—</td><td>URL di algod, obbligatorio</td></tr><tr><td><code>rpcPublicURI</code></td><td>—</td><td>Nodo di fallback, usato se il primo non risponde o è su un’altra rete</td></tr><tr><td><code>token</code></td><td>—</td><td>Inviato come <code>X-Algo-API-Token</code>; i nodi pubblici non lo richiedono</td></tr><tr><td><code>indexerURI</code>, <code>indexerToken</code></td><td>—</td><td>Indexer, per leggere transazioni vecchie con <code>getTransaction</code> e <code>getTransactionReceipt</code></td></tr><tr><td><code>chainId</code></td><td><code>mainnet-v1.0</code></td><td>Genesis ID della rete: <code>testnet-v1.0</code>, <code>betanet-v1.0</code> o quello di una rete locale</td></tr><tr><td><code>chainName</code></td><td><code>Algorand</code></td><td></td></tr><tr><td><code>nativeCurrency</code></td><td><code>Algo</code>, <code>ALGO</code>, <code>6</code></td><td>Le commissioni sono restituite in microAlgo</td></tr></tbody></table></div>
+<h2 id="firma">Firma</h2>
+<p>Le opzioni sono le stesse delle reti EVM, con il formato delle chiavi di Algorand. Gli account Algorand non derivano da un percorso, quindi <code>walletIndex</code> non si usa.</p>
+<div class="table-wrap"><table><thead><tr><th>Signer</th><th>Formato</th><th>Dove</th></tr></thead><tbody><tr><td><code>mnemonic</code></td><td>Le 25 parole dell’account Algorand</td><td>Backend</td></tr><tr><td><code>privateKey</code></td><td>Seed Ed25519 di 32 byte in esadecimale <code>0x…</code>, oppure la secret key di 64 byte in base64 (<code>account.sk</code> di algosdk)</td><td>Backend</td></tr><tr><td><code>wallet</code></td><td>Un <code>IAvmWallet</code>: <code>{ address, signTransactions }</code>, per esempio da <code>@txnlab/use-wallet</code></td><td>Browser, solo TypeScript</td></tr></tbody></table></div>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import { useWallet } from '@txnlab/use-wallet-react';
+import { Web3Service } from '@certifie/web3-service';
+
+// Nel browser firma il wallet dell'utente (Pera, Defly, Lute…): la chiave non arriva mai alla pagina.
+const { activeAddress, signTransactions } = useWallet();
+const web3 = new Web3Service(testnet, { signer: { wallet: { address: activeAddress!, signTransactions } } });</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">// In .NET firma una chiave del backend: le 25 parole…
+var web3 = new Web3Service(provider, new Web3ServiceOptions { Mnemonic = configuration["Algorand:Mnemonic"] });
+
+// …oppure il seed di 32 byte in esadecimale, come lo restituisce AlgorandWallets.GetWallet(mnemonic).PrivateKey
+var fromSeed = new Web3Service(provider, new Web3ServiceOptions { PrivateKey = configuration["Algorand:PrivateKey"] });</code></pre></div></div></div>
+<p>Per creare un account usa <code>AlgorandWallets</code>; vedi <a href="wallet-hd.html#algorand-wallets">Metodi statici</a>. Un account nuovo va finanziato con almeno 0,1 ALGO (il saldo minimo) più le commissioni.</p>
+<h2 id="deploy">Deploy</h2>
+<p>L’ABI è la descrizione dell’applicazione in JSON: ARC-56 (generata da Algorand Python, TEALScript e AlgoKit), ARC-32 o ARC-4. Con <code>bytecode</code> vuoto i programmi arrivano dalla descrizione ARC-56: compilati (<code>byteCode</code>) oppure sorgente TEAL (<code>source</code>), compilata dal nodo. In alternativa passa i programmi <code>{ approval, clear }</code> in base64, in esadecimale <code>0x…</code> o come sorgente TEAL.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">import notarizer from './Notarizer.arc56.json' with { type: 'json' };
+
+// Gli argomenti vanno al metodo di creazione (qui create(string)void).
+// value finanzia il conto dell'applicazione dopo la creazione, es. per le box che salverà: 0,2 ALGO in microAlgo.
+const deployed = await algorand.deploy(notarizer, '', ['CERTIFIE'], undefined, { value: '200000' });
+const appId = deployed.tx!.contractAddress!; // ID dell'applicazione, es. '1002'
+
+// Programmi espliciti: base64, 0x… o sorgente TEAL
+await algorand.deploy(notarizer, { approval: approvalBase64, clear: clearBase64 }, ['CERTIFIE']);</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var notarizer = await File.ReadAllTextAsync("Notarizer.arc56.json");
+
+// Gli argomenti vanno al metodo di creazione (qui create(string)void).
+// Value finanzia il conto dell'applicazione dopo la creazione, es. per le box che salverà: 0,2 ALGO in microAlgo.
+var deployed = await algorand.DeployAsync(notarizer, "", new object[] { "CERTIFIE" },
+    options: new TransactionOptions { Value = 200_000 });
+var appId = deployed.Tx!.ContractAddress!; // ID dell'applicazione, es. "1002"
+
+// Programmi espliciti: base64, 0x… o sorgente TEAL
+await algorand.DeployAsync(notarizer, new AvmPrograms { Approval = approvalBase64, Clear = clearBase64 }, new object[] { "CERTIFIE" });</code></pre></div></div></div>
+<p>Il metodo di creazione è quello che ARC-56 indica con l’azione <code>NoOp</code> in <code>actions.create</code>, oppure, nelle descrizioni senza azioni, quello chiamato <code>create</code> o <code>createApplication</code>. Lo schema dello stato e le pagine extra si ricavano dalla descrizione e dalla dimensione dei programmi.</p>
+<div class="callout callout-note"><strong>Nota</strong><div><p>La compilazione della sorgente TEAL richiede un nodo con <code>EnableDeveloperAPI</code> (attivo su LocalNet). Con i nodi pubblici usa una descrizione ARC-56 con <code>byteCode</code> o passa i programmi già compilati.</p></div></div>
+<h2 id="mint">Notarizzazione</h2>
+<p>Come sulle reti EVM, <code>mint</code> chiama <code>mint(address,string,string,string)void</code> con hash, algoritmo e metadati. L’indirizzo del contratto è l’ID dell’applicazione; il primo argomento è il conto dell’applicazione, come l’indirizzo del contratto su EVM.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const result = await algorand.mint(notarizer, appId, {
+  hash: { data: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', algorithm: 'sha2' },
+  metadata: 'ipfs://bafy...',
+});
+
+result.tx?.transactionHash; // ID della transazione Algorand
+result.tx?.blockNumber;     // round di conferma
+result.nativeFee;           // { amount: '1000', symbol: 'ALGO', decimals: '6' }: commissione in microAlgo</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var result = await algorand.MintAsync(notarizer, appId, new NotarizationDocument
+{
+    Hash = new NotarizationHash { Data = hash, Algorithm = "sha2" },
+    Metadata = "ipfs://bafy...",
+});
+
+Console.WriteLine(result.Tx!.TransactionHash); // ID della transazione Algorand
+Console.WriteLine(result.NativeFee!.Amount);   // "1000": commissione in microAlgo</code></pre></div></div></div>
+<h2 id="contratti">Applicazioni e metodi ARC-4</h2>
+<p><code>getContract(abi, appId)</code> restituisce un <a href="web3contract.html">Web3Contract</a> con gli stessi metodi delle reti EVM. I metodi <code>readonly</code> sono letture, quelli con un argomento <code>pay</code> sono <code>payable</code>, gli altri sono scritture.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const app = algorand.getContract(notarizer, appId);
+app.methods.map(method =&gt; method.signature); // ['create(string)void', 'mint(address,string,string,string)void', 'label()string', …]
+
+await app.call('label');                             // 'CERTIFIE': simulazione gratuita
+await app.call('metadata', { hash: 'e3b0…' });       // ['e3b0…', 'sha2', 'ipfs://bafy...']: le tuple diventano array
+
+const token = algorand.getContract(tokenArc56, tokenAppId); // un'applicazione ARC-200
+await token.call('arc200_transfer', { to: 'ALGO…', value: '1000' }); // transazione, restituita quando è confermata
+await token.call('deposit', { note: 'grazie' }, { value: '100000' }); // payable: 0,1 ALGO pagati all'applicazione</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var app = algorand.GetContract(notarizer, appId);
+var label = await app.CallAsync("label");                          // "CERTIFIE": simulazione gratuita
+var metadata = await app.CallAsync("metadata", new { hash = "e3b0…" }); // ["e3b0…", "sha2", "ipfs://bafy..."]
+
+var token = algorand.GetContract(tokenArc56, tokenAppId); // un'applicazione ARC-200
+await token.CallAsync("arc200_transfer", new { to = "ALGO…", value = "1000" }); // transazione confermata
+await token.SendAsync("deposit", new { note = "grazie" }, new TransactionOptions { Value = 100_000 }); // payable</code></pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Tipo ARC-4</th><th>Valore JSON in ingresso</th><th>Valore restituito</th></tr></thead><tbody><tr><td><code>uint8</code> … <code>uint512</code>, <code>ufixed</code></td><td><code>number</code> o stringa decimale</td><td>Stringa decimale</td></tr><tr><td><code>bool</code></td><td><code>boolean</code></td><td><code>boolean</code></td></tr><tr><td><code>address</code>, <code>account</code></td><td>Indirizzo Algorand di 58 caratteri</td><td>Indirizzo</td></tr><tr><td><code>string</code></td><td><code>string</code></td><td><code>string</code></td></tr><tr><td><code>byte[]</code>, <code>byte[N]</code></td><td>Esadecimale <code>0x…</code></td><td>Esadecimale <code>0x…</code></td></tr><tr><td><code>application</code>, <code>asset</code></td><td>ID come <code>number</code> o stringa</td><td>—</td></tr><tr><td>Array e tuple</td><td>Array</td><td>Array</td></tr><tr><td><code>pay</code></td><td>Non si passa: l’importo è <code>options.value</code></td><td>—</td></tr></tbody></table></div>
+<p>Prima di ogni scrittura la libreria simula il gruppo di transazioni sul nodo. Così trova da sola conti, applicazioni, asset e box che l’applicazione legge, calcola la commissione delle transazioni interne e, se l’applicazione rifiuterebbe la chiamata, restituisce <code>TRANSACTION_REVERTED</code> senza inviare né pagare nulla, con il messaggio di errore della descrizione ARC-56 quando c’è. Le letture sono simulazioni senza commissione, quindi non richiedono un conto finanziato.</p>
+<h2 id="token">Token e NFT</h2>
+<p>Su Algorand un token può esistere senza contratto: è un Algorand Standard Asset (ASA), creato con <code>createToken</code> e letto con <code>getTokenInfo</code>. Un NFT è un ASA con <code>totalSupply</code> 1 e <code>decimals</code> 0. Il creatore ne resta il gestore.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const coin = await algorand.createToken({ name: 'Certifie Coin', symbol: 'CERT', totalSupply: '1000000000', decimals: 2 });
+coin.tokenId; // ID dell'asset, es. '1005'
+
+const nft = await algorand.createToken({
+  name: 'Certificato #1', symbol: 'CERT1', totalSupply: 1,
+  uri: 'ipfs://bafy...#arc3',                // ARC-3
+  metadataHash: '0x' + sha256OfMetadataJson, // 32 byte, opzionale
+});
+
+await algorand.getTokenInfo(coin.tokenId);
+// { standard: 'ASA', address: '1005', name: 'Certifie Coin', symbol: 'CERT', decimals: '2', totalSupply: '1000000000', creator: 'ALGO…' }</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var coin = await algorand.CreateTokenAsync(new TokenDefinition { Name = "Certifie Coin", Symbol = "CERT", TotalSupply = 1_000_000_000, Decimals = 2 });
+Console.WriteLine(coin.TokenId); // ID dell'asset, es. "1005"
+
+var info = await algorand.GetTokenInfoAsync(coin.TokenId); // Standard "ASA", Name, Symbol, Decimals, TotalSupply, TokenURI, Creator</code></pre></div></div></div>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Limite su Algorand</th></tr></thead><tbody><tr><td><code>name</code></td><td>Al massimo 32 byte</td></tr><tr><td><code>symbol</code></td><td>Unit name, al massimo 8 byte</td></tr><tr><td><code>totalSupply</code></td><td>Da 1 a 2<sup>64</sup> − 1 unità minime</td></tr><tr><td><code>decimals</code></td><td>Da 0 a 19, default 0</td></tr><tr><td><code>uri</code></td><td>Al massimo 96 byte</td></tr><tr><td><code>metadataHash</code></td><td>32 byte in esadecimale <code>0x…</code></td></tr></tbody></table></div>
+<p>I token gestiti da un’applicazione funzionano come i contratti ERC: <code>standards</code> riconosce ARC-200 (fungibili), ARC-72 (NFT) e ARC-73, <code>getTokenInfo</code> legge nome, simbolo, decimali e offerta, e <code>mintNft</code> usa <code>arc72_mint</code> (oppure <code>safeMint</code>, <code>mint</code>, <code>mintTo</code>). Gli ID dei nuovi token arrivano dagli eventi <code>arc72_Transfer</code> o dagli ASA creati dalle transazioni interne dell’applicazione.</p>
+<div class="tabs" data-group="lang"><div class="tab-pane" data-label="TypeScript"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-ts">const collection = algorand.getContract(nftArc56, nftAppId);
+collection.standards; // ['ARC-72', 'ARC-72 Enumeration', 'ARC-72 Management', 'ARC-73']
+const minted = await collection.mintNft({ to: 'ALGO…', uri: 'ipfs://bafy...' }); // arc72_mint(address,string)
+await collection.getTokenInfo(minted.tokenIds[0]); // { standard: 'ARC-72', tokenId, totalSupply, owner, tokenURI }</code></pre></div></div><div class="tab-pane" data-label="C#"><div class="code"><div class="code-title">Esempio</div><pre><code class="language-csharp">var collection = algorand.GetContract(nftArc56, nftAppId);
+var minted = await collection.MintNftAsync(new { to = "ALGO…", uri = "ipfs://bafy..." }); // arc72_mint(address,string)
+var nft = await collection.GetTokenInfoAsync(minted.TokenIds[0]); // Standard "ARC-72", Owner, TokenURI</code></pre></div></div></div>
+<h2 id="risultati">Ricevute e commissioni</h2>
+<p>Le transazioni hanno la stessa forma JSON delle reti EVM; i campi che su Algorand non esistono sono zero o vuoti.</p>
+<div class="table-wrap"><table><thead><tr><th>Campo</th><th>Su Algorand</th></tr></thead><tbody><tr><td><code>tx.transactionHash</code></td><td>ID della transazione (l’ultima del gruppo, se il metodo è payable)</td></tr><tr><td><code>tx.blockNumber</code>, <code>tx.blockHash</code></td><td>Round di conferma e hash del suo blocco</td></tr><tr><td><code>tx.contractAddress</code></td><td>ID dell’applicazione creata, dopo <code>deploy</code></td></tr><tr><td><code>tx.status</code></td><td>Sempre <code>'1'</code>: Algorand non registra transazioni fallite, che restituiscono invece <code>TRANSACTION_REVERTED</code> prima dell’invio</td></tr><tr><td><code>tx.logs</code></td><td>Log dell’applicazione: <code>data</code> in esadecimale, <code>address</code> è il conto dell’applicazione</td></tr><tr><td><code>gasUsed</code>, <code>cumulativeGasUsed</code></td><td><code>'0'</code></td></tr><tr><td><code>nativeFee.amount</code></td><td>Commissione pagata, in microAlgo</td></tr><tr><td><code>check().gasPrice</code></td><td>Commissione minima per transazione, in microAlgo</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Opzione</th><th>Su Algorand</th></tr></thead><tbody><tr><td><code>gasPrice</code></td><td>Commissione fissa della transazione in microAlgo. Default: commissione minima × (1 + transazioni interne)</td></tr><tr><td><code>value</code></td><td>MicroAlgo pagati a un metodo <code>payable</code>, oppure al conto dell’applicazione dopo <code>deploy</code></td></tr><tr><td><code>gas</code>, <code>nonce</code></td><td>Ignorati</td></tr></tbody></table></div>
+
+      <nav class="pager" aria-label="Pagine"><a href="blockchain.html"><span>Precedente</span>Più blockchain</a><a class="next" href="bitcoin.html"><span>Successiva</span>Bitcoin</a></nav>
+      <footer class="foot"><span>CERTIFIE · @certifie/web3-service</span><span>Documentazione della versione 0.2.0</span></footer>
+    </article>
+    <aside class="toc" id="toc" aria-label="In questa pagina"></aside>
+  </main>
+</div>
+<div class="search" id="search" hidden>
+  <div class="search-box" role="dialog" aria-label="Cerca nella documentazione">
+    <input id="search-input" type="search" placeholder="Cerca pagine, metodi, tipi…" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" data-manual></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script src="assets/search-index.js"></script>
+<script src="assets/docs.js"></script>
+</body>
+</html>

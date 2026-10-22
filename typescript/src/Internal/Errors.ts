@@ -1,4 +1,4 @@
-import { Web3Error } from '../Web3Exception.js';
+import { NotImplementedError, Web3Error } from '../Web3Exception.js';
 
 /** Factories for errors raised in more than one place. */
 export function invalidArgument(message: string): Web3Error {
@@ -8,6 +8,11 @@ export function invalidArgument(message: string): Web3Error {
 /** The contract does not offer the requested feature, e.g. minting on a contract that is not an NFT. */
 export function notSupported(message: string): Web3Error {
   return new Web3Error('NOT_SUPPORTED', message);
+}
+
+/** The blockchain does not offer the operation at all, e.g. deploy on Bitcoin. */
+export function notImplemented(operation: string, chainName: string, hint = ''): NotImplementedError {
+  return new NotImplementedError(`${operation} is not available on ${chainName}.${hint ? ` ${hint}` : ''}`);
 }
 
 export function methodNotFound(method: string): Web3Error {
@@ -30,6 +35,10 @@ export function transactionReverted(transactionHash: string): Web3Error {
 
 export function transactionNotFound(transactionHash: string): Web3Error {
   return new Web3Error('TRANSACTION_NOT_FOUND', 'The transaction is unknown or has not been mined.', { transactionHash });
+}
+
+export function tokenNotFound(tokenId: string): Web3Error {
+  return new Web3Error('TOKEN_NOT_FOUND', `Token ${tokenId} does not exist.`);
 }
 
 export function receiptDetailsFailed(transactionHash: string, cause: unknown): Web3Error {

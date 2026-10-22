@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <None Include="..\..\..\shared\test-vectors.json" Link="test-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\shared\algorand\*.arc56.json" LinkBase="algorand" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

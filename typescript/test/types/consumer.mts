@@ -1,6 +1,7 @@
 import {
   Web3Service, type Web3Contract, type ITransaction, type IEthereumProvider, type IEvmProvider, type EthereumProviderConfig, type Eip1193Provider,
-  type IContractMethod, type INftMint, type ITokenInfo, type ITransactionDetails,
+  type IContractMethod, type INftMint, type ITokenInfo, type ITransactionDetails, type IAlgorandNetwork, type IBitcoinNetwork, type IAvmWallet,
+  type ITokenCreation, type IWeb3Service, NotImplementedError,
 } from '@certifie/web3-service';
 const provider: IEthereumProvider = { chainId: 1337, rpcURI: 'http://localhost:8545', nativeCurrency: { symbol: 'ETH', decimals: 18 } };
 const service = new Web3Service(provider, { signer: { privateKey: '0x1234' } });
@@ -41,3 +42,18 @@ async function contracts(): Promise<string[]> {
   return [balance, kind ?? '', sent.name ?? '', ...minted.tokenIds, details.value, ...Web3Service.detectStandards(contract.abi)];
 }
 void contracts;
+async function multiChain(): Promise<string[]> {
+  const algorand = new Web3Service({ kind: 'avm', rpcURI: 'https://testnet-api.algonode.cloud', chainId: 'testnet-v1.0' }, { signer: { mnemonic: 'example' } });
+  const network: IAlgorandNetwork = algorand.provider;
+  const created: ITokenCreation = await algorand.createToken({ name: 'Coin', symbol: 'CN', totalSupply: '1000', decimals: 2 });
+  const deployed = await algorand.deploy({ methods: [] }, { approval: '0x01', clear: '0x01' });
+  const avmWallet: IAvmWallet = { address: 'ADDRESS', signTransactions: async transactions => transactions.map(() => null) };
+  new Web3Service({ kind: 'avm', rpcURI: 'https://testnet-api.algonode.cloud' }, { signer: { wallet: avmWallet } });
+  const bitcoin: IWeb3Service = new Web3Service({ kind: 'bitcoin', rpcURI: 'https://mempool.space/api' });
+  const bitcoinNetwork: IBitcoinNetwork = new Web3Service({ kind: 'bitcoin', rpcURI: 'https://mempool.space/api' }).provider;
+  // @ts-expect-error An Algorand provider is not an EVM network.
+  const wrong: IEthereumProvider = algorand.provider;
+  const unavailable = new NotImplementedError('deploy is not available on Bitcoin.');
+  return [network.chainId, created.tokenId, deployed.tx?.contractAddress ?? '', bitcoin.kind, bitcoinNetwork.chainName, unavailable.code];
+}
+void multiChain;

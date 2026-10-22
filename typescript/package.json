@@ -1,6 +1,6 @@
 {
   "name": "@certifie/web3-service",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Blockchain notarization, contract deployment and transaction receipts for EVM networks.",
   "license": "UNLICENSED",
   "author": "CERTIFIE <info@certifie.me>",
@@ -56,6 +56,7 @@
     "certifie"
   ],
   "dependencies": {
+    "algosdk": "^3.9.0",
     "big.js": "^6.2.1",
     "ethers": "^6.13.2",
     "web3": "^4.12.1"

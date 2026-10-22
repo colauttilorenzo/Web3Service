@@ -86,13 +86,16 @@ test('the wallet is switched to the configured chain, adding it when unknown', a
   assert.equal(fixed.calls.includes('eth_sendTransaction'), false);
 });
 
-test('a wallet cannot be combined with a private key', async t => {
+test('a wallet cannot be combined with a private key, and must be an EIP-1193 provider', async t => {
   const chain = localChain(t);
   const wallet = browserWallet(chain);
   const signer = { wallet, privateKey: vectors.wallets[0].privateKey };
   const service = new Web3Service({ rpcURI: 'http://node.test', chainId: 1337 }, { signer, web3Factory: () => new Web3(chain) });
   await assert.rejects(service.deploy(abi, bytecode, ['Both']), error => error.code === 'INVALID_ARGUMENT');
   assert.deepEqual(wallet.calls, []);
+  const algorandWallet = { address: 'ADDRESS', signTransactions: async () => [] };
+  const mismatched = new Web3Service({ rpcURI: 'http://node.test', chainId: 1337 }, { signer: { wallet: algorandWallet }, web3Factory: () => new Web3(chain) });
+  await assert.rejects(mismatched.deploy(abi, bytecode, ['Algorand wallet']), error => error.code === 'INVALID_ARGUMENT');
 });
 
 test('a transaction rejected in the wallet reports USER_REJECTED and broadcasts nothing', async t => {

@@ -1,190 +1,95 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Nethereum.RPC.Eth.DTOs;
-using RpcReceipt = Nethereum.RPC.Eth.DTOs.TransactionReceipt;
+using Certifie.Web3.Algorand;
+using Certifie.Web3.Evm;
 
 namespace Certifie.Web3
 {
     /// <summary>
-    /// Deploys contracts, notarizes document hashes with <c>mint</c>, and reads contracts and receipts on EVM networks.
-    /// Native port of the <c>@certifie/web3-service</c> JavaScript class: same defaults, error codes and JSON output,
+    /// Deploys contracts, notarizes document hashes with <c>mint</c>, creates tokens, and reads contracts and transactions on any supported blockchain.
+    /// The provider selects the blockchain: an <see cref="IEvmProvider"/> (or a node URI) for EVM networks, an <see cref="IAvmProvider"/> for Algorand,
+    /// an <see cref="IBitcoinProvider"/> for Bitcoin. The API and the JSON output are the same everywhere; an operation the blockchain does not have
+    /// throws <see cref="System.NotImplementedException"/>. Native port of the <c>@certifie/web3-service</c> JavaScript class,
     /// with numeric values returned as decimal integer strings. Arithmetic uses <see cref="BigInteger"/>.
     /// </summary>
-    public sealed class Web3Service : IContractRunner
+    public sealed class Web3Service : IWeb3Service
     {
-        private const string MintSignature = "mint(address,string,string,string)";
-        private static readonly Regex BytecodePattern = new Regex("^0x(?:[0-9a-f]{2})+$", RegexOptions.IgnoreCase);
-        private readonly Web3ServiceOptions _options;
-        private readonly RpcConnector _rpc;
-        private readonly WriteQueue _writes = new WriteQueue();
+        private readonly IWeb3Service _chain;
 
-        /// <summary>Initializes from a node URI (<c>https://</c>, <c>http://</c>, <c>wss://</c> or <c>ws://</c>) with Ethereum defaults.</summary>
+        /// <summary>Initializes from an EVM node URI (<c>https://</c>, <c>http://</c>, <c>wss://</c> or <c>ws://</c>) with Ethereum defaults.</summary>
         public Web3Service(string rpcURI, Web3ServiceOptions? options = null)
             : this(new EvmProvider { RpcURI = rpcURI }, options) { }
 
-        /// <summary>Initializes from a provider configuration; omitted fields default to Ethereum (0x1, Ether, ETH, 18 decimals).</summary>
-        public Web3Service(EvmProvider provider, Web3ServiceOptions? options = null)
+        /// <summary>Initializes from a provider: an <see cref="EvmProvider"/>, <see cref="AvmProvider"/>, <see cref="BitcoinProvider"/> or any implementation of their interfaces.</summary>
+        public Web3Service(IBlockchainProvider provider, Web3ServiceOptions? options = null)
         {
-            Provider = Configuration.ResolveProvider(provider);
-            _options = Configuration.ResolveOptions(options);
-            _rpc = new RpcConnector(Provider, _options.Timeout);
+            _chain = Blockchains.Create(provider, options);
         }
 
-        public EthereumProvider Provider { get; }
+        public string Kind => _chain.Kind;
 
-        /// <summary>Normalized lowercase hex chain ID, e.g. <c>0x539</c>.</summary>
-        public string ChainId => Provider.ChainId;
+        public ResolvedProvider Provider => _chain.Provider;
+
+        public string ChainId => _chain.ChainId;
 
         public static string ShrinkAddress(string address) =>
             address.Length > 10 ? $"{address.Substring(0, 6)}...{address.Substring(address.Length - 4)}" : address;
 
+        /// <summary>EVM chain IDs as lowercase hex, e.g. 137 → 0x89.</summary>
         public static string? NormalizeChainId(string? chainId) => chainId == null ? null : Integers.NormalizeChainId(chainId);
 
         public static string NormalizeChainId(BigInteger chainId) => Integers.ToHex(Integers.RequireNonNegative(chainId, "chainId"));
 
-        /// <summary>A new 12-word English BIP-39 phrase.</summary>
+        /// <summary>A new 12-word English BIP-39 phrase, for EVM wallets. Algorand accounts: see <see cref="AlgorandWallets"/>.</summary>
         public static string CreateMnemonic() => HdWallets.CreateMnemonic();
 
-        /// <summary>Derives the wallet at <c>m/44'/60'/0'/0/{index}</c>; the default index 1 matches the original service.</summary>
+        /// <summary>Derives the EVM wallet at <c>m/44'/60'/0'/0/{index}</c>; the default index 1 matches the original service.</summary>
         public static WalletInfo GetWallet(string mnemonic, int index = 1, string password = "") => HdWallets.Derive(mnemonic, index, password);
 
         public static string GetPrivateKey(string mnemonic, int index = 1, string password = "") => GetWallet(mnemonic, index, password).PrivateKey;
 
-        /// <summary>ERC standards recognized from the functions of an ABI, e.g. <c>["ERC-20"]</c> or <c>["ERC-721", "ERC-721 Metadata", "ERC-165"]</c>.</summary>
-        public static List<string> DetectStandards(string abi) => ErcStandards.Detect(AbiMethods.Describe(abi).Select(fn => fn.Method.Signature).ToList());
+        /// <summary>Standards recognized from the functions of an ABI, e.g. <c>["ERC-20"]</c>, <c>["ERC-721", "ERC-721 Metadata", "ERC-165"]</c> or <c>["ARC-200"]</c>.</summary>
+        public static List<string> DetectStandards(string abi) => ContractMethods.ParseAbi(abi) is JsonArray
+            ? ErcStandards.Detect(AbiMethods.Describe(abi).Select(fn => fn.Method.Signature).ToList())
+            : ArcStandards.Detect(Arc4Methods.Describe(abi).Select(fn => fn.Method.Name).ToList());
 
-        /// <summary>A contract at an address: lists its functions and calls them with named parameters, e.g. <c>contract.CallAsync("transfer", new { to, amount })</c>.</summary>
-        public Web3Contract GetContract(string abi, string address) => new Web3Contract(abi, address, this);
+        /// <summary>A contract at an address (an application ID on Algorand): lists its functions and calls them with named parameters, e.g. <c>contract.CallAsync("transfer", new { to, amount })</c>.</summary>
+        public Web3Contract GetContract(string abi, string address) => _chain.GetContract(abi, address);
 
-        public Task<CheckResult> CheckAsync(CancellationToken cancellationToken = default) =>
-            _rpc.UseAsync(async session =>
-            {
-                var blockNumber = await session.QuantityAsync(session.Eth.Blocks.GetBlockNumber.SendRequestAsync()).ConfigureAwait(false);
-                var gasPrice = await session.QuantityAsync(session.Eth.GasPrice.SendRequestAsync()).ConfigureAwait(false);
-                return new CheckResult { BlockNumber = Integers.ToDecimalString(blockNumber), GasPrice = Integers.ToDecimalString(gasPrice) };
-            }, cancellationToken);
+        public Task<CheckResult> CheckAsync(CancellationToken cancellationToken = default) => _chain.CheckAsync(cancellationToken);
 
-        /// <summary>
-        /// Calls a read-only method. A single output is returned as its value, several outputs as a JSON array.
-        /// Integers become decimal strings, bytes become 0x hex.
-        /// </summary>
         public Task<JsonNode?> CallContractMethodAsync(string method, string abi, string address, object[]? parameters = null,
             CancellationToken cancellationToken = default) =>
-            _rpc.UseAsync(async session =>
-            {
-                var function = ContractCalls.GetFunction(session.Eth, abi, address, method);
-                var outputs = await session.WithTimeoutAsync(function.CallDecodingToDefaultAsync(parameters ?? Array.Empty<object>())).ConfigureAwait(false);
-                return ContractCalls.OutputsToJson(outputs);
-            }, cancellationToken);
+            _chain.CallContractMethodAsync(method, abi, address, parameters, cancellationToken);
 
-        /// <summary>Notarizes a document hash by calling <c>mint(address,string,string,string)</c> on the contract.</summary>
         public Task<TransactionResult> MintAsync(string abi, string contractAddress, NotarizationDocument document, TransactionResult? onChainEvent = null,
-            TransactionOptions? options = null, CancellationToken cancellationToken = default)
-        {
-            ValidateDocument(document);
-            var arguments = new object[] { contractAddress, document.Hash.Data, document.Hash.Algorithm, document.Metadata ?? "" };
-            return WriteAsync(Named(onChainEvent, "mint"), session =>
-            {
-                var function = ContractCalls.GetFunction(session.Eth, abi, contractAddress, "mint", $"The ABI must contain {MintSignature}.");
-                return new TransactionRequest(function.GetData(arguments), contractAddress,
-                    (from, value) => function.EstimateGasAsync(from, null, value, arguments), options);
-            }, cancellationToken);
-        }
+            TransactionOptions? options = null, CancellationToken cancellationToken = default) =>
+            _chain.MintAsync(abi, contractAddress, document, onChainEvent, options, cancellationToken);
 
         public Task<TransactionResult> DeployAsync(string abi, string bytecode, object[]? constructorArguments = null, TransactionResult? onChainEvent = null,
-            TransactionOptions? options = null, CancellationToken cancellationToken = default)
-        {
-            ValidateBytecode(bytecode);
-            var arguments = constructorArguments ?? Array.Empty<object>();
-            return WriteAsync(Named(onChainEvent, "deploy"), session =>
-            {
-                var data = session.Eth.DeployContract.GetData(bytecode, abi, arguments);
-                return new TransactionRequest(data, null,
-                    (from, value) => session.Eth.TransactionManager.EstimateGasAsync(new CallInput { From = from, Data = data, Value = value }), options);
-            }, cancellationToken);
-        }
+            TransactionOptions? options = null, CancellationToken cancellationToken = default) =>
+            _chain.DeployAsync(abi, bytecode, constructorArguments, onChainEvent, options, cancellationToken);
+
+        public Task<TransactionResult> DeployAsync(string abi, AvmPrograms programs, object[]? constructorArguments = null, TransactionResult? onChainEvent = null,
+            TransactionOptions? options = null, CancellationToken cancellationToken = default) =>
+            _chain.DeployAsync(abi, programs, constructorArguments, onChainEvent, options, cancellationToken);
+
+        /// <summary>Creates a token without a contract: an Algorand Standard Asset. Not available on EVM networks, where tokens are contracts.</summary>
+        public Task<TokenCreation> CreateTokenAsync(TokenDefinition token, TransactionResult? onChainEvent = null, TransactionOptions? options = null,
+            CancellationToken cancellationToken = default) =>
+            _chain.CreateTokenAsync(token, onChainEvent, options, cancellationToken);
+
+        public Task<TokenInfo> GetTokenInfoAsync(string tokenId, CancellationToken cancellationToken = default) => _chain.GetTokenInfoAsync(tokenId, cancellationToken);
 
         public Task<TransactionResult> GetTransactionReceiptAsync(string transactionHash, TransactionResult? onChainEvent = null,
             CancellationToken cancellationToken = default) =>
-            _rpc.UseAsync(async session =>
-            {
-                var receipt = await Receipts.GetAsync(session, transactionHash).ConfigureAwait(false) ?? throw Errors.TransactionNotFound(transactionHash);
-                var result = onChainEvent?.Copy() ?? new TransactionResult();
-                return await TransactionResults.FromReceiptAsync(session, receipt, result, Provider).ConfigureAwait(false);
-            }, cancellationToken);
+            _chain.GetTransactionReceiptAsync(transactionHash, onChainEvent, cancellationToken);
 
-        /// <summary>A transaction by hash, pending or mined. With the contract ABI, the called function and its arguments are decoded too.</summary>
         public Task<TransactionDetails> GetTransactionAsync(string transactionHash, string? abi = null, CancellationToken cancellationToken = default) =>
-            _rpc.UseAsync(async session =>
-            {
-                var functions = abi == null ? new List<AbiFunction>() : AbiMethods.Describe(abi);
-                var details = Transactions.FromRpc(await Transactions.GetAsync(session, transactionHash).ConfigureAwait(false), functions);
-                return await TransactionResults.AddMinedDetailsAsync(session, details, Provider).ConfigureAwait(false);
-            }, cancellationToken);
-
-        Task<JsonNode?> IContractRunner.ReadAsync(string abi, string address, string signature, object[] args, CancellationToken cancellationToken) =>
-            CallContractMethodAsync(signature, abi, address, args, cancellationToken);
-
-        Task<TransactionResult> IContractRunner.SendAsync(string abi, string address, string signature, object[] args, string name, TransactionOptions? options,
-            CancellationToken cancellationToken) =>
-            TransactAsync(abi, address, signature, args, new TransactionResult { Name = name }, options, cancellationToken);
-
-        Task<TransactionDetails> IContractRunner.GetTransactionAsync(string transactionHash, string abi, CancellationToken cancellationToken) =>
-            GetTransactionAsync(transactionHash, abi, cancellationToken);
-
-        /// <summary>Sends a call to any state-changing contract function.</summary>
-        private Task<TransactionResult> TransactAsync(string abi, string address, string signature, object[] args, TransactionResult onChainEvent,
-            TransactionOptions? options, CancellationToken cancellationToken) =>
-            WriteAsync(onChainEvent, session =>
-            {
-                var function = ContractCalls.GetFunction(session.Eth, abi, address, signature);
-                return new TransactionRequest(function.GetData(args), address, (from, value) => function.EstimateGasAsync(from, null, value, args), options);
-            }, cancellationToken);
-
-        private static TransactionResult Named(TransactionResult? onChainEvent, string name)
-        {
-            var copy = onChainEvent?.Copy() ?? new TransactionResult();
-            copy.Name ??= name;
-            return copy;
-        }
-
-        private static void ValidateDocument(NotarizationDocument? document)
-        {
-            if (string.IsNullOrEmpty(document?.Hash?.Data) || string.IsNullOrEmpty(document!.Hash.Algorithm))
-                throw Errors.InvalidArgument("A document hash and algorithm are required.");
-        }
-
-        private static void ValidateBytecode(string? bytecode)
-        {
-            if (bytecode == null || !BytecodePattern.IsMatch(bytecode)) throw Errors.InvalidArgument("bytecode must be a non-empty 0x-prefixed hex string.");
-        }
-
-        /// <summary>Writes are queued per instance, so concurrent calls get consecutive nonces.</summary>
-        private Task<TransactionResult> WriteAsync(TransactionResult onChainEvent, Func<RpcSession, TransactionRequest> prepare,
-            CancellationToken cancellationToken) =>
-            _writes.RunAsync(() => _rpc.UseAsync(session => SendAsync(session, prepare(session), onChainEvent), cancellationToken), cancellationToken);
-
-        /// <summary>Signs and broadcasts the request, waits until it is mined and describes the result.</summary>
-        private async Task<TransactionResult> SendAsync(RpcSession session, TransactionRequest request, TransactionResult onChainEvent)
-        {
-            onChainEvent.RequestedAt = TransactionResults.RequestedAt(onChainEvent.RequestedAt);
-            var transactionHash = await KeySigner.Create(_options, ChainId).SendAsync(session, request).ConfigureAwait(false);
-            var receipt = await Receipts.WaitAsync(session, transactionHash, _options.TransactionTimeout, _options.PollingInterval).ConfigureAwait(false);
-            if (receipt.Status?.Value == 0) throw Errors.TransactionReverted(transactionHash);
-            return await DescribeMinedAsync(session, receipt, onChainEvent).ConfigureAwait(false);
-        }
-
-        /// <summary>The transaction is already mined, so a failure here must still hand back its hash.</summary>
-        private async Task<TransactionResult> DescribeMinedAsync(RpcSession session, RpcReceipt receipt, TransactionResult onChainEvent)
-        {
-            try { return await TransactionResults.FromReceiptAsync(session, receipt, onChainEvent, Provider).ConfigureAwait(false); }
-            catch (Exception error) when (!session.IsCancellation(error)) { throw Errors.ReceiptDetailsFailed(receipt.TransactionHash, error); }
-        }
+            _chain.GetTransactionAsync(transactionHash, abi, cancellationToken);
     }
 }

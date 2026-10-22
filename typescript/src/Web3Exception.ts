@@ -28,3 +28,11 @@ export class Web3Error extends Error {
     };
   }
 }
+
+/** The blockchain of the provider does not offer the operation, e.g. deploy on Bitcoin. The equivalent of NotImplementedException in .NET. */
+export class NotImplementedError extends Web3Error {
+  constructor(message: string) {
+    super('NOT_IMPLEMENTED', message);
+    this.name = 'NotImplementedError';
+  }
+}
