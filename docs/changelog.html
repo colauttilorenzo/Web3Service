@@ -43,6 +43,7 @@
 <li>Pacchetto NuGet <code>Certifie.Web3Service</code> con le stesse API e lo stesso JSON.</li>
 <li>Repository con <code>typescript/</code> e <code>dotnet/</code>, ciascuno con <code>src</code> e <code>test</code>: stessi nomi di file e di metodi nei due linguaggi, così una correzione si applica facilmente a entrambi.</li>
 <li>Test con gli stessi nomi in TypeScript e .NET, valori attesi condivisi in <code>shared/test-vectors.json</code> e un test di coerenza che confronta il JSON prodotto dalle due versioni sulla stessa chain.</li>
+<li>GitHub Actions: a ogni push su <code>main</code> esegue i test nei due linguaggi, pubblica i pacchetti npm e NuGet su GitHub Packages con la versione di <code>package.json</code> (più un numero di build se esiste già) e la documentazione su GitHub Pages.</li>
 <li>Nuova opzione <code>pollingIntervalMs</code> (1 secondo), come <code>PollingInterval</code> in .NET. <code>provider.chainId</code> è ora normalizzato in esadecimale minuscolo e <code>callContractMethod</code> con più output restituisce sempre un array, come in .NET.</li>
 <li>Codice sorgente suddiviso in moduli (TypeScript) e classi interne (.NET) piccoli e con un solo compito, con metodi di al massimo 10 righe; l’API pubblica non cambia e il tipo <code>NativeCurrency</code> ora è esportato.</li>
 <li>Configurazione EVM con default Ethereum (<code>0x1</code>, Ether, ETH, 18 decimali), anche parziale.</li>

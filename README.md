@@ -56,3 +56,24 @@ npm ci
 npm test              # TypeScript tests
 npm run test:dotnet   # .NET tests and the TypeScript/.NET parity test (requires the .NET 8 SDK)
 ```
+
+## Continuous integration
+
+Two GitHub Actions workflows run on every push to `main`:
+
+- [`release.yml`](.github/workflows/release.yml) runs the TypeScript tests, the .NET tests and the parity test, then publishes both packages to GitHub Packages. The version is the one in `typescript/package.json`; if that version is already published, it gets a build number (`0.1.0-build.1`, `0.1.0-build.2`, …), computed by [`.github/scripts/resolve-version.mjs`](.github/scripts/resolve-version.mjs). To publish a clean version, raise `version` in `typescript/package.json`.
+- [`docs.yml`](.github/workflows/docs.yml) publishes `docs/` to GitHub Pages when it changes. Enable it once in **Settings → Pages → Source: GitHub Actions**.
+
+GitHub Packages requires the npm scope to match the repository owner, so the npm package is published as `@<owner>/web3-service` (for example `@certifie/web3-service` when the repository belongs to the `certifie` organization). The packages have the same visibility as the repository, and GitHub Packages always asks for a token to install them, even when they are public: use a GitHub token with the `read:packages` scope.
+
+```sh
+# npm: .npmrc in the consuming project
+@<owner>:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+```sh
+# NuGet (add --prerelease to dotnet add package for build versions)
+dotnet nuget add source https://nuget.pkg.github.com/<owner>/index.json --name github --username <user> --password <token> --store-password-in-clear-text
+dotnet add package Certifie.Web3Service --source github
+```

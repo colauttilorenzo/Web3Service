@@ -8,6 +8,7 @@
 - Repository split into `typescript/` and `dotnet/`, each with `src` and `test`: files and methods have the same names in both languages (`Web3Service`, `Internal/Configuration`, `Internal/KeySigner`, …), so a fix can be applied to both in the same place.
 - Mirrored tests with the same names in TypeScript and .NET, shared expected values in `shared/test-vectors.json`, and a parity test (`npm run test:dotnet`) that checks both versions return the same JSON for the same calls on the same chain.
 - New `pollingIntervalMs` option (default 1 second), matching `PollingInterval` in .NET. `provider.chainId` is now normalized to lowercase hex, and `callContractMethod` returns an array for several outputs, as in .NET.
+- GitHub Actions: on every push to `main`, tests in both languages, then npm and NuGet packages on GitHub Packages with the `package.json` version (plus a build number when it is already published), and the documentation on GitHub Pages.
 - Multi-page documentation in `docs/`: reusable examples for Next.js, Vanilla, Fastify, Express and .NET, signatures and types in TypeScript and C#.
 - Source split into small single-purpose modules (TypeScript) and internal classes (.NET), with methods of at most 10 lines; public names are unchanged and `NativeCurrency` is now exported as a type.
 
